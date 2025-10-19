@@ -5,6 +5,7 @@
  *      Standardized in that it's not feature rich, but supports press-opacity adjustment 
  */
 import { Text, Component, Pressable } from 'react-native'
+import { useState } from 'react';
 import { useRouter } from 'expo-router';
 import getButtonStyles from '../styles/button';
 
@@ -12,6 +13,9 @@ const LinkButton = ({ onPress, title, link, active }) => {
     const router = useRouter();
     const button = getButtonStyles();
     const activeState = active === "true" ? true : false;
+    
+    // Track whether the button is pressed, to adjust opacity
+    const [isPressed, setPressed] = useState(false);
     return (
         <Pressable
             onPress={() => {
