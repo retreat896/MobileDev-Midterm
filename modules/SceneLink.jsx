@@ -1,25 +1,26 @@
 /**
- * Code Courtesy of Kristopher Adams
+ * Original Code Courtesy of Kristopher Adams
  * Purpose: 
  *      Provide a standardized "Link" button, that enables screen switching
- *      Standardized in that it's not feature rich, but supports press-opacity adjustment 
+ *      Standardized in that it's not feature rich, but supports press-opacity adjustment
  */
 import { Text, Component, Pressable } from 'react-native'
 import { useState } from 'react';
 import { useRouter } from 'expo-router';
 import getButtonStyles from '../styles/button';
 
-const LinkButton = ({ onPress, title, link, active }) => {
+const SceneLink = ({ onPress, title, link }) => {
     const router = useRouter();
     const button = getButtonStyles();
-    const activeState = active === "true" ? true : false;
-    
+
     // Track whether the button is pressed, to adjust opacity
     const [isPressed, setPressed] = useState(false);
     return (
         <Pressable
-            onPress={() => {
-                // onPress && onPress();
+        onPress={() => {
+                // Call the onPress function.
+                onPress();
+                // Display the next scene.
                 router.push(link);
             }}
             style={({ pressed }) => [
@@ -34,4 +35,4 @@ const LinkButton = ({ onPress, title, link, active }) => {
 }
 
 
-export default LinkButton;
+export default SceneLink;
