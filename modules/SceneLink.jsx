@@ -9,6 +9,12 @@ import { useState } from 'react';
 import { useRouter } from 'expo-router';
 import getButtonStyles from '../styles/button';
 
+/**
+ * Idea for later: 
+ *      Have a onTransition option that allows an asynchronous function 
+ *      to be called and executed. While executing, it shows the loading
+ *      screen. 
+ */
 const SceneLink = ({ onPress, title, link }) => {
     const router = useRouter();
     const button = getButtonStyles();
