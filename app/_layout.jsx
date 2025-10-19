@@ -10,10 +10,9 @@ export default function RootLayout() {
         unmountOnBlur: true
       }}
     >
-      <Stack.Screen name="index" />
-      <Stack.Screen name="geometry" />
-      <Stack.Screen name="gravity" />
-      <Stack.Screen name="custom" />
+      <Stack.Screen name="play" />
+      <Stack.Screen name="settings" />
+      <Stack.Screen name="stats" />
     </Stack>
   );
 }
