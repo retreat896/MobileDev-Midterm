@@ -1,4 +1,11 @@
+
+import { useFonts } from '@expo-google-fonts/honk';
 import { StyleSheet } from 'react-native';
+
+    useFonts({
+        'Honk': require('../node_modules/@expo-google-fonts/honk/400Regular/Honk_400Regular.ttf'),
+    });
+
 export const styles = StyleSheet.create({
     mainView: {
         flex: 1,
@@ -8,9 +15,6 @@ export const styles = StyleSheet.create({
         borderWidth: 1,
         borderColor: 'red',
     },
-    gameText: {
-        color: '#ffffff',
-    },
     titleButton: {
         width: 200,
         height: 80,
@@ -19,41 +23,30 @@ export const styles = StyleSheet.create({
         justifyContent: 'center',
         borderRadius: 12,
         marginVertical: 10,
+        borderColor: "red",
+        borderWidth: 2,
     },
     titleButtonText: {
         color: 'white',
+        fontFamily:  'Honk',
+        fontSize: 48,
+        borderColor: "red",
+        borderWidth: 2,
     },
-    popupContainer: {
-        justifyContent: 'center',
-        // alignItems: 'center',
-        borderRadius: 8,
-        borderWidth: 1,
-        borderColor: 'red',
-        backgroundColor: 'lightblue',
-        zIndex: 1,
-    },
-    popupText: {
-        textAlign: 'center',
-        color: 'black',
-    },
-    pageButton: {
-        width: 50,
-        height: 25,
-        backgroundColor: '#007276ff',
-        alignSelf: 'center',
-        justifyContent: 'center',
-        borderRadius: 12,
-        marginVertical: 10,
+    wrapper: {
+        position:"absolute",
+        width:"90%",
+        height:"90%",
+        flex:1,
+        opacity: 0.90,
+        borderColor: "red",
+        borderWidth: 2,
     },
     row: {
         display: 'flex',
         flexDirection: 'row',
-        justifyContent: 'space-evenly',
-    },
-    listContainer: {
-        display: 'flex',
-        justifyContent: 'space-evenly',
-        alignContent: 'space-evenly'
+        justifyContent:'center',
+        borderColor: "red",
+        borderWidth: 2,
     }
-
 });

@@ -1,88 +1,103 @@
-import React from 'react'
-import { StyleSheet, Text, View, Button, Image, FlatList, useWindowDimensions } from 'react-native';
-import ItemSelectMenu from '../modules/ItemSelectMenu';
+import { React, useState } from 'react'
+import { View, Image, StyleSheet, Pressable, useWindowDimensions } from 'react-native';
+import { Button, Text } from 'react-native-paper';
 import { styles } from '../styles/main';
 
-let image = () => {
-    return (
-        <Image
-            source={{ src: "https://images.dog.ceo/breeds/terrier-andalusian/images.jpg" }}
-            style={{
-                width: 85,
-                height: 85,
-                borderRadius: 10,
-                elevation: 15, // Android
-                shadowColor: "black",
-                shadowOpacity: 0.3,
-                shadowRadius: 4, // iOS
-            }}
-        />
-    )
-}
 
-const makeItems = (count) => {
-    let array = [];
-    for (let i = 0; i < count; i++) {
-        array.push({
-            onPress: () => {
-                console.log("Pressed " + i);
-            },
+const LevelSelect = ({ levels, onSelect }) => {
+    const { width, height } = useWindowDimensions();
+    const [page, setPage] = useState(0);
+    const [pages, setPages] = useState(levels || null);
 
-            icon: {
-                uri: "https://images.dog.ceo/breeds/terrier-andalusian/images.jpg"
-            },
-
-            label: `${i}`,
-
-            style: {
-                // size: 75,
-                // borderRadius: 10,
-                borderColor: "yellow",
-                // elevation: 10,
-                // shadowColor: "black",
-                // shadowOpacity: 0.3,
-                // shadowRadius: 4,
-                color: "white"
-            }
-        });
+    /**
+     * Move to the next page
+     */
+    const onNext = () => {
+        console.log("Next Level");
+        setPage((page + 1) % pages.length);
     }
 
-    return (array);
-}
+    /**
+     * Move to the previous page
+     */
+    const onPrev = () => {
+        console.log("Previous Level");
+        setPage((page - 1 + pages.length) % pages.length);
+    }
 
-const LevelSelect = () => {
-    const { width:screenWidth, height:screenHeight } = useWindowDimensions();
-    const items = makeItems(60);
-    
+    console.log("Levels: " + levels);
+    console.log("Main Page: " + levels[page]);
+
+    // Image Dimension Percentages (Preserve Aspect Ratio)
+    const MAX_IMAGE_WIDTH = 50;
+    const MAX_IMAGE_HEIGHT = 70;
+
     return (
-        // <View>
-        //         {/* <PopupScreen title="Levels" width={400} height={600} radius={10}> */}
-        //             <ItemSelectMenu items={items} width={400} height={600} numColumns={5} />
-        //         {/* </PopupScreen> */}
-        // </View>
-        
-        <View
-        style={{
-            width: screenWidth,
-            height: screenHeight,
-            ...styles.popupContainer
-            }}>
-
-            <Text style={{
-                textAlign: 'center',
-                color: 'black'
-            }}>Levels</Text>
-
-            <View>
-                <ItemSelectMenu items={items} width={screenWidth} height={screenHeight - 200} itemsPerRow={4} rowsPerPage={4} />
-                {/* #TODO: Make Simply Done */}
-                {/* #TODO: <SimpleSelectMenu/> */}
-                {/* max-width: 100%;  height: auto; maintan the aspect ratio and fill the width*/}
-                {/* Can try and do with Item, for ItemSelectMenu? It work, may as well make it more usable.
-                    It be handy if any components provided to it could be dynamic.*/}
+        <View>
+            <View style={[levelStyles.row, levelStyles.spread]}>
+                <Button style={levelStyles.pageButton} onPress={onNext}>{"<-"}</Button>
+                <Pressable
+                    style={levelStyles.pressable}
+                    onPress={() => {
+                        console.log("Selected Level #" + page);
+                        onSelect(page);
+                    }}
+                >
+                    {/* Only display the image element if level references are provided */}
+                    {pages ? <Image source={{ uri: pages[page] }} style={levelStyles.image} /> : <View />}
+                </Pressable>
+                <Button style={levelStyles.pageButton} onPress={onPrev}>{"->"}</Button>
             </View>
         </View>
     )
 }
+
+const levelStyles = StyleSheet.create({
+
+    pressable: {
+        width:'100%',
+        maxWidth: (MAX_IMAGE_WIDTH * MAX_IMAGE_HEIGHT/100) + "%",
+        height: '100%',
+        maxHeight: MAX_IMAGE_HEIGHT + '%'
+    },
+    image: {
+        width: 'auto',
+        height: '100%',
+        elevation: 10,          // Android
+        shadowColor: 'black',
+        shadowOpacity: 0.3,
+        shadowRadius: 4,         // IOS,
+        borderWidth: 1,
+        borderColor: 'red',
+        borderRadius:18
+    },
+    spread: {
+        flexDirection: "row",
+        justifyContent: 'space-between',
+        borderColor: "red",
+        borderWidth: 2,
+    },
+    pageButton: {
+        marginHorizontal: 50,
+        width: 50,
+        height: 50,
+        backgroundColor: '#007276ff',
+        alignItems: 'center',
+        justifyContent: 'center',
+        borderRadius: 12,
+        borderColor: "red",
+        borderWidth: 2,
+    },
+    row: {
+        position: 'static',
+        display: 'flex',
+        flexDirection: 'row',
+        justifyContent: 'center',
+        alignItems: 'center',
+        height: "100%",
+        borderColor: "red",
+        borderWidth: 2,
+    }
+})
 
 export default LevelSelect

@@ -10,9 +10,7 @@ export default function RootLayout() {
         unmountOnBlur: true
       }}
     >
-      <Stack.Screen name="play" />
-      <Stack.Screen name="settings" />
-      <Stack.Screen name="stats" />
+
     </Stack>
   );
 }
