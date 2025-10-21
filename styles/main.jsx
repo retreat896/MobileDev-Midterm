@@ -5,9 +5,11 @@ export const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center',
         backgroundColor: '#1c1c1cff',
+        borderWidth: 1,
+        borderColor: 'red',
     },
-    gameText:{
-        color:"#ffffff"
+    gameText: {
+        color: '#ffffff',
     },
     titleButton: {
         width: 200,
@@ -21,4 +23,27 @@ export const styles = StyleSheet.create({
     titleButtonText: {
         color: 'white',
     },
+    popupContainer: {
+        justifyContent: 'center',
+        borderRadius: 0,
+        borderWidth: 1,
+        borderColor: 'red',
+        backgroundColor: 'lightblue',
+        zIndex: 1,
+    },
+    popupText: {
+        textAlign: 'center',
+        color: 'black',
+    },
+    pageButton: {
+        width: 50,
+        height: 25,
+        backgroundColor: '#007276ff',
+        alignSelf: 'center',
+        justifyContent: 'center',
+        borderRadius: 12,
+        marginVertical: 10,
+    },
+
+
 });

@@ -1,6 +1,7 @@
 import { Text, View, Pressable, FlatList } from 'react-native'
 import { useState, useEffect } from 'react';
 import { Item, ItemSize, ITEM_MARGIN } from './Item';
+import { styles } from '../styles/main';
 
 const ItemSelectMenu = ({ items, width, height, numColumns }) => {
     const [page, setPage] = useState(-1);
@@ -39,21 +40,13 @@ const ItemSelectMenu = ({ items, width, height, numColumns }) => {
 
         setPage(0); // Set the page to 0, forcing a rerender
     }, []);
-
+ 
 
     return (
         <View>
             <Pressable 
                 onPress={() => { setPage((page - 1 + pages.length) % pages.length); }}
-                style={{
-                    width: 50,
-                    height: 25,
-                    backgroundColor: '#007276ff',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    borderRadius: 12,
-                    marginVertical: 10,
-                }}
+                style={styles.pageButton}
             >
                 <Text style={{
                     textAlign: "center"
@@ -71,24 +64,11 @@ const ItemSelectMenu = ({ items, width, height, numColumns }) => {
                 }}
             
                 numColumns={columns}
-            
-                style={{
-                    width: width,
-                    height: height
-                }}
             />
 
             <Pressable 
                 onPress={() => { setPage((page + 1) % pages.length); }}
-                style={{
-                    width: 50,
-                    height: 25,
-                    backgroundColor: '#007276ff',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    borderRadius: 12,
-                    marginVertical: 10,
-                }}
+                style={styles.pageButton}
             >
                 <Text style={{
                     textAlign: "center"
