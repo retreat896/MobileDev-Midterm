@@ -25,8 +25,8 @@ const Item = ({ onPress=() => {}, icon={}, label="null", style={ } }) => {
             style={{
                 margin: ITEM_MARGIN/2,
                 marginBottom: ITEM_MARGIN/2 + 5,
-                width: ItemSize(style),
-                height: ItemSize(style),
+                width: 'auto', // We need another way to use vw/vh
+                height: '20%', // Such that the height can use vw, to have same scale
                 backgroundColor: '#777777',
             }}
             >
@@ -39,8 +39,8 @@ const Item = ({ onPress=() => {}, icon={}, label="null", style={ } }) => {
                     resizeMode="cover"
                     style={{
                         // Dimensions
-                        width: ItemSize(style),
-                        height: ItemSize(style),
+                        width:'100%',
+                        height: '100%',
                         
                         // Shadows
                         elevation: !style.elevation ? 10 : style.elevation, // Android

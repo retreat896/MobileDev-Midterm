@@ -1,6 +1,6 @@
 import React from 'react'
 import { StyleSheet, Text, View, Button, Image, FlatList, useWindowDimensions } from 'react-native';
-import ItemSelectMenu from './ItemSelectMenu';
+import ItemSelectMenu from '../modules/ItemSelectMenu';
 import { styles } from '../styles/main';
 
 let image = () => {
@@ -60,11 +60,12 @@ const LevelSelect = () => {
         //             <ItemSelectMenu items={items} width={400} height={600} numColumns={5} />
         //         {/* </PopupScreen> */}
         // </View>
-
+        
         <View
-            style={{
-                width: screenWidth,
-                height: screenHeight,
+        style={{
+            width: screenWidth,
+            height: screenHeight,
+            ...styles.popupContainer
             }}>
 
             <Text style={{
@@ -73,7 +74,12 @@ const LevelSelect = () => {
             }}>Levels</Text>
 
             <View>
-                 <ItemSelectMenu items={items} width={400} height={600} numColumns={5} />
+                <ItemSelectMenu items={items} width={screenWidth} height={screenHeight - 200} itemsPerRow={4} rowsPerPage={4} />
+                {/* #TODO: Make Simply Done */}
+                {/* #TODO: <SimpleSelectMenu/> */}
+                {/* max-width: 100%;  height: auto; maintan the aspect ratio and fill the width*/}
+                {/* Can try and do with Item, for ItemSelectMenu? It work, may as well make it more usable.
+                    It be handy if any components provided to it could be dynamic.*/}
             </View>
         </View>
     )

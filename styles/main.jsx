@@ -25,6 +25,7 @@ export const styles = StyleSheet.create({
     },
     popupContainer: {
         justifyContent: 'center',
+        // alignItems: 'center',
         borderRadius: 8,
         borderWidth: 1,
         borderColor: 'red',
@@ -44,6 +45,15 @@ export const styles = StyleSheet.create({
         borderRadius: 12,
         marginVertical: 10,
     },
-
+    row: {
+        display: 'flex',
+        flexDirection: 'row',
+        justifyContent: 'space-evenly',
+    },
+    listContainer: {
+        display: 'flex',
+        justifyContent: 'space-evenly',
+        alignContent: 'space-evenly'
+    }
 
 });
