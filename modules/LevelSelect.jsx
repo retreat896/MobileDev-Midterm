@@ -3,7 +3,6 @@ import { View, Image, StyleSheet, Pressable, useWindowDimensions } from 'react-n
 import { Button, Text } from 'react-native-paper';
 import { styles } from '../styles/main';
 
-
 const LevelSelect = ({ levels, onSelect }) => {
     const { width, height } = useWindowDimensions();
     const [page, setPage] = useState(0);
@@ -28,9 +27,6 @@ const LevelSelect = ({ levels, onSelect }) => {
     console.log("Levels: " + levels);
     console.log("Main Page: " + levels[page]);
 
-    // Image Dimension Percentages (Preserve Aspect Ratio)
-    const MAX_IMAGE_WIDTH = 50;
-    const MAX_IMAGE_HEIGHT = 70;
 
     return (
         <View>
@@ -52,8 +48,11 @@ const LevelSelect = ({ levels, onSelect }) => {
     )
 }
 
-const levelStyles = StyleSheet.create({
+// Image Dimension Percentages (Preserve Aspect Ratio)
+const MAX_IMAGE_WIDTH = 50;
+const MAX_IMAGE_HEIGHT = 70;
 
+const levelStyles = StyleSheet.create({
     pressable: {
         width:'100%',
         maxWidth: (MAX_IMAGE_WIDTH * MAX_IMAGE_HEIGHT/100) + "%",
