@@ -65,7 +65,6 @@ const LevelSelect = () => {
             style={{
                 width: screenWidth,
                 height: screenHeight,
-                ...styles.popupContainer
             }}>
 
             <Text style={{

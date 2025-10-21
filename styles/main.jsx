@@ -25,7 +25,7 @@ export const styles = StyleSheet.create({
     },
     popupContainer: {
         justifyContent: 'center',
-        borderRadius: 0,
+        borderRadius: 8,
         borderWidth: 1,
         borderColor: 'red',
         backgroundColor: 'lightblue',
