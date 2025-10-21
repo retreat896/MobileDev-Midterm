@@ -5,7 +5,7 @@ import { Item } from './Item'
 const SimpleSelectMenu = () => {
   return (
     <View>
-      <Simple Item style={} onPress={()=>} label='' icon={} key={} />
+      <Simple Item style={} onPress={()=>{}} label='' icon={} key={} />
     </View>
   )
 }
