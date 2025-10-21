@@ -1,11 +1,13 @@
 import { Text, View, Pressable, FlatList } from 'react-native'
 import { useState, useEffect } from 'react';
 import { Item, ItemSize, ITEM_MARGIN } from './Item';
+import {styles} from '../styles/main';
+
 
 const ItemSelectMenu = ({ items, width, height, numColumns }) => {
     const [page, setPage] = useState(-1);
     const [pages, setPages] = useState([]); // Used useState because it wasn't remembering the Array
-    
+
     // The maximum number of columns for the display
     const maxColumns = Math.max(1, Math.floor(width / (ItemSize(items[0].style) + ITEM_MARGIN)));
     const columns = Math.min(numColumns, maxColumns); // The necessary number of columns (may be lower than set value)
@@ -15,7 +17,6 @@ const ItemSelectMenu = ({ items, width, height, numColumns }) => {
 
     const itemsPerPage = columns * maxRows;                  // Items per page
     const numPages = Math.ceil(items.length / itemsPerPage); // Number of pages
-    
     
     useEffect(() => {
         console.log("Rendered Columns: " + columns);
@@ -42,53 +43,34 @@ const ItemSelectMenu = ({ items, width, height, numColumns }) => {
 
 
     return (
-        <View>
+        <View style={styles.popupContainer}>
             <Pressable 
                 onPress={() => { setPage((page - 1 + pages.length) % pages.length); }}
-                style={{
-                    width: 50,
-                    height: 25,
-                    backgroundColor: '#007276ff',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    borderRadius: 12,
-                    marginVertical: 10,
-                }}
+                style={styles.pageButton}
             >
                 <Text style={{
                     textAlign: "center"
                 }}>{"<"}</Text>
             </Pressable>
 
-            {/* FlatList contains the Item components, for selection */}
-            <FlatList
-                data={pages[page]}
+            <View>
+                {/* FlatList contains the Item components, for selection */}
+                <FlatList
+                    data={pages[page]}
                 
-                renderItem={(item) => {
-                    return (
-                        <Item {...item.item}/>
-                    );
-                }}
-            
-                numColumns={columns}
-            
-                style={{
-                    width: width,
-                    height: height
-                }}
-            />
+                    renderItem={(item) => {
+                        return (
+                            <Item {...item.item}/>
+                        );
+                    }}
+                    
+                    numColumns={columns}
+                />
+            </View>
 
             <Pressable 
                 onPress={() => { setPage((page + 1) % pages.length); }}
-                style={{
-                    width: 50,
-                    height: 25,
-                    backgroundColor: '#007276ff',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    borderRadius: 12,
-                    marginVertical: 10,
-                }}
+                style={styles.pageButton}
             >
                 <Text style={{
                     textAlign: "center"

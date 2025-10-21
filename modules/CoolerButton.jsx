@@ -5,7 +5,7 @@ import {styles} from "../styles/main"
 
 
 
-export const TitleScreenButton = ({onPress,title})=>{
+export const CoolerButton = ({onPress,title})=>{
     return (
       <Pressable onPress={onPress} style={styles.titleButton}>
             <Text style={styles.titleButtonText}>{title}</Text>
@@ -13,4 +13,4 @@ export const TitleScreenButton = ({onPress,title})=>{
     )
 }
 
-export default TitleScreenButton
+export default CoolerButton

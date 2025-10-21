@@ -1,33 +1,36 @@
 import { Text, View, Component, Pressable } from 'react-native'
 import { useState } from 'react';
 
-const PopupScreen = ({ children, title, width, height, radius, style }) => {
+const PopupScreen = ({ children, title }) => {
 
     return (
         <View
-            style={{
-                width: width,
-                height: height,
-                display: 'flexbox',
-                borderRadius: radius,
-                borderWidth: 1,
-                borderColor: 'red',
-                backgroundColor: 'lightblue',
-                position: 'absolute',
-                zIndex: 1,
-                opacity: 0.8,
-            }}>
+            style={styles.popup}>
 
-            <Text style={{
-                textAlign: 'center',
-                color: 'black'
-            }}>{title}</Text>
+            <Text style={styles.text}>{title}</Text>
 
             <View>
-                {children}    
+                {children}
             </View>
         </View>
     )
+}
+let styles = {
+    popup: {
+        display: 'flexbox',
+        flex:1,
+        borderRadius: 8,
+        borderWidth: 1,
+        borderColor: 'red',
+        backgroundColor: 'lime',
+        position: 'absolute',
+        zIndex: 1,
+        opacity: 0.8,
+    },
+    text: {
+        textAlign: 'center',
+        color: 'black'
+    }
 }
 
 

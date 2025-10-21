@@ -37,7 +37,7 @@ const Item = ({ onPress=() => {}, icon={}, label="null", style={ } }) => {
                 <Image
                     source={icon}
                     resizeMode="cover"
-                    style={{
+                    style={{ 
                         // Dimensions
                         width: ItemSize(style),
                         height: ItemSize(style),
