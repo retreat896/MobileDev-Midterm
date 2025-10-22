@@ -1,21 +1,15 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { View, useWindowDimensions, StyleSheet } from 'react-native';
 import { Button, Card, Text } from 'react-native-paper';
 
 const Wrapper = ({ children, title, subtitle, onOpen, onClose, style }) => {
     const { width, height } = useWindowDimensions();
 
-    const myCode = () => {
-        try {
-            onOpen();
-        } catch(e) {
-            console.log("No Open Function Defined");
-        }
-    }
+    // Call onOpen using UseEffect on every initial render
+    useEffect(onOpen, []);
 
     return (
         <Card style={[style||null]}>
-            {myCode()}
             <Text style={wrapperStyles.title}>{title}</Text>
             <Card.Actions style={wrapperStyles.close}>
                 <Button mode="contained" onPress={onClose}>X</Button>
