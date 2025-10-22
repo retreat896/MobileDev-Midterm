@@ -1,16 +1,13 @@
 import React, { Component } from 'react'
 import { Pressable, Text, View } from 'react-native'
-import {styles} from "../styles/main"
+import { styles } from '@styles/main';
 
-
-
-
-export const CoolerButton = ({onPress,title})=>{
+const CoolerButton = ({onPress,title})=>{
     return (
       <Pressable onPress={onPress} style={styles.titleButton}>
             <Text style={styles.titleButtonText}>{title}</Text>
       </Pressable>
     )
-}
+};
 
-export default CoolerButton
+export default CoolerButton;

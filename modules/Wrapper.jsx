@@ -1,8 +1,6 @@
-import React from 'react'
+import React from 'react';
 import { View, useWindowDimensions, StyleSheet } from 'react-native';
 import { Button, Card, Text } from 'react-native-paper';
-import { styles } from '../styles/main';
-
 
 const Wrapper = ({ children, title, subtitle, onOpen, onClose, style }) => {
     const { width, height } = useWindowDimensions();
@@ -54,6 +52,6 @@ const wrapperStyles = StyleSheet.create({
         borderBottomLeftRadius: 18,
         borderBottomRightRadius: 18,
     }
-})
+});
 
-export default Wrapper
+export default Wrapper;

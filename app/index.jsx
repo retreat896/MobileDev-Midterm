@@ -1,12 +1,12 @@
 import { View, useWindowDimensions } from 'react-native';
 import { Text } from 'react-native-paper';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useRouter } from 'expo-router';
-import { styles } from '../styles/main';
-import LevelSelect from '../modules/LevelSelect';
-import MainMenu from '../modules/MainMenu';
-import Wrapper from '../modules/Wrapper';
+import { styles } from '@styles/main';
+import LevelSelect from '@components/LevelSelect';
+import MainMenu from '@components/MainMenu';
+import Wrapper from '@components/Wrapper';
 import * as ScreenOrientation from 'expo-screen-orientation';
 
 // router.push(path): Navigates to a new screen and adds it to the navigation stack.
@@ -14,11 +14,7 @@ import * as ScreenOrientation from 'expo-screen-orientation';
 // router.back(): Navigates back to the previous screen.
 // router.navigate({ pathname: string, params: object }): Navigates to a specific path with parameters.
 
-
 const index = () => {
-
-
-
     // Lock the screen to landscape mode
     ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.LANDSCAPE_RIGHT);
 
@@ -30,7 +26,7 @@ const index = () => {
     const [levelSelect, openLevelSelect] = useState(false);
 
     useEffect(() => {
-        console.log("updatePage")
+        console.log("Loaded Main index.jsx")
     }, [settings, stats, levelSelect])
 
 
@@ -88,4 +84,5 @@ const index = () => {
     );
 };
 
+// export default index
 export default index;

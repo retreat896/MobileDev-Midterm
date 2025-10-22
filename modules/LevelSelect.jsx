@@ -1,12 +1,11 @@
-import { React, useState } from 'react'
+import React, { useState } from 'react'
 import { View, Image, StyleSheet, Pressable, useWindowDimensions } from 'react-native';
 import { Button, Text } from 'react-native-paper';
-import { styles } from '../styles/main';
 
 const LevelSelect = ({ levels, onSelect }) => {
     const { width, height } = useWindowDimensions();
     const [page, setPage] = useState(0);
-    const [pages, setPages] = useState(levels || null);
+    const [pages, setPages] = useState(levels);
 
     /**
      * Move to the next page
@@ -27,11 +26,10 @@ const LevelSelect = ({ levels, onSelect }) => {
     console.log("Levels: " + levels);
     console.log("Main Page: " + levels[page]);
 
-
     return (
         <View>
             <View style={[levelStyles.row, levelStyles.spread]}>
-                <Button style={levelStyles.pageButton} onPress={onNext}>{"<-"}</Button>
+                <Button style={levelStyles.pageButton} onPress={onPrev}>{"<-"}</Button>
                 <Pressable
                     style={levelStyles.pressable}
                     onPress={() => {
@@ -42,7 +40,7 @@ const LevelSelect = ({ levels, onSelect }) => {
                     {/* Only display the image element if level references are provided */}
                     {pages ? <Image source={{ uri: pages[page] }} style={levelStyles.image} /> : <View />}
                 </Pressable>
-                <Button style={levelStyles.pageButton} onPress={onPrev}>{"->"}</Button>
+                <Button style={levelStyles.pageButton} onPress={onNext}>{"->"}</Button>
             </View>
         </View>
     )
@@ -97,6 +95,6 @@ const levelStyles = StyleSheet.create({
         borderColor: "red",
         borderWidth: 2,
     }
-})
+});
 
-export default LevelSelect
+export default LevelSelect;
