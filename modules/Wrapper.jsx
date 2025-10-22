@@ -30,6 +30,7 @@ const wrapperStyles = StyleSheet.create({
         alignSelf: 'flex-end',
         borderColor: "red",
         borderWidth: 2,
+        zIndex: 1,
     },
     title:{
         position:"absolute",
