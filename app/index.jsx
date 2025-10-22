@@ -80,9 +80,10 @@ const index = () => {
     const showLevelSelect = () => {
         let levels = [
             new Level("HelloWorld").setImage(require('@assets/favicon.png')), 
-            new Level("Lo").setImageURI('https://images.dog.ceo/breeds/terrier-andalusian/images.jpg')
+            new Level("Lo").setImageURI('https://images.dog.ceo/breeds/terrier-andalusian/images.jpg'),
+            new Level("A. Lovelace").setImage(require('@assets/splash-icon.png'))
         ];
-        
+
         if (levelSelect) {
             return (
                 <Wrapper title={wrapperTitle} style={styles.wrapper}
