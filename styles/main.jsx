@@ -2,9 +2,9 @@
 import { useFonts } from '@expo-google-fonts/honk';
 import { StyleSheet } from 'react-native';
 
-    useFonts({
-        'Honk': require('../node_modules/@expo-google-fonts/honk/400Regular/Honk_400Regular.ttf'),
-    });
+// useFonts({
+//     'Honk': require('../node_modules/@expo-google-fonts/honk/400Regular/Honk_400Regular.ttf'),
+// });
 
 export const styles = StyleSheet.create({
     mainView: {
