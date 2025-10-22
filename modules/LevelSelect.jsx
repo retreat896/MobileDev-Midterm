@@ -1,46 +1,68 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { View, Image, StyleSheet, Pressable, useWindowDimensions } from 'react-native';
 import { Button, Text } from 'react-native-paper';
 
-const LevelSelect = ({ levels, onSelect }) => {
+/**
+ * Create a LevelSelect component
+ * @param {Object} param0 Array\<Level\>, Function(Level), Function(Level)
+ */
+const LevelSelect = ({ levels, onSelect, onChange }) => {
     const { width, height } = useWindowDimensions();
     const [page, setPage] = useState(0);
     const [pages, setPages] = useState(levels);
 
-    /**
-     * Move to the next page
-     */
-    const onNext = () => {
-        console.log("Next Level");
-        setPage((page + 1) % pages.length);
+    // Run on each initial render
+    useEffect(() => {
+        console.log("Levels: " + levels.map(l => l.getName()));
+        console.log("Main Page: " + levels[page].getName());
+        
+        // Call a Change event
+        onChange(pages[page]);
+    }, []);
+
+    const changeLevel = (type) => {
+        let level = page; // Start with current index
+
+        console.log(type + " level");
+        console.log(`\tCurrent Level: ${pages[level].getName()}`);
+        
+        // Increment the level
+        if ("next" === type.toLowerCase()) {
+            level = (level + 1) % pages.length;
+        }
+        // Decrement the level
+        else if ("previous" === type.toLowerCase()) {
+            level = (level - 1 + pages.length) % pages.length;
+        }
+        
+        console.log(`\tUpdated Level: ${pages[level].getName()}`);
+        
+        // Update the page value
+        setPage(level);
+        
+        // Call a Change event
+        // Use the 'level' variable because useState doesn't update immediately
+        onChange(pages[level]);
     }
 
-    /**
-     * Move to the previous page
-     */
-    const onPrev = () => {
-        console.log("Previous Level");
-        setPage((page - 1 + pages.length) % pages.length);
-    }
 
-    console.log("Levels: " + levels);
-    console.log("Main Page: " + levels[page]);
 
     return (
         <View>
             <View style={[levelStyles.row, levelStyles.spread]}>
-                <Button style={levelStyles.pageButton} onPress={onPrev}>{"<-"}</Button>
+                <Button style={levelStyles.pageButton} onPress={() => changeLevel("Previous")}>{"<-"}</Button>
                 <Pressable
                     style={levelStyles.pressable}
                     onPress={() => {
                         console.log("Selected Level #" + page);
-                        onSelect(page);
+                        // Return the selected level
+                        onSelect(pages[page]);
                     }}
                 >
                     {/* Only display the image element if level references are provided */}
-                    {pages ? <Image source={{ uri: pages[page] }} style={levelStyles.image} /> : <View />}
+                    {pages ? <Image source={pages[page].getImage()} style={levelStyles.image} /> : <View />}
                 </Pressable>
-                <Button style={levelStyles.pageButton} onPress={onNext}>{"->"}</Button>
+                <Button style={levelStyles.pageButton} onPress={() => changeLevel("Next")}>{"->"}</Button>
             </View>
         </View>
     )

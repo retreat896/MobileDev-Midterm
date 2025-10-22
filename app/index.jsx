@@ -7,6 +7,7 @@ import { styles } from '@styles/main';
 import LevelSelect from '@components/LevelSelect';
 import MainMenu from '@components/MainMenu';
 import Wrapper from '@components/Wrapper';
+import Level from '@app/Level';
 import * as ScreenOrientation from 'expo-screen-orientation';
 
 // router.push(path): Navigates to a new screen and adds it to the navigation stack.
@@ -24,6 +25,8 @@ const index = () => {
     const [settings, openSettings] = useState(false);
     const [stats, openStats] = useState(false);
     const [levelSelect, openLevelSelect] = useState(false);
+    // A dynamic Wrapper Title variable
+    const [wrapperTitle, setWrapperTitle] = useState('');
 
     useEffect(() => {
         console.log("Loaded Main index.jsx")
@@ -33,7 +36,18 @@ const index = () => {
     const showSettings = () => {
         if (settings) {
             return (
-                <Wrapper style={styles.wrapper} title="Settings" subtitle="here be settings" onOpen={() => console.log('Settings Opened')} onClose={() => openSettings(false)} >
+                <Wrapper title={wrapperTitle} style={styles.wrapper}
+                    onOpen={(() => {
+                        console.log('Settings Opened');
+                        setWrapperTitle('Settings');
+                    })}
+
+                    onClose={() => {
+                        console.log('Settings Closed');
+                        openSettings(false);
+                        setWrapperTitle('');
+                    }} >
+                    
                     <Text>I am a child</Text>
                 </Wrapper>
             )
@@ -44,7 +58,18 @@ const index = () => {
     const showStats = () => {
         if (stats) {
             return (
-                <Wrapper style={styles.wrapper} title="Player Stats" subtitle="here be stats" onOpen={() => console.log('Stats Opened')} onClose={() => openStats(false)} >
+                <Wrapper title={wrapperTitle} style={styles.wrapper}
+                    onOpen={(() => {
+                        console.log('Player-Stats Opened');
+                        setWrapperTitle('Player Stats');
+                    })}
+
+                    onClose={() => {
+                        console.log('Player-Stats Closed');
+                        openStats(false);
+                        setWrapperTitle('');
+                    }} >
+
                     <Text>I am a child</Text>
                 </Wrapper>
             )
@@ -53,11 +78,25 @@ const index = () => {
     }
 
     const showLevelSelect = () => {
-        let levels = ['https://images.dog.ceo/breeds/terrier-andalusian/images.jpg'];
+        let levels = [new Level("HelloWorld").setImage(require('@assets/favicon.png')), new Level("Lo").setImageURI('https://images.dog.ceo/breeds/terrier-andalusian/images.jpg')];
         if (levelSelect) {
             return (
-                <Wrapper style={styles.wrapper} title="Levels" subtitle="here be levels" onOpen={() => console.log('Levels Opened')} onClose={() => openLevelSelect(false)}>
-                    <LevelSelect levels={levels} onSelect={(level) => console.log("Selected: " + levels[level])} />
+                <Wrapper title={wrapperTitle} style={styles.wrapper}
+                    onOpen={(() => {
+                        console.log('Level-Select Opened');
+                        setWrapperTitle(levels[0].getName()); // Set to the first level
+                    })}
+
+                    onClose={() => {
+                        console.log('Level-Select Closed');
+                        openLevelSelect(false);
+                        setWrapperTitle('');
+                    }} >
+                        
+                    <LevelSelect levels={levels} 
+                        onSelect={(level) => console.log("Level Selected: " + level.getName())}
+                        onChange={(level) => { setWrapperTitle(level.getName())}}
+                    />
                 </Wrapper>
             )
         }
