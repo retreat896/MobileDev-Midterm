@@ -1,5 +1,5 @@
 class Level {
-    #image={};
+    #image;
     #name="";
     
     /**
