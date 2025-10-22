@@ -78,7 +78,11 @@ const index = () => {
     }
 
     const showLevelSelect = () => {
-        let levels = [new Level("HelloWorld").setImage(require('@assets/favicon.png')), new Level("Lo").setImageURI('https://images.dog.ceo/breeds/terrier-andalusian/images.jpg')];
+        let levels = [
+            new Level("HelloWorld").setImage(require('@assets/favicon.png')), 
+            new Level("Lo").setImageURI('https://images.dog.ceo/breeds/terrier-andalusian/images.jpg')
+        ];
+        
         if (levelSelect) {
             return (
                 <Wrapper title={wrapperTitle} style={styles.wrapper}
