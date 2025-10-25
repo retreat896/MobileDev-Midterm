@@ -5,7 +5,7 @@ import { useFonts } from 'expo-font';
 
 const CoolerButton = ({ onPress, title }) => {
     useFonts({
-        Honk: require('../assets/fonts/Honk_400Regular.ttf'),
+        Honk: require('@assets/fonts/Honk_400Regular.ttf'),
     });
 
     let coolerStyles = {
