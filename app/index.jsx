@@ -99,7 +99,7 @@ const index = () => {
                     }} >
                         
                     <LevelSelect levels={levels} 
-                        onSelect={(level) => console.log("Level Selected: " + level.getName())}
+                        onSelect={(level) => {console.log("Level Selected: " + level.getName()); router.navigate("/Game")}}
                         onChange={(level) => { setWrapperTitle(level.getName())}}
                     />
                 </Wrapper>
