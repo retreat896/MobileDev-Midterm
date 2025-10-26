@@ -11,7 +11,7 @@ const PopupScreen = ({ children, title, width, height, radius, style }) => {
                 display: 'flexbox',
                 borderRadius: radius,
                 borderWidth: 1,
-                borderColor: 'red',
+                
                 backgroundColor: 'lightblue',
                 position: 'absolute',
                 zIndex: 1,

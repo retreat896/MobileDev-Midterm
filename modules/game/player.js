@@ -12,10 +12,15 @@ export default class Player {
         this.width = width;
         this.height = height;
         this.size = size;
+        this.rotation = 0;
     }
 
     setScore(score) {
         this.score = score;
+    }
+
+    setRotation(angle) {
+        this.rotation = angle;
     }
 
     /**
@@ -60,5 +65,9 @@ export default class Player {
         if (hpRatio > 0.25) return styles.half; // yellow
         if (hpRatio > 0.1) return styles.oneQuarter; // orange
         return styles.one; // red
+    }
+
+    getRotation() {
+        return this.rotation;
     }
 }

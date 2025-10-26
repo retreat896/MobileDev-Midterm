@@ -1,4 +1,5 @@
 import { useFonts } from '@expo-google-fonts/honk';
+import { useInteropClassName } from 'expo-router/build/link/useLinkHooks';
 import { StyleSheet } from 'react-native';
 
 export const styles = StyleSheet.create({
@@ -8,22 +9,34 @@ export const styles = StyleSheet.create({
         justifyContent: 'center',
         backgroundColor: '#1c1c1cff',
         borderWidth: 1,
-        borderColor: 'red',
+        
     },
     wrapper: {
-        position: 'absolute',
-        width: '90%',
-        height: '90%',
-        flex: 1,
-        opacity: 0.9,
-        borderColor: 'red',
-        borderWidth: 2,
+
     },
     row: {
         display: 'flex',
         flexDirection: 'row',
         justifyContent: 'center',
-        borderColor: 'red',
-        borderWidth: 2,
+    },
+    debug: {
+        borderColor: 'blue',
+        
+    },
+    portal: {
+        width: '100%',
+    },
+    usernameModal: {
+        position: 'absolute',
+        justifyContent: 'center',
+        marginHorizontal: '10%',
+        width: '80%',
+        backgroundColor: 'white',
+        padding: 20,
+        borderRadius:8
+    },
+    username:{
+        color:"red",
+        fontFamily:"Honk"
     },
 });
