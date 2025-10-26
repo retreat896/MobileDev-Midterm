@@ -17,15 +17,15 @@ const CoolerButton = ({ onPress, title }) => {
             justifyContent: 'center',
             borderRadius: 12,
             marginVertical: 10,
-            borderColor: 'red',
-            borderWidth: 2,
+            
+            
         },
         coolerButtonText: {
             color: 'white',
             fontFamily: 'Honk',
             fontSize: 48,
-            borderColor: 'red',
-            borderWidth: 2,
+            
+            
         },
     };
 

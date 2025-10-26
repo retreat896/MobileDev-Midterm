@@ -39,10 +39,10 @@ export default class Enemy {
     }
 
     collidesWith(projectile) {
-        const dx = this.x - projectile.x;
-        const dy = this.y - projectile.y;
+        const dx = this.x - projectile.x+projectile.radius;
+        const dy = this.y - projectile.y+projectile.radius;
         const distance = Math.sqrt(dx * dx + dy * dy);
-        return distance < this.width / 1.5 + projectile.radius; 
+        return distance < this.width  + projectile.radius; 
     }
 
     takeDamage(damage) {
