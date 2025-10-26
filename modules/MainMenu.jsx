@@ -1,6 +1,6 @@
 import { StyleSheet, View } from 'react-native';
 import React, { useState } from 'react';
-import CoolerButton from '@components/CoolerButton';
+import CoolerButton from '@modules/CoolerButton';
 
 const MainMenu = ({onPlay, onSettings, onStats}) => {
 

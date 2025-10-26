@@ -10,7 +10,7 @@
       "@assets/*": [
         "assets/*"
       ],
-      "@components/*": [
+      "@modules/*": [
         "modules/*"
       ],
       "@styles/*": [

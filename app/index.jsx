@@ -4,9 +4,9 @@ import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import React, { useEffect, useState } from 'react';
 import { useRouter } from 'expo-router';
 import { styles } from '@styles/main';
-import LevelSelect from '@components/LevelSelect';
-import MainMenu from '@components/MainMenu';
-import Wrapper from '@components/Wrapper';
+import LevelSelect from '@modules/LevelSelect';
+import MainMenu from '@modules/MainMenu';
+import Wrapper from '@modules/Wrapper';
 import Level from '@app/Level';
 import * as ScreenOrientation from 'expo-screen-orientation';
 
