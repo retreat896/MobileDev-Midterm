@@ -172,7 +172,9 @@ const index = () => {
                             router.navigate('/game'); // No need to pass parameters to Game when can use Context
                         }}
                         onChange={(level) => {
-                            setWrapperTitle(level.getName());
+                            // Add a space, because some titles don't display the second word
+                            // This is a patch, not a fix
+                            setWrapperTitle(level.getName() + ' ');
                         }}
                     />
                 </Wrapper>
