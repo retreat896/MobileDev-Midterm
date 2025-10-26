@@ -1,0 +1,66 @@
+[
+    {
+        "name": "Cloudy-Hills Sunset",
+        "image": "/assets/backgrounds/used/Cloudy_Hills_Sunset.jpg"
+    },
+    {
+        "name": "Desert Sunset",
+        "image": "/assets/backgrounds/used/Desert_Sunset.jpg"
+    },
+    {
+        "name": "Island Sunset",
+        "image": "/assets/backgrounds/used/Island_Sunset.jpg"
+    },
+    {
+        "name": "Ocean 4",
+        "image": "/assets/backgrounds/used/Ocean_4.png"
+    },
+    {
+        "name": "Ocean 5",
+        "image": "/assets/backgrounds/used/Ocean_5.png"
+    },
+    {
+        "name": "Ocean_6",
+        "image": "/assets/backgrounds/used/Ocean_6.png"
+    },
+    {
+        "name": "Ocean_7",
+        "image": "/assets/backgrounds/used/Ocean_7.png"
+    },
+    {
+        "name": "Ocean_8",
+        "image": "/assets/backgrounds/used/Ocean_8.png"
+    },
+    {
+        "name": "Outer Space",
+        "image": "/assets/backgrounds/used/Outer_Space.jpg"
+    },
+    {
+        "name": "Pixelated Desert",
+        "image": "/assets/backgrounds/used/Pixelated_Desert.jpg"
+    },
+    {
+        "name": "Pixelated Mountains",
+        "image": "/assets/backgrounds/used/Pixelated_Mountains.jpg"
+    },
+    {
+        "name": "Snowy Mountain",
+        "image": "/assets/backgrounds/used/Snowy_Mountain.jpg"
+    },
+    {
+        "name": "Tall Forest",
+        "image": "/assets/backgrounds/used/Tall_Forest.jpg"
+    },
+    {
+        "name": "The Moon",
+        "image": "/assets/backgrounds/used/The_Moon.jpg"
+    },
+    {
+        "name": "Treetop Forest",
+        "image": "/assets/backgrounds/used/Treetop_Forest.jpg"
+    },
+    {
+        "name": "Secret Waterfall",
+        "image": "/assets/backgrounds/used/Secret_Waterfall.jpg"
+    }
+]
