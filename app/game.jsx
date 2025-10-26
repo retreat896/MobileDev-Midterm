@@ -2,13 +2,15 @@ import Projectile from '@modules/game/projectile';
 import Enemy from '@modules/game/enemy';
 import Player from '@modules/game/player';
 import React, { Component, useState } from 'react';
-import { StyleSheet, Dimensions, StatusBar, View, useWindowDimensions } from 'react-native';
+import { StyleSheet, Dimensions, StatusBar, View, ImageBackground, useWindowDimensions } from 'react-native';
 import { Button, Dialog, FAB, Portal, Text } from 'react-native-paper';
 import { GameLoop } from 'react-native-game-engine';
 import * as ScreenOrientation from 'expo-screen-orientation';
 import { router } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Wrapper from '@components/menu/Wrapper';
+import { useLevel } from '@components/LevelContext';
+import Level from '@modules/menu/Level';
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('screen');
 
@@ -20,7 +22,7 @@ const PLAYER_START_HP = 100;
 const PLAYER = new Player(PLAYER_START_HP, SCREEN_WIDTH, SCREEN_HEIGHT, PLAYER_SIZE);
 
 // see chat gpt for what i implemented. https://chatgpt.com/share/68fda8d9-4bec-800b-a86d-11ed95a51191
-export default class SingleTouch extends Component {
+class SingleTouch extends Component {
     constructor() {
         super();
         this.state = {
@@ -214,8 +216,15 @@ export default class SingleTouch extends Component {
     };
 
     render() {
+        const level = this.props.level.current;
+
         return (
             <GameLoop style={styles.container} onUpdate={this.onUpdate}>
+                {/* Display the Level Background */}
+                <ImageBackground source={level.getImage()} style={[
+                    styles.backgroundImage,
+                    styles.imageFullDisplay
+                ]}/>
                 <StatusBar hidden={true} />
                 <FAB icon={this.state.paused ? 'close' : 'pause'} style={styles.pause} onPress={() => this.setState({ paused: !this.state.paused })} />
                 {this.state.paused ? (
@@ -318,10 +327,27 @@ export default class SingleTouch extends Component {
     }
 }
 
+export default function GameScreen() {
+    const { level } = useLevel();
+
+    console.log("Level is Class Object: " + (level.current instanceof Level));
+
+    return <SingleTouch level={level} />;
+}
+
 const styles = StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: '#FFF',
+    },
+    backgroundImage: {
+        position: 'absolute',
+    },
+    imageFullDisplay: {
+        width: SCREEN_WIDTH,
+        height: SCREEN_HEIGHT,
+        alignSelf: 'center',
+        justifyContent: 'center'
     },
     finger: {
         borderColor: '#CCC',

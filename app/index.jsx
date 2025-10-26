@@ -7,73 +7,15 @@ import { styles } from '@styles/main';
 import LevelSelect from '@components/menu/LevelSelect';
 import MainMenu from '@components/menu/MainMenu';
 import Wrapper from '@components/menu/Wrapper';
-import Level from '@modules/menu/Level';
 import * as ScreenOrientation from 'expo-screen-orientation';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { StatusBar } from 'expo-status-bar';
-import leveldata from '@assets/leveldata.json';
+import { useLevel } from '@components/LevelContext';
 
 // router.push(path): Navigates to a new screen and adds it to the navigation stack.
 // router.replace(path): Replaces the current screen in the navigation stack with the new one.
 // router.back(): Navigates back to the previous screen.
 // router.navigate({ pathname: string, params: object }): Navigates to a specific path with parameters.
-
-/** Level Test Cases:
- *      Direct Image: new Level('Level 1').setImageURI('https://images.dog.ceo/breeds/terrier-andalusian/images.jpg')
- *      Local Image File: new Level("HelloWorld").setImage(require('@assets/favicon.png'))
- *      Image Blob: <github image fetch>
- */
-// Array to hold all levels
-const levels = [];
-
-/**
- * Retreive the neccesary data to create all the Levels from leveldata.json
- */
-async function fetchLevels() {
-    let start = Date.now();
-    
-    // Process each level
-    for (let level of leveldata) {
-        // The Level to create
-        let levelToAdd = new Level(level.name);
-
-        // Fetch the Level image
-        let response = await fetch("https://raw.githubusercontent.com/retreat896/MobileDev-Midterm/main/" + level.image);
-            
-        // The response failed
-        if (!response.ok) {
-            // Throw an error
-            throw Error(`Failed to resolve URL: "${response.url}" Status: ${response.status}`);
-        }
-            
-        // Create a new Level using the name and image
-        let imageBlob = await response.blob();
-        let type = 'direct'; // The type of Image
-
-        // The API returned the image as a Blob
-        if (imageBlob) {
-            type = 'blob';
-
-            // Set the Image using the image Blob
-            await levelToAdd.setImageBlob(imageBlob);    
-        }
-        // The API returned a direct image URL
-        else {
-            // Set the Image using the direct URL
-            levelToAdd.setImageURI(response.url);
-        }
-
-        // Add the Level to the list
-        levels.push(levelToAdd);
-        // console.log(`Created Level (${type}): "${level.name}"`);
-    }
-
-    let end = Date.now();
-  
-    console.log(`Level Load Time: ${(end - start)/1000} seconds`);
-}
-
-fetchLevels();
 
 const index = () => {
     // Lock the screen to landscape mode
@@ -81,6 +23,9 @@ const index = () => {
 
     const router = useRouter();
     const { width: screenWidth, height: screenHeight } = useWindowDimensions();
+
+    // Get the global Level properties and operations
+    const { level, allLoaded, allLevels } = useLevel();
 
     const [settings, openSettings] = useState(false);
     const [stats, openStats] = useState(false);
@@ -94,6 +39,7 @@ const index = () => {
     // A dynamic Wrapper Title variable
     const [wrapperTitle, setWrapperTitle] = useState('');
 
+    // Eventually: Add a loading screen while leveldata is loading
     useEffect(() => {
         async function loadUsername() {
             try {
@@ -211,7 +157,7 @@ const index = () => {
                     style={styles.wrapper}
                     onOpen={() => {
                         console.log('Level-Select Opened');
-                        setWrapperTitle(levels[0].getName()); // Set to the first level
+                        setWrapperTitle(allLevels[0].getName()||null); // Set to the first level
                     }}
                     onClose={() => {
                         console.log('Level-Select Closed');
@@ -219,10 +165,11 @@ const index = () => {
                         setWrapperTitle('');
                     }}>
                     <LevelSelect
-                        levels={levels}
-                        onSelect={(level) => {
-                            console.log('Level Selected: ' + level.getName());
-                            router.navigate('/game');
+                        levels={allLevels} // Uses the LevelContext allLevels
+                        onSelect={(selected) => {
+                            console.log('Level Selected: ' + selected.getName());
+                            level.current = selected; // Set LevelContext current level
+                            router.navigate('/game'); // No need to pass parameters to Game when can use Context
                         }}
                         onChange={(level) => {
                             setWrapperTitle(level.getName());
@@ -234,12 +181,22 @@ const index = () => {
         return null;
     };
 
+    if (!allLoaded) {
+        return (
+            <View>
+                <Text>
+                    The level data is loading. Please hold.
+                </Text>
+            </View>
+        )
+    }
+
     return (
         // <SafeAreaProvider>
         //     <SafeAreaView style={{ flex: 1 }}>
         <View style={styles.mainView}>
             <StatusBar hidden={true} />
-            <Text variant="displaySmall" style={styles.username}>Welcome {username !== '' ? username : 'John Doe'}!</Text>
+            {/* <Text variant="displaySmall" style={styles.username}>Welcome {username !== '' ? username : 'John Doe'}!</Text> */}
             <MainMenu onPlay={() => openLevelSelect(true)} onSettings={() => openSettings(true)} onStats={() => openStats(true)} />
             
             {/* Toggle the Modal display per each option */}
