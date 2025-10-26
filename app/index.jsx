@@ -18,40 +18,62 @@ import leveldata from '@assets/leveldata.json';
 // router.back(): Navigates back to the previous screen.
 // router.navigate({ pathname: string, params: object }): Navigates to a specific path with parameters.
 
+/** Level Test Cases:
+ *      Direct Image: new Level('Level 1').setImageURI('https://images.dog.ceo/breeds/terrier-andalusian/images.jpg')
+ *      Local Image File: new Level("HelloWorld").setImage(require('@assets/favicon.png'))
+ *      Image Blob: <github image fetch>
+ */
 // Array to hold all levels
 const levels = [];
 
+/**
+ * Retreive the neccesary data to create all the Levels from leveldata.json
+ */
 async function fetchLevels() {
     let start = Date.now();
-    try {
-        // Process each level
-        for (let level of leveldata) {
-            // Fetch the Level image
-            let res = await fetch("https://raw.githubusercontent.com/retreat896/MobileDev-Midterm/main/" + level.image).catch(e => console.error)
+    
+    // Process each level
+    for (let level of leveldata) {
+        // The Level to create
+        let levelToAdd = new Level(level.name);
+
+        // Fetch the Level image
+        let response = await fetch("https://raw.githubusercontent.com/retreat896/MobileDev-Midterm/main/" + level.image);
             
-            if (res.status !== 200) {
-                console.log(`Failed to resolve: "${res.url}`);
-                console.log(`Status: ${res.status}  -  "${res.statusText}"`);
-                
-                // Keep going
-                continue;
-            }
-
-            // Process the response data
-            let data = await res.json();
-        
-            // Create a new Level using the name and image
-            levels.push(new Level(level.name).setImage(data));
-            console.log(`Created Level: "${level.name}"`);
+        // The response failed
+        if (!response.ok) {
+            // Throw an error
+            throw Error(`Failed to resolve URL: "${response.url}" Status: ${response.status}`);
         }
-    }
-    catch (e) {
-        console.error(e);
-    }
-    let end = Date.now();
+            
+        // Create a new Level using the name and image
+        let imageBlob = await response.blob();
+        let type = 'direct'; // The type of Image
 
+        // The API returned the image as a Blob
+        if (imageBlob) {
+            type = 'blob';
+
+            // Set the Image using the image Blob
+            await levelToAdd.setImageBlob(imageBlob);    
+        }
+        // The API returned a direct image URL
+        else {
+            // Set the Image using the direct URL
+            levelToAdd.setImageURI(response.url);
+        }
+
+        // Add the Level to the list
+        levels.push(levelToAdd);
+        // console.log(`Created Level (${type}): "${level.name}"`);
+    }
+
+    let end = Date.now();
+  
     console.log(`Level Load Time: ${(end - start)/1000} seconds`);
 }
+
+fetchLevels();
 
 const index = () => {
     // Lock the screen to landscape mode
@@ -118,9 +140,7 @@ const index = () => {
         }
     }
 
-    useEffect(() => {
-        fetchLevels();
-        
+    useEffect(() => {        
         async function getUsername() {
             return await AsyncStorage.getItem('username');
         }
@@ -183,11 +203,6 @@ const index = () => {
     };
 
     const showLevelSelect = () => {
-        const levels = [
-            // new Level("HelloWorld").setImage(require('@assets/favicon.png')),
-            new Level('Level 1').setImageURI('https://images.dog.ceo/breeds/terrier-andalusian/images.jpg'),
-            // new Level("A. Lovelace").setImage(require('@assets/splash-icon.png'))
-        ];
 
         if (levelSelect) {
             return (
@@ -207,7 +222,7 @@ const index = () => {
                         levels={levels}
                         onSelect={(level) => {
                             console.log('Level Selected: ' + level.getName());
-                            router.navigate('/Game');
+                            router.navigate('/game');
                         }}
                         onChange={(level) => {
                             setWrapperTitle(level.getName());
