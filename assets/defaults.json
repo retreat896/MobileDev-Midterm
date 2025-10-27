@@ -1,0 +1,11 @@
+{
+    "userdata": {
+        "Username": "Pioneer Pete"
+    },
+    "gamedata": {
+        "HighScore": 0,
+        "LongestGame": 0,
+        "TotalTimePlayed": 0,
+        "TimeElapsed": 0
+    }
+}

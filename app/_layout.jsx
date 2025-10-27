@@ -3,6 +3,7 @@ import { PaperProvider } from 'react-native-paper';
 import { Stack } from 'expo-router';
 import { useFonts } from 'expo-font';
 import { LevelProvider } from '@components/LevelContext';
+import { DataProvider } from '@components/DataContext';
 
 export default function RootLayout() {
    useFonts({
@@ -12,12 +13,14 @@ export default function RootLayout() {
     return (
         <PaperProvider>
             <LevelProvider>
-                <Stack
-                    screenOptions={{
-                        headerShown: false,
-                        detachPreviousScreen: true,
-                        unmountOnBlur: true,
-                    }}></Stack>
+                <DataProvider>
+                    <Stack
+                        screenOptions={{
+                            headerShown: false,
+                            detachPreviousScreen: true,
+                            unmountOnBlur: true,
+                        }}></Stack>
+                </DataProvider>
             </LevelProvider>
         </PaperProvider>
     );

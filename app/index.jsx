@@ -1,16 +1,18 @@
-import { View, useWindowDimensions } from 'react-native';
-import { Modal, Dialog, Text, Button, TextInput, PaperProvider } from 'react-native-paper';
+import { View, Platform, useWindowDimensions, KeyboardAvoidingView, KeyboardAvoidingViewBase, KeyboardAvoidingViewComponent } from 'react-native';
+import { Modal, Dialog, Text, Button, Chip, Card, TextInput, PaperProvider } from 'react-native-paper';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { useRouter } from 'expo-router';
 import { styles } from '@styles/main';
 import LevelSelect from '@components/menu/LevelSelect';
 import MainMenu from '@components/menu/MainMenu';
+import InfoDialog from '@components/menu/InfoDialog';
+import ConfirmDialog from '@components/menu/ConfirmDialog';
 import Wrapper from '@components/menu/Wrapper';
 import * as ScreenOrientation from 'expo-screen-orientation';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { StatusBar } from 'expo-status-bar';
 import { useLevel } from '@components/LevelContext';
+import { useData } from '@components/DataContext';
 
 // router.push(path): Navigates to a new screen and adds it to the navigation stack.
 // router.replace(path): Replaces the current screen in the navigation stack with the new one.
@@ -24,170 +26,199 @@ const index = () => {
     const router = useRouter();
     const { width: screenWidth, height: screenHeight } = useWindowDimensions();
 
-    // Get the global Level properties and operations
-    const { level, allLoaded, allLevels } = useLevel();
+    // Get the global properties and operations
+    const { level, levelsLoaded, allLevels } = useLevel();
+    const { dataLoaded, getItem, setItem } = useData();
 
     const [settings, openSettings] = useState(false);
     const [stats, openStats] = useState(false);
     const [levelSelect, openLevelSelect] = useState(false);
-    const [usernameInput, openUsernameInput] = useState(false);
+    const [noUsernameInput, disableUsernameInput] = useState(true);
     const [usernameError, showUsernameError] = useState(false);
-    const [username, changeUsername] = useState('');
-    const [tempUsername, changeTempUsername] = useState('');
+    const [username, changeUsername] = useState(null);
+    const [usernameConfirm, showUsernameConfirm] = useState(false);
     const [playerStats, changePlayerStats] = useState({highScore:"", totalPlayTime:""})
 
     // A dynamic Wrapper Title variable
     const [wrapperTitle, setWrapperTitle] = useState('');
 
-    // Eventually: Add a loading screen while leveldata is loading
+    // Execute once, on initial render
     useEffect(() => {
-        async function loadUsername() {
-            try {
-                const stored = await AsyncStorage.getItem('username');
-                if (!stored) {
-                    openUsernameInput(true);
-                } else {
-                    changeUsername(stored);
-                    console.log('Loaded username:', stored);
-                }
-            } catch (error) {
-                console.error('Error loading username:', error);
-            }
-        }
-
-        async function loadStats(){
-             try {
-                const highScore = await AsyncStorage.getItem('HighScore');
-                const totalPlayTime = await AsyncStorage.getItem('TotalDuration');
-                changePlayerStats({highScore:highScore, totalPlayTime:totalPlayTime})
-            } catch (error) {
-                console.error('Error loading username:', error);
-            }
-        }
-
-        loadStats();
-        loadUsername();
+        console.log("RUNNING");
     }, []);
 
-    async function handleUsernameChange(text, update = false) {
-        try {
-            if (update == true) {
-                await AsyncStorage.setItem('username', text);
-                changeUsername(text);
-                console.log("updating username to '" + text + "'");
-            } else {
-                changeTempUsername(text);
-                console.log("updating tempusername to '" + text + "'");
+    useEffect(() => {
+        console.log("LOADING");
+
+        // Data has been loaded
+        if (dataLoaded) {
+            // Username not being edited and doesn't match saved data
+            if (noUsernameInput && username != getItem('Username')) {
+                console.log("Updating Username: " + getItem('Username'))
+                changeUsername(getItem('Username')); // Update the username
             }
-
-            showUsernameError(false);
-        } catch (error) {
-            console.error('Error saving username:', error);
         }
-    }
-
-    useEffect(() => {        
-        async function getUsername() {
-            return await AsyncStorage.getItem('username');
-        }
-        
-        console.log('Loaded Main index.jsx');
-        if (getUsername() === '') {
-            openUsernameInput(true); //show initial username input if the username is empty
-        }
-        
-        console.log(getUsername());
-    }, [settings, stats, levelSelect, usernameInput, username]);
+    }, [settings, stats, levelSelect]);
 
     const showSettings = () => {
-        if (settings) {
-            return (
-                <Wrapper
-                    title={wrapperTitle}
-                    style={styles.wrapper}
-                    onOpen={() => {
-                        console.log('Settings Opened');
-                        setWrapperTitle('Settings');
+        if (!settings) return null;
+
+        return (
+            <Wrapper title={wrapperTitle} style={styles.wrapper} 
+                onOpen={() => {
+                    console.log('Settings Opened');
+                    setWrapperTitle('Settings');
+                }}
+                onClose={() => {
+                    console.log('Settings Closed');
+                    openSettings(false);
+                    setWrapperTitle('');
+            }}>       
+                {/* Settings Components */}
+                <KeyboardAvoidingView
+                    behavior={Platform.OS === 'ios' ? 'padding' : 'height'} // Or 'position' for Android if 'height' doesn't work
+                    keyboardVerticalOffset={Platform.OS === 'ios' ? 64 : 0} // Adjust 64 based on your header height
+                    style={{ flexDirection: 'column', marginTop: 40, alignContent: 'center' }} // Ensure it takes up available space
+                >
+                    {/* Username Text Input */}
+                    <TextInput
+                        disableFullscreenUI // Prevent Fullscreen Stupid Keyboard
+                        left={<TextInput.Icon disabled icon="account-outline" />}
+                        style={{
+                            overflow: 'hidden',
+                            width: '50%',
+                            alignSelf: 'center'
+                        }}
+                        theme={{ roundness: 10 }}
+                        disabled={noUsernameInput}
+                        label="Username"
+                        value={username}
+                        submitBehavior='blurAndSubmit'
+                        onChangeText={text => changeUsername(text)}
+                        onSubmitEditing={(submit) => {
+                            // Check if username is valid
+                            const isValidUsername = (str) => {
+                                return /^[a-zA-Z_]+$/.test(str);
+                            }
+
+                            let text = submit.nativeEvent.text;
+
+                            if (isValidUsername(text)) {
+                                console.log(`Username Submitted: ${text}`);
+                                setItem('Username', text, true); // Update the username
+                                disableUsernameInput(true); // Hide username input
+                            }
+                            else {
+                                console.log(`Invalid Username: ${text}`);
+                                showUsernameError(true);
+                            }
+                        }}
+                    >
+                    </TextInput>
+                </KeyboardAvoidingView>
+
+                {/* Edit-Username Error Dialog */}
+                <InfoDialog
+                    title="Invalid Username"
+                    info="A username may only contain a-z, A-Z and '_'"
+                    isError={true}
+                    visible={usernameError}
+                    onConfirm={() => showUsernameError(false)}
+                />
+               
+                {/* Reset-Username Confirm Dialog */}
+                <ConfirmDialog 
+                    title="Reset Username" 
+                    info="Are you sure you want to change this?" 
+                    visible={usernameConfirm}
+                    onDeny={() => {
+                        console.log("Cancelled Username change.");
+                        disableUsernameInput(true); // Hide username input
+                        showUsernameConfirm(false); // Hide ConfirmDialog
+                    }} 
+                    onConfirm={() => {
+                        console.log("Enable Username Input");
+                        disableUsernameInput(false); // Enable username input
+                        showUsernameConfirm(false); // Hide ConfirmDialog
                     }}
-                    onClose={() => {
-                        console.log('Settings Closed');
-                        openSettings(false);
-                        setWrapperTitle('');
-                    }}>
-                    <Text>I am a child</Text>
-                </Wrapper>
-            );
-        }
-        return null;
+                />
+                
+                {/* Reset-Username Button */}
+                <View style={styles.row}>
+                    <Button
+                        compact
+                        mode="text"
+                        onPress={() => {
+                            console.log("Show Dialog")
+                            showUsernameConfirm(true); // Show ConfirmDialog
+                        }}>
+                        Edit Username
+                    </Button>
+                </View>
+            </Wrapper>
+        )
     };
 
     const showStats = () => {
-        if (stats) {
-            return (
-                <Wrapper
-                    title={wrapperTitle}
-                    style={styles.wrapper}
-                    onOpen={() => {
-                        console.log('Player-Stats Opened');
-                        setWrapperTitle('Player Stats');
-                    }}
-                    onClose={() => {
-                        console.log('Player-Stats Closed');
-                        openStats(false);
-                        setWrapperTitle('');
-                    }}>
-                    <View style={styles.row}>
-                        <Text variant="bodyLarge">High Score: {playerStats.highScore||0}</Text>
-                    </View>
-                    <View style={styles.row}>
-                        <Text variant="bodyLarge">Total Playtime: {playerStats.totalPlayTime||0}</Text>
-                    </View>
-                </Wrapper>
-            );
-        }
-        return null;
+        if (!stats) return null;
+
+        return (
+            <Wrapper title={wrapperTitle} style={styles.wrapper}
+                onOpen={() => {
+                    console.log('Player-Stats Opened');
+                    setWrapperTitle('Player Stats');
+                }}
+                onClose={() => {
+                    console.log('Player-Stats Closed');
+                    openStats(false);
+                    setWrapperTitle('');
+            }}>
+                <View style={styles.row}>
+                    <Text variant="bodyLarge">High Score: {playerStats.highScore||0}</Text>
+                </View>
+                <View style={styles.row}>
+                    <Text variant="bodyLarge">Total Playtime: {playerStats.totalPlayTime||0}</Text>
+                </View>
+            </Wrapper>
+        );
     };
 
     const showLevelSelect = () => {
+        if (!levelSelect) return null;
 
-        if (levelSelect) {
-            return (
-                <Wrapper
-                    title={wrapperTitle}
-                    style={styles.wrapper}
-                    onOpen={() => {
-                        console.log('Level-Select Opened');
-                        setWrapperTitle(allLevels[0].getName()||null); // Set to the first level
+        return (
+            <Wrapper title={wrapperTitle} style={styles.wrapper}
+                onOpen={() => {
+                    console.log('Level-Select Opened');
+                    setWrapperTitle(allLevels[0].getName()||null); // Set to the first level
+                }}
+                onClose={() => {
+                    console.log('Level-Select Closed');
+                    openLevelSelect(false);
+                    setWrapperTitle('');
+            }}>
+                <LevelSelect
+                    levels={allLevels} // Uses the LevelContext allLevels
+                    onSelect={(selected) => {
+                        console.log('Level Selected: ' + selected.getName());
+                        level.current = selected; // Set LevelContext current level
+                        router.navigate('/game'); // No need to pass parameters to Game when can use Context
                     }}
-                    onClose={() => {
-                        console.log('Level-Select Closed');
-                        openLevelSelect(false);
-                        setWrapperTitle('');
-                    }}>
-                    <LevelSelect
-                        levels={allLevels} // Uses the LevelContext allLevels
-                        onSelect={(selected) => {
-                            console.log('Level Selected: ' + selected.getName());
-                            level.current = selected; // Set LevelContext current level
-                            router.navigate('/game'); // No need to pass parameters to Game when can use Context
-                        }}
-                        onChange={(level) => {
-                            // Add a space, because some titles don't display the second word
-                            // This is a patch, not a fix
-                            setWrapperTitle(level.getName() + ' ');
-                        }}
-                    />
-                </Wrapper>
-            );
-        }
-        return null;
+                    onChange={(level) => {
+                        // Add a space, because some titles don't display the second word
+                        // This is a patch, not a fix
+                        setWrapperTitle(level.getName() + ' ');
+                    }}
+                />
+            </Wrapper>
+        );
     };
 
-    if (!allLoaded) {
+    if (!levelsLoaded || !dataLoaded) {
         return (
-            <View>
+            <View style={{ flex: 1, alignSelf: 'center', justifyContent: 'center'  }}>
                 <Text>
-                    The level data is loading. Please hold.
+                    The { !dataLoaded ? "data is" : (!levelsLoaded ? "levels are" : "") } loading. Please hold.
                 </Text>
             </View>
         )
@@ -205,49 +236,6 @@ const index = () => {
             {showSettings()}
             {showLevelSelect()}
             {showStats()}
-            <Dialog
-                visible={usernameInput}
-                onDismiss={() => {
-                    if (username == '') {
-                        openUsernameInput(true);
-                        showUsernameError(true);
-                        return;
-                    }
-                    showUsernameError(false);
-                    openUsernameInput(false);
-                    console.log('Closing Username Input');
-                }}>
-                <Dialog.Title>Please Enter A Username</Dialog.Title>
-                <Dialog.Content>
-                    {usernameError ? <Text style={styles.error}>Please Submit a Username</Text> : null}
-                    <TextInput value={tempUsername} onChangeText={handleUsernameChange} error={usernameError} placeholder="Username" mode="outlined" />
-                </Dialog.Content>
-
-                <Dialog.Actions>
-                    <Button
-                        onPress={() => {
-                            if (tempUsername == '') {
-                                openUsernameInput(true);
-                                showUsernameError(true);
-                                return;
-                            }
-                            handleUsernameChange(tempUsername, true);
-                            openUsernameInput(false)
-                            console.log('Closing Username Input');
-                        }}>
-                        Done
-                    </Button>
-                </Dialog.Actions>
-            </Dialog>
-            <Button
-                onPress={() => {
-                    handleUsernameChange('', true);
-                    openUsernameInput(true)
-                    changeTempUsername('');
-                    changeUsername('');
-                }}>
-                reset Username
-            </Button>
         </View>
         //     </SafeAreaView>
         // </SafeAreaProvider>
