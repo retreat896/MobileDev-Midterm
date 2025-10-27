@@ -9,13 +9,6 @@ const Wrapper = ({ children, title, subtitle, onOpen, onClose, style }) => {
     useEffect(onOpen, []);
 
     return (
-        // <Card style={[style||null]}>
-        //     <Text style={wrapperStyles.title}>{title}</Text>
-        //     <Card.Actions style={wrapperStyles.close}>
-        //         <Button mode="contained" onPress={onClose}>X</Button>
-        //     </Card.Actions>
-        //     {children}
-        // </Card>
         <Dialog visible={true} style={[style, wrapperStyles.container]} onDismiss={onClose}>
             <Dialog.Actions style={wrapperStyles.close}>
                 <FAB icon="close" onPress={onClose} />
@@ -28,7 +21,9 @@ const Wrapper = ({ children, title, subtitle, onOpen, onClose, style }) => {
 
 const wrapperStyles = StyleSheet.create({
     container: {
-        height: '100%',
+        width: '80%',
+        height: '90%',
+        alignSelf: 'center'
     },
     close: {
         position: 'absolute',
