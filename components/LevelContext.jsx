@@ -7,8 +7,7 @@ import leveldata from '@assets/leveldata.json';
  */
 async function fetchLevels() {
     let levels = [];
-    let start = Date.now();
-    
+
     // Process each level
     for (let level of leveldata) {
         // The Level to create
@@ -42,12 +41,8 @@ async function fetchLevels() {
 
         // Add the Level to the list
         levels.push(levelToAdd);
-        console.log(`Created Level (${type}): "${level.name}"`);
+        //console.log(`Created Level (${type}): "${level.name}"`);
     }
-
-    let end = Date.now();
-  
-    console.log(`Level Load Time: ${(end - start)/1000} seconds`);
 
     return levels;
 }
@@ -63,13 +58,15 @@ export const LevelProvider = ({ children }) => {
     // Array to hold all levels
     const [allLevels, setAllLevels] = useState([]);
     const level = useRef(null); // Utilize useRef so Class Objects can be passed
-    const [allLoaded, setLoaded] = useState(false);
+    const [levelsLoaded, setLoaded] = useState(false);
 
     // This would technically run on every initial render but because
     // LevelProvider is in the Root layout, only one will EVER be displayed
     useEffect(() => {
         const loadData = async () => {
-            if (!allLoaded) { // Not necessary, but seemed like good practice
+            if (!levelsLoaded) { // Not necessary, but seemed like good practice
+                let start = Date.now(); // Track loading time
+                
                 let levels = await fetchLevels(); // Fetch all levels
 
                 // Lock the levels Object from modifications
@@ -81,6 +78,9 @@ export const LevelProvider = ({ children }) => {
 
                 // The levels were loaded
                 setLoaded(true);
+                
+                let end = Date.now();
+                console.log(`Level Load Time: ${(end - start)/1000} seconds`);
             }
         }
 
@@ -90,7 +90,7 @@ export const LevelProvider = ({ children }) => {
     //const getLevelByName = (name) => allLevels.find(level => name == level.getName());
 
     return (
-        <LevelContext.Provider value={{ level, allLoaded, allLevels }}>
+        <LevelContext.Provider value={{ levelsLoaded, level, allLevels }}>
             {children}
         </LevelContext.Provider>
     );
@@ -99,7 +99,7 @@ export const LevelProvider = ({ children }) => {
 // Return the set level data
 /**
  * 
- * @returns {Object} { level, allLoaded, allLevels }
+ * @returns {Object} { level, levelsLoaded, allLevels }
  */
 export const useLevel = () => {
     const context = useContext(LevelContext);
