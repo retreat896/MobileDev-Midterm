@@ -110,6 +110,20 @@ export const DataProvider = ({ children }) => {
     }
 
     /**
+     * Get all keys for a specific type of data
+     * @param {String} type The category the value falls under (e.g. 'userdata', 'gamedata')  
+     */
+    const getKeys = (type) => {
+        // The category does not exist
+        if (!Object.keys(defaults).includes(type)) {
+            throw new Error(`The data category '${type}' does not exist.`);
+        }
+
+        // Return the keys
+        return Object.keys(defaults[type]);
+    }
+
+    /**
      * Save a key-value to the memory (RAM)
      * @param {String} key The item being changed
      * @param {String} value The updated value 
@@ -142,7 +156,7 @@ export const DataProvider = ({ children }) => {
     }
 
     return (
-        <DataContext.Provider value={{ dataLoaded, getItem, setItem }}>
+        <DataContext.Provider value={{ dataLoaded, getItem, getKeys, setItem }}>
             {children}
         </DataContext.Provider>
     );
