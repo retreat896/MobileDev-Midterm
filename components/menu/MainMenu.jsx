@@ -11,14 +11,7 @@ const MainMenu = ({ onPlay, onSettings, onStats }) => {
         <SafeAreaProvider>
             <SafeAreaView style={styles.container}>
                 {/* Background Layer */}
-                <ImageBackground
-                    source={Background}
-                    resizeMode="contain" // Changed to contain to show full image
-                    style={[
-                        styles.backgroundImage,
-                        styles.imageFullDisplay
-                    ]}
-                />
+                
 
                 {/* Content Overlay Layer */}
                 <View style={styles.contentOverlay}>
@@ -33,17 +26,6 @@ const MainMenu = ({ onPlay, onSettings, onStats }) => {
 
 const styles = StyleSheet.create({
     container: {
-        flex: 1,
-        backgroundColor: '#000', // Background color for letterboxing areas
-    },
-    backgroundImage: {
-        position: 'absolute',
-    },
-    imageFullDisplay: {
-        width: screenWidth,
-        height: screenHeight,
-        alignSelf: 'center',
-        justifyContent: 'center'
     },
     contentOverlay: {
         flex: 1,

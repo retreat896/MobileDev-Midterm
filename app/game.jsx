@@ -2,7 +2,7 @@ import Projectile from '@modules/game/projectile';
 import Enemy from '@modules/game/enemy';
 import Player from '@modules/game/player';
 import React, { Component, useState } from 'react';
-import { StyleSheet, Dimensions, StatusBar, View, ImageBackground, useWindowDimensions } from 'react-native';
+import { StyleSheet, Dimensions, StatusBar, View, ImageBackground, useWindowDimensions, Image } from 'react-native';
 import { Button, Dialog, FAB, Portal, Text } from 'react-native-paper';
 import { GameLoop } from 'react-native-game-engine';
 import * as ScreenOrientation from 'expo-screen-orientation';
@@ -13,6 +13,9 @@ import { useLevel } from '@components/LevelContext';
 import Level from '@modules/menu/Level';
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('screen');
+
+const guy = require("../assets/guy.png");
+const bad_guy = require("../assets/bad_guy.png")
 
 const RADIUS = 20; //used for finger radius
 const PLAYER_SIZE = 50;
@@ -274,12 +277,12 @@ class SingleTouch extends Component {
                 /> */}
 
                 {/* Player */}
-                <View
+                <Image
                     style={[
                         styles.player,
                         {
-                            width: PLAYER.getSize(),
-                            height: PLAYER.getSize(),
+                            width: PLAYER.getWidth().width*2,
+                            height: PLAYER.getHeight().height,
 
                             // Center the player at its fixed position (playerX, playerY)
                             left: PLAYER.getPos().x - PLAYER.getSize() / 2,
@@ -288,8 +291,10 @@ class SingleTouch extends Component {
                             // Apply rotation
                             transform: [{ rotate: `${PLAYER.getRotation()}deg` }],
                         },
-                        PLAYER.getColor(),
+                        // PLAYER.getColor(),
                     ]}
+                    source={guy}
+                    resizeMode='contain'
                 />
 
                 {/* Projectile */}
@@ -308,7 +313,7 @@ class SingleTouch extends Component {
 
                 {/* Enemy */}
                 {this.state.enemies.map((e, i) => (
-                    <View
+                    <Image
                         key={i}
                         style={[
                             styles.enemy,
@@ -318,8 +323,9 @@ class SingleTouch extends Component {
                                 width: e.width,
                                 height: e.height,
                             },
-                            e.getColor(),
+                            // e.getColor(),
                         ]}
+                        source={bad_guy}
                     />
                 ))}
             </GameLoop>
@@ -359,9 +365,6 @@ const styles = StyleSheet.create({
         position: 'absolute',
     },
     player: {
-        borderColor: '#CCC',
-        borderWidth: 4,
-        backgroundColor: 'pink',
     },
     projectile: {
         width: 10,
@@ -371,9 +374,7 @@ const styles = StyleSheet.create({
         position: 'absolute',
     },
     enemy: {
-        backgroundColor: 'red',
         position: 'absolute',
-        borderRadius: 10,
     },
     score: {
         fontSize: 20,

@@ -3,7 +3,7 @@ import { styles } from '@styles/game';
 
 export default class Player {
 
-    constructor(hp=100, width=10, height=10, size=50) {
+    constructor(hp=100, width=50, height=10, size=50) {
         this.x = width - 100;
         this.y = height / 2;
         this.hp = hp;
@@ -56,6 +56,14 @@ export default class Player {
     getSize(){
         return this.size;
     }
+
+    getWidth(){
+        return {width: this.size};
+    }
+
+    getHeight(){
+        return {height: this.size};
+    }   
 
     getColor() {
         const hpRatio = this.hp / this.maxHp;
