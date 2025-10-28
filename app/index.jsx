@@ -27,7 +27,7 @@ const index = () => {
 
     // Get the global properties and operations
     const { level, levelsLoaded, allLevels } = useLevel();
-    const { dataLoaded, getItem, getKeys, setItem } = useData();
+    const { dataLoaded, getItem, getKeys, setItem, saveItems } = useData();
 
     const [settings, openSettings] = useState(false);
     const [stats, openStats] = useState(false);
@@ -118,7 +118,8 @@ const index = () => {
                             let text = submit.nativeEvent.text;
                             if (isValidUsername(text)) {
                                 console.log(`Username Submitted: ${text}`);
-                                setItem('Username', text, true); // Update the username
+                                setItem('Username', text); // Update the username
+                                saveItems('Username'); // Save the username
                                 disableUsernameInput(true); // Hide username input
                             } else {
                                 console.log(`Invalid Username: ${text}`);
@@ -217,8 +218,8 @@ const index = () => {
                     levels={allLevels} // Uses the LevelContext allLevels
                     onSelect={(selected) => {
                         console.log('Level Selected: ' + selected.getName());
-                        level.current = selected; // Set LevelContext current level
-                        router.navigate('/game'); // No need to pass parameters to Game when can use Context
+                        level.current = selected; // Set LevelContext current level 
+                        router.navigate('/GameScreen'); // No need to pass parameters to Game when can use Context
                     }}
                     onChange={(level) => {
                         // Add a space, because some titles don't display the second word
