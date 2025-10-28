@@ -41,13 +41,21 @@ export default function GameScreen() {
 	 */
 	const saveGamedata = async () => {
 		const duration = getGameDuration();
+		const score = player.getScore();
+
 		// Save the game data to the app storage
-		setItem('Score', player.getScore(), true);			
+		setItem('Score', score, true);			
 		setItem('TimeElapsed', duration, true);
 		
 		// Update TotalTimePlayed
 		let totalTimePlayed = parseInt(getItem('TotalTimePlayed'));
 		setItem('TotalTimePlayed', duration + totalTimePlayed);
+
+		// Update HighScore, if qualifies
+		let highScore = parseInt(getItem('HighScore'));
+		if (score > highScore) {
+			setItem('HighScore', score);
+		}
 		
 		// Update LongestGame, if qualifies
 		let longestGame = parseInt(getItem('LongestGame'));
@@ -56,7 +64,7 @@ export default function GameScreen() {
 		}
 
 		// Wait for the storage to sync
-		await saveItems('Score', 'TimeElapsed', 'TotalTimePlayed', 'LongestGame')
+		await saveItems('Score', 'HighScore', 'TimeElapsed', 'TotalTimePlayed', 'LongestGame')
 			.catch(err => console.error('Failed to save game: ', err));
 	}
 

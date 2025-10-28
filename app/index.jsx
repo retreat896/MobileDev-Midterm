@@ -186,9 +186,10 @@ const index = () => {
                     renderItem={({ item }) => {
                         // Destructure item from the object
                         return (
-                            <View style={styles.row}>
-                                <Text variant="bodyLarge">{item[0]}:</Text>
-                                <Text variant="bodyLarge">{item[1]}</Text>
+                            <View style={[ styles.row, { justifyContent: 'flex-start' } ]}>
+                                {/* Format the data label with spaces between Pascal case words */}
+                                <Text variant="bodyLarge">{item[0].replace(/([a-z])([A-Z])/g, '$1 $2')}:</Text>
+                                <Text variant="bodyLarge">{" " + item[1]}</Text>
                             </View>
                         );
                     }}
