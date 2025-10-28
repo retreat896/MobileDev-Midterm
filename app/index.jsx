@@ -53,9 +53,14 @@ const index = () => {
         if (dataLoaded) {
             // Only run when settings is being opened
             // Username not being edited and doesn't match saved data
-            if (settings && noUsernameInput && username != getItem('Username')) {
+            if (settings && (noUsernameInput || username != getItem('Username'))) {
                 console.log('Updating Username: ' + getItem('Username'));
                 changeUsername(getItem('Username')); // Update the username
+
+                // Turn off the username input
+                if (!noUsernameInput) {
+                    disableUsernameInput(true);
+                }
             }
 
             // Only run when stats is being opened
@@ -107,13 +112,13 @@ const index = () => {
                         theme={{ roundness: 10 }}
                         disabled={noUsernameInput}
                         label="Username"
-                        value="Kristopher Adams"
+                        value={username}
                         submitBehavior="blurAndSubmit"
                         onChangeText={(text) => changeUsername(text)}
                         onSubmitEditing={(submit) => {
                             // Check if username is valid
                             const isValidUsername = (str) => {
-                                return /^[a-zA-Z_]+$/.test(str);
+                                return /^[a-zA-Z_\s]+$/.test(str);
                             };
                             let text = submit.nativeEvent.text;
                             if (isValidUsername(text)) {
@@ -121,14 +126,15 @@ const index = () => {
                                 setItem('Username', text); // Update the username
                                 saveItems('Username'); // Save the username
                                 disableUsernameInput(true); // Hide username input
-                            } else {
+                            }
+                            else {
                                 console.log(`Invalid Username: ${text}`);
                                 showUsernameError(true);
                             }
                         }}></TextInput>
                 </KeyboardAvoidingView>
                 {/* Edit-Username Error Dialog */}
-                <InfoDialog title="Invalid Username" info="A username may only contain a-z, A-Z and '_'" isError={true} visible={usernameError} onConfirm={() => showUsernameError(false)} />
+                <InfoDialog title="Invalid Username" info="A username may only contain a-z, A-Z, '_', and spaces. " isError={true} visible={usernameError} onConfirm={() => showUsernameError(false)} />
                 {/* Reset-Username Confirm Dialog */}
                 <ConfirmDialog
                     title="Reset Username"
@@ -149,7 +155,7 @@ const index = () => {
                 />
                 {/* Reset-Username Button */}
                 <View style={styles.row}>
-                    
+
                     <Button
                         compact
                         mode="text"
@@ -157,7 +163,7 @@ const index = () => {
                             console.log('Show Dialog');
                             showUsernameConfirm(true); // Show ConfirmDialog
                         }}>
-                        
+
                         Edit Username
                     </Button>
                 </View>
@@ -186,7 +192,7 @@ const index = () => {
                     renderItem={({ item }) => {
                         // Destructure item from the object
                         return (
-                            <View style={[ styles.row, { justifyContent: 'flex-start' } ]}>
+                            <View style={[styles.row, { justifyContent: 'flex-start' }]}>
                                 {/* Format the data label with spaces between Pascal case words */}
                                 <Text variant="bodyLarge">{item[0].replace(/([a-z])([A-Z])/g, '$1 $2')}:</Text>
                                 <Text variant="bodyLarge">{" " + item[1]}</Text>
