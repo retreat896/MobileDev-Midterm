@@ -184,8 +184,7 @@ export const DataProvider = ({ children }) => {
 
 // Return the set level data
 /**
- * 
- * @returns {Object} { dataLoaded, getItem, getKeys, setItem, waitForAsyncStorage }
+ * @returns {Object} { dataLoaded, getItem, getKeys, setItem, saveItems }
  */
 export const useData = () => {
     const context = useContext(DataContext);
