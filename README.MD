@@ -160,7 +160,7 @@ Mobile-Midterm/
 
 ### 🔍 Contribution Overview
 
-![GitHub Commit Activity](https://img.shields.io/github/commit-activity/m/retreat896/Mobile-Midterm?color=blue\&logo=github) ![Last Commit](https://img.shields.io/github/last-commit/retreat896/Mobile-Midterm?color=green)
+![GitHub Commit Activity](https://img.shields.io/github/commit-activity/m/retreat896/MobileDev-Midterm?color=blue\&logo=github) ![Last Commit](https://img.shields.io/github/last-commit/retreat896/MobileDev-Midterm?color=green)
 
 ### 📈 Graphs & Analytics
 
