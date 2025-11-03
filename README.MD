@@ -164,9 +164,9 @@ Mobile-Midterm/
 
 ### 📈 Graphs & Analytics
 
-[![GitHub Graphs](https://github-readme-activity-graph.vercel.app/graph?username=retreat896\&repo=Mobile-Midterm\&theme=react-dark)](https://github.com/retreat896/Mobile-Midterm)
+[![GitHub Graphs](https://github-readme-activity-graph.vercel.app/graph?username=retreat896\&repo=Mobile-Midterm\&theme=react-dark)](https://github.com/retreat896/MobileDev-Midterm)
 
-[![GitHub Graphs](https://github-readme-activity-graph.vercel.app/graph?username=JMalland\&repo=Mobile-Midterm\&theme=react-dark)](https://github.com/retreat896/Mobile-Midterm)
+[![GitHub Graphs](https://github-readme-activity-graph.vercel.app/graph?username=JMalland\&repo=Mobile-Midterm\&theme=react-dark)](https://github.com/retreat896/MobileDev-Midterm)
 
 ---
 
