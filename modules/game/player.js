@@ -2,80 +2,134 @@ import { styles } from '@styles/game';
 
 
 export default class Player {
-
-    constructor(hp=100, width=50, height=10, size=50) {
-        this.x = width - 100;
-        this.y = height / 2;
-        this.hp = hp;
-        this.maxHp = hp;
-        this.score = 0;
-        this.width = width;
-        this.height = height;
-        this.size = size;
-        this.rotation = 0;
-    }
-
-    setScore(score) {
-        this.score = score;
-    }
-
-    setRotation(angle) {
-        this.rotation = angle;
-    }
+    // Leave private because these should ONLY be set during construction
+    #maxHp;
+    #hp;
+    #score;
+    #width;
+    #height;
 
     /**
-     * @params {Enemy} enemy It's Joe Momma!
+     * @param {Number} x The x coordinate
+     * @param {Number} y The y coordinate
+     * @param {Number} maxHp Maximum health
+     * @param {Number} width The display width
+     * @param {Number} height The display height
+     */
+    constructor(x, y, maxHp=100, width=50, height=50) {
+        // Publically Accessible Values
+        // X and Y are NOT optional
+        this.x = x;
+        this.y = y;
+        this.rotation = 0;
+
+        // These are private because they don't need to be managed by an outside class.
+        // X, Y, and rotation all can be adjusted up or down. 
+        // Below, the values never, or only change in a specific direction.
+        this.#maxHp = maxHp;
+        this.#hp = this.#maxHp;
+        this.#score = 0;
+        this.#width = width;
+        this.#height = height;
+    }
+
+    // Should add Enemy direction, and verify direction
+    /**
+     * Check if an enemy has made it past the player
+     * @params {Enemy} The enemy that may have escaped
      */
     enemyOutOfBounds(enemy) {
-        if (enemy.x > this.width-1) {
-            this.hp -= enemy.damage;
-        }
-    }
-
-    takeDamage(damage) {
-        this.hp -= damage;
-        if (this.hp <= 0) {
-            this.active = false;
-        }
+        return enemy.x > this.x;
     }
 
     /**
-     * Return the Player's HP
+     * Hurt 'em
+     * @param {Number} damage Number of health points to remove 
      */
-    getHP() {
-        return this.hp;
+    takeDamage(damage) {
+        // Prevent negative damage
+        if (damage < 1) {
+            throw new Error("Silly Player, you can't heal yourself through pain.");
+        }
+
+        this.#hp -= damage;
     }
 
-    getPos(){
-        return {
-            x: this.x,
-            y: this.y,
-        };  
+    /**
+     * Add points to the score
+     * @param {Number} points Amount to increment score by 
+     */
+    addScore(points) {
+        // Logging but not error in case ever want to take away points
+        if (points < 0) {
+            console.error("Losing points? -- Are you sure you know what you're doing?");
+        }
+
+        this.#score += points;
     }
 
-    getSize(){
-        return this.size;
+    /**
+     * @returns The maximumm health points
+     */
+    getMaxHp() {
+        return this.#maxHp;
     }
 
-    getWidth(){
-        return {width: this.size};
+    /**
+     * @returns The current health points
+     */
+    getHp() {
+        return this.#hp;
     }
 
-    getHeight(){
-        return {height: this.size};
-    }   
+    /**
+     * @returns The current score
+     */
+    getScore() {
+        return this.#score;
+    }
 
+    /**
+     * @returns The display width
+     */
+    getWidth() {
+        return this.#width;
+    }
+
+    /**
+     * @returns The display height
+     */
+    getHeight() {
+        return this.#height;
+    }
+
+    /**
+     * Get the position the object is displayed at
+     * @returns The displayed x-position
+     */
+    getDisplayX() {
+        return this.x - this.#width;
+    }
+
+    /**
+     * Get the position the object is displayed at
+     * @returns The displayed y-position
+     */
+    getDisplayY() {
+        return this.y - this.#height;
+    }
+
+    /**
+     * Get the display color, based on health
+     * @returns a JSON object with color settings for StyleSheet use
+     */
     getColor() {
-        const hpRatio = this.hp / this.maxHp;
+        const hpRatio = this.#hp / this.#maxHp;
 
         if (hpRatio > 0.75) return styles.full; // green
         if (hpRatio > 0.5) return styles.threeQuarters; // lime
         if (hpRatio > 0.25) return styles.half; // yellow
         if (hpRatio > 0.1) return styles.oneQuarter; // orange
         return styles.one; // red
-    }
-
-    getRotation() {
-        return this.rotation;
     }
 }
