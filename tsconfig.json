@@ -1,0 +1,31 @@
+{
+  "compilerOptions": {
+    "allowJs": true,
+    "jsx": "react",
+    "baseUrl": ".",
+    "paths": {
+      "@app/*": [
+        "app/*"
+      ],
+      "@assets/*": [
+        "assets/*"
+      ],
+      "@modules/*": [
+        "modules/*"
+      ],
+      "@styles/*": [
+        "styles/*"
+      ],
+      "@components/*":[
+        "components/*"
+      ]
+    }
+  },
+  "include": [
+    "app/**/*",
+    "assets/**/*",
+    "modules/**/*",
+    "styles/**/*"
+, "components/menu", "components/Wrapper.jsx", "components/MainMenu.jsx", "components/LevelSelect.jsx", "components/CoolerButton.jsx"  ],
+  "extends": "expo/tsconfig.base"
+}
