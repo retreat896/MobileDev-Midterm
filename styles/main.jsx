@@ -39,9 +39,8 @@ export const styles = StyleSheet.create({
         fontFamily: 'Honk',
     },
     imageFullDisplay: {
-        width: SCREEN_WIDTH,
-        height: SCREEN_HEIGHT,
+        width: '100%',
+        height: '100%',
         position: 'absolute',
-        left:0
     },
 });

@@ -13,35 +13,22 @@ async function fetchLevels() {
         // The Level to create
         let levelToAdd = new Level(level.name);
 
-        // Fetch the Level image
-        let response = await fetch("https://raw.githubusercontent.com/retreat896/MobileDev-Midterm/main/" + level.image);
-            
-        // The response failed
-        if (!response.ok) {
-            // Throw an error
-            throw Error(`Failed to resolve URL: "${response.url}" Status: ${response.status}`);
-        }
-            
-        // Create a new Level using the name and image
-        let imageBlob = await response.blob();
-        let type = 'direct'; // The type of Image
+        // Construct the image URL
+        // We use the direct URL instead of fetching as blob to avoid issues
+        const imageUrl = "https://raw.githubusercontent.com/retreat896/MobileDev-Midterm/main/" + level.image;
+        
+        // Set the Image using the direct URL
+        levelToAdd.setImageURI(imageUrl);
 
-        // The API returned the image as a Blob
-        if (imageBlob) {
-            type = 'blob';
-
-            // Set the Image using the image Blob
-            await levelToAdd.setImageBlob(imageBlob);    
+        if (level.enemySpawn) {
+            levelToAdd.setEnemySpawn(level.enemySpawn);
         }
-        // The API returned a direct image URL
-        else {
-            // Set the Image using the direct URL
-            levelToAdd.setImageURI(response.url);
+        if (level.playerSpawn) {
+            levelToAdd.setPlayerSpawn(level.playerSpawn);
         }
 
         // Add the Level to the list
         levels.push(levelToAdd);
-        //console.log(`Created Level (${type}): "${level.name}"`);
     }
 
     return levels;

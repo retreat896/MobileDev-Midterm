@@ -11,10 +11,41 @@ export default class Enemy {
         this.maxHp = hp;
         this.points = points;
         this.damage = 1;
+        this.path = null;
+        this.currentPathIndex = 0;
+        this.rotation = 0;
+    }
+
+    setPath(path) {
+        this.path = path;
+        this.currentPathIndex = 0;
+    }
+
+    getRotation() {
+        return this.rotation;
     }
 
     update() {
-        this.x += this.speed;
+        if (this.path && this.currentPathIndex < this.path.length) {
+            const target = this.path[this.currentPathIndex];
+            const dx = target.x - this.x;
+            const dy = target.y - this.y;
+            const distance = Math.sqrt(dx * dx + dy * dy);
+
+            if (distance < this.speed) {
+                this.x = target.x;
+                this.y = target.y;
+                this.currentPathIndex++;
+            } else {
+                const angle = Math.atan2(dy, dx);
+                this.rotation = angle * (180 / Math.PI);
+                this.x += Math.cos(angle) * this.speed;
+                this.y += Math.sin(angle) * this.speed;
+            }
+        } else {
+            this.x += this.speed;
+            this.rotation = 0;
+        }
     }
 
     isOutOfBounds(width) {
