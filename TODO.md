@@ -2,6 +2,20 @@
 
 ## High Priority
 
+- [ ] **Add Mongo-DB interactions.**
+    - Implement retreive/update player data.
+    - Implement retreive level data
+     
+- [ ] **Add more finalized backgrounds.**
+    - Add background images that are thematically related to the game.
+    - Update `Level` objects to use these new backgrounds.
+     
+- [ ] **Fix aspect ratio and handle black bars.**
+    - Enforce a specific aspect ratio (e.g., 16:9).
+    - Wrap the game view in a container that maintains this ratio and adds black bars (letterboxing/pillarboxing) for other screen sizes.
+
+## Medium Priority
+
 - [ ] **Finish path tracing to have an end point that causes damage.**
     - Implement a raycast/laser mechanic that instantly hits the first enemy in its path.
     - Ensure it deals damage correctly.
@@ -11,14 +25,6 @@
 
 - [ ] **Fix bullet offset and player image offset.**
     - Adjust the rendering coordinates in `GameScreen` to align the player image and projectile spawn point correctly with the logical position.
-
-- [ ] **Add more finalized backgrounds.**
-    - Add background images that are thematically related to the game.
-    - Update `Level` objects to use these new backgrounds.
-
-- [ ] **Fix aspect ratio and handle black bars.**
-    - Enforce a specific aspect ratio (e.g., 16:9).
-    - Wrap the game view in a container that maintains this ratio and adds black bars (letterboxing/pillarboxing) for other screen sizes.
 
 ## Suggested Improvements
 
