@@ -2,8 +2,13 @@
   "name": "midterm",
   "version": "1.0.0",
   "main": "expo-router/entry",
+  "workspaces": [
+    "./backend"
+  ],
   "scripts": {
-    "start": "expo start --tunnel",
+    "start:api": "npm run start --workspaces api",
+    "start:app": "expo start --tunnel",
+    "start": "start \"Expo App\" npm run start:app && start \"API Server\" npm run start:api",
     "prebuild": "expo prebuild --clean",
     "android": "expo run:android",
     "ios": "expo run:ios"

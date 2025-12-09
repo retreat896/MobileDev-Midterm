@@ -1,6 +1,6 @@
-import Projectile from '@modules/game/projectile';
-import Enemy from '@modules/game/enemy';
-import Player from '@modules/game/player';
+import Projectile from '@modules/game/Projectile';
+import Enemy from '@modules/game/Enemy';
+import Player from '@modules/game/Player';
 import React, { Component, useState } from 'react';
 import { StyleSheet, Dimensions, StatusBar, View, ImageBackground, useWindowDimensions, Image } from 'react-native';
 import { Button, Dialog, FAB, Portal, Text } from 'react-native-paper';
@@ -10,6 +10,7 @@ import { router } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Wrapper from '@components/menu/Wrapper';
 import { useLevel } from '@components/LevelContext';
+import { useData } from '@components/DataContext';
 import Level from '@modules/menu/Level';
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('screen');
