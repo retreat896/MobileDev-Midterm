@@ -126,10 +126,9 @@ export const DataProvider = ({ children }) => {
     /**
      * Save a key-value to the memory (RAM)
      * @param {String} key The item being changed
-     * @param {String} value The updated value 
-     * @param {boolean} saveToAsyncStorage If true, app data will be updated
+     * @param {String} value The updated value
      */
-    const setItem = (key, value, saveToAsyncStorage=false) => {
+    const setItem = (key, value) => {
         // Ensure all inputs are Strings
         key = String(key);
         value = String(value);
@@ -145,18 +144,39 @@ export const DataProvider = ({ children }) => {
 
         // Update the saved memory data
         data.current[key] = value;
+    }
 
-        // Save the value to the app storage
-        if (saveToAsyncStorage) {
+    /**
+     * Save a list of keys to app storage
+     * @param {Array<String>} keys List of keys to save 
+     */
+    const saveItems = async (...keys) => {
+        // Convert to string to be safe
+        keys = keys.map(key => String(key));
+        
+        // No keys were provided
+        if (keys.length === 0) {
+            throw new Error('Invalid Keys: Empty list.');
+        }
+
+        // The provided keys aren't all valid keys
+        let keysFound = keys.filter(key => Object.keys(data.current).includes(key));
+        if (keysFound.length < keys.length) {
+            throw new Error(`The following items do not exist: ${keys.filter(key => !keysFound.includes(key))}`);
+        }
+
+        // Save all keys
+        for (let key of keys) {
+            key = String(key); // Convert to string to be safe
+
             console.log(`Writing '${key}' to app storage.`);
-            AsyncStorage.setItem(key, data[key])
-            .then(() => console.log(`Finished writing '${key}' successfully.`))
-            .catch((e) => console.error);
+            await AsyncStorage.setItem(key, data.current[key]).catch(e => console.error);
+            console.log(`Finished writing '${key}' successfully.`);
         }
     }
 
     return (
-        <DataContext.Provider value={{ dataLoaded, getItem, getKeys, setItem }}>
+        <DataContext.Provider value={{ dataLoaded, getItem, getKeys, setItem, saveItems }}>
             {children}
         </DataContext.Provider>
     );
@@ -164,8 +184,7 @@ export const DataProvider = ({ children }) => {
 
 // Return the set level data
 /**
- * 
- * @returns {Object} { level, dataLoaded, allLevels }
+ * @returns {Object} { dataLoaded, getItem, getKeys, setItem, saveItems }
  */
 export const useData = () => {
     const context = useContext(DataContext);

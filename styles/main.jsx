@@ -25,6 +25,11 @@ export const styles = StyleSheet.create({
     portal: {
         width: '100%',
     },
+    dialog: {
+        flexDirection: 'column',
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
     usernameModal: {
         position: 'absolute',
         justifyContent: 'center',

@@ -7,7 +7,8 @@ module.exports = {
         '@assets': './assets',
         '@modules': './modules',
         '@styles': './styles',
-        '@components': './components'
+        '@components': './components',
+        '@hooks': './hooks'
       },
     }],
   ],
