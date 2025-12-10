@@ -6,7 +6,9 @@ const Wrapper = ({ children, title, subtitle, onOpen, onClose, style }) => {
     const { width, height } = useWindowDimensions();
 
     // Call onOpen using UseEffect on every initial render
-    useEffect(onOpen, []);
+    useEffect(() => {
+        if (onOpen) onOpen();
+    }, []);
 
     return (
         <Dialog visible={true} style={[style, wrapperStyles.container]} onDismiss={onClose}>

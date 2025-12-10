@@ -3,7 +3,7 @@ import { styles } from '@styles/game';
 
 export default class Player {
 
-    constructor(hp=100, width=50, height=10, size=50) {
+    constructor(hp=10, width=50, height=10, size=50) {
         this.x = width - 100;
         this.y = height / 2;
         this.hp = hp;
@@ -14,7 +14,14 @@ export default class Player {
         this.size = size;
         this.rotation = 0;
         this.bulletOffset = {x: 0, y: 0};
+        this.bulletOffset = {x: 0, y: 0};
         this.imageOffset = {x: 0, y: 0};
+    }
+
+    reset() {
+        this.hp = this.maxHp;
+        this.active = true;
+        this.score = 0;
     }
 
     setScore(score) {

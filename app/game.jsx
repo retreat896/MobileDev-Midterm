@@ -19,7 +19,7 @@ const bad_guy = require("../assets/bad_guy.png")
 
 const RADIUS = 20; //used for finger radius
 const PLAYER_SIZE = 50;
-const PLAYER_START_HP = 100;
+const PLAYER_START_HP = 10;
 
 // Player
 const PLAYER = new Player(PLAYER_START_HP, SCREEN_WIDTH, SCREEN_HEIGHT, PLAYER_SIZE);
@@ -36,9 +36,11 @@ class SingleTouch extends Component {
             score: 0,
             paused: false,
         };
+        this.gameOver = false;
     }
 
     async componentDidMount() {
+        PLAYER.reset();
         await ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.LANDSCAPE_RIGHT);
         
         // Set Player Spawn
@@ -203,9 +205,13 @@ class SingleTouch extends Component {
         }
 
         if (PLAYER.getHP() <= 0) {
-            AsyncStorage.setItem('Score', this.state.score);
-            AsyncStorage.setItem('Duration', this.duration);
-            router.navigate('/gameOver');
+            if (this.gameOver) return;
+            this.gameOver = true;
+            
+            const duration = Date.now() - this.startTime;
+            AsyncStorage.setItem('Score', this.state.score.toString());
+            AsyncStorage.setItem('Duration', duration.toString());
+            router.replace('/GameOver');
         }
 
         //-----------projectiles-----------

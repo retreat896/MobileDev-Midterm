@@ -12,7 +12,7 @@ import { CollisionDetector } from '@modules/game/CollisionDetector';
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('screen');
 
-const PLAYER_START_HP = 100;
+const PLAYER_START_HP = 10;
 const PLAYER = new Player(SCREEN_WIDTH - 100, SCREEN_HEIGHT / 2, PLAYER_START_HP);
 
 export function useGameLoop() {
