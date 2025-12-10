@@ -5,6 +5,11 @@
 - [ ] **Add Mongo-DB interactions.**
     - Implement retreive/update player data.
     - Implement retreive level data
+
+- [ ] **Implement Username on inital load.**
+    - Implement a username input screen that is displayed on initial load.
+    - Implement a username storage system that stores the username in the database.
+    - Implement a username changing system that allows the user to change their username.
      
 - [ ] **Add more finalized backgrounds.**
     - Add background images that are thematically related to the game.
