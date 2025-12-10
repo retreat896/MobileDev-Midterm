@@ -25,11 +25,6 @@ export const styles = StyleSheet.create({
     portal: {
         width: '100%',
     },
-    dialog: {
-        flexDirection: 'column',
-        justifyContent: 'center',
-        alignItems: 'center',
-    },
     usernameModal: {
         position: 'absolute',
         justifyContent: 'center',
@@ -44,9 +39,8 @@ export const styles = StyleSheet.create({
         fontFamily: 'Honk',
     },
     imageFullDisplay: {
-        width: SCREEN_WIDTH,
-        height: SCREEN_HEIGHT,
+        width: '100%',
+        height: '100%',
         position: 'absolute',
-        left:0
     },
 });

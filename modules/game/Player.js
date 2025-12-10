@@ -2,134 +2,103 @@ import { styles } from '@styles/game';
 
 
 export default class Player {
-    // Leave private because these should ONLY be set during construction
-    #maxHp;
-    #hp;
-    #score;
-    #width;
-    #height;
 
-    /**
-     * @param {Number} x The x coordinate
-     * @param {Number} y The y coordinate
-     * @param {Number} maxHp Maximum health
-     * @param {Number} width The display width
-     * @param {Number} height The display height
-     */
-    constructor(x, y, maxHp=100, width=50, height=50) {
-        // Publically Accessible Values
-        // X and Y are NOT optional
+    constructor(hp=100, width=50, height=10, size=50) {
+        this.x = width - 100;
+        this.y = height / 2;
+        this.hp = hp;
+        this.maxHp = hp;
+        this.score = 0;
+        this.width = width;
+        this.height = height;
+        this.size = size;
+        this.rotation = 0;
+        this.bulletOffset = {x: 0, y: 0};
+        this.imageOffset = {x: 0, y: 0};
+    }
+
+    setScore(score) {
+        this.score = score;
+    }
+
+    setRotation(angle) {
+        this.rotation = angle;
+    }
+
+    setPos(x, y) {
         this.x = x;
         this.y = y;
-        this.rotation = 0;
-
-        // These are private because they don't need to be managed by an outside class.
-        // X, Y, and rotation all can be adjusted up or down. 
-        // Below, the values never, or only change in a specific direction.
-        this.#maxHp = maxHp;
-        this.#hp = this.#maxHp;
-        this.#score = 0;
-        this.#width = width;
-        this.#height = height;
     }
 
-    // Should add Enemy direction, and verify direction
+    setBulletOffset(x, y) {
+        this.bulletOffset = {x, y};
+    }
+
+    getBulletOffset() {
+        return this.bulletOffset || {x: 0, y: 0};
+    }
+
+    setImageOffset(x, y) {
+        this.imageOffset = {x, y};
+    }
+
+    getImageOffset() {
+        return this.imageOffset || {x: 0, y: 0};
+    }
+
     /**
-     * Check if an enemy has made it past the player
-     * @params {Enemy} The enemy that may have escaped
+     * @params {Enemy} enemy It's Joe Momma!
      */
     enemyOutOfBounds(enemy) {
-        return enemy.x > this.x;
+        if (enemy.x > this.width-1) {
+            this.hp -= enemy.damage;
+        }
     }
 
-    /**
-     * Hurt 'em
-     * @param {Number} damage Number of health points to remove 
-     */
     takeDamage(damage) {
-        // Prevent negative damage
-        if (damage < 1) {
-            throw new Error("Silly Player, you can't heal yourself through pain.");
+        this.hp -= damage;
+        if (this.hp <= 0) {
+            this.active = false;
         }
-
-        this.#hp -= damage;
     }
 
     /**
-     * Add points to the score
-     * @param {Number} points Amount to increment score by 
+     * Return the Player's HP
      */
-    addScore(points) {
-        // Logging but not error in case ever want to take away points
-        if (points < 0) {
-            console.error("Losing points? -- Are you sure you know what you're doing?");
-        }
-
-        this.#score += points;
+    getHP() {
+        return this.hp;
     }
 
-    /**
-     * @returns The maximumm health points
-     */
-    getMaxHp() {
-        return this.#maxHp;
+    getPos(){
+        return {
+            x: this.x,
+            y: this.y,
+        };  
     }
 
-    /**
-     * @returns The current health points
-     */
-    getHp() {
-        return this.#hp;
+    getSize(){
+        return this.size;
     }
 
-    /**
-     * @returns The current score
-     */
-    getScore() {
-        return this.#score;
+    getWidth(){
+        return {width: this.size};
     }
 
-    /**
-     * @returns The display width
-     */
-    getWidth() {
-        return this.#width;
-    }
+    getHeight(){
+        return {height: this.size};
+    }   
 
-    /**
-     * @returns The display height
-     */
-    getHeight() {
-        return this.#height;
-    }
-
-    /**
-     * Get the position the object is displayed at
-     * @returns The displayed x-position
-     */
-    getDisplayX() {
-        return this.x - this.#width;
-    }
-
-    /**
-     * Get the position the object is displayed at
-     * @returns The displayed y-position
-     */
-    getDisplayY() {
-        return this.y - this.#height;
-    }
-
-    /**
-     * Get the display color, based on health
-     * @returns a JSON object with color settings for StyleSheet use
-     */
     getColor() {
-        const hpRatio = this.#hp / this.#maxHp;
+        const hpRatio = this.hp / this.maxHp;
 
         if (hpRatio > 0.75) return styles.full; // green
         if (hpRatio > 0.5) return styles.threeQuarters; // lime
         if (hpRatio > 0.25) return styles.half; // yellow
         if (hpRatio > 0.1) return styles.oneQuarter; // orange
         return styles.one; // red
+    }
+
+    getRotation() {
+        return this.rotation;
     }
 }

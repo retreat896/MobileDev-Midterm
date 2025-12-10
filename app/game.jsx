@@ -1,6 +1,6 @@
-import Projectile from '@modules/game/Projectile';
-import Enemy from '@modules/game/Enemy';
-import Player from '@modules/game/Player';
+import Projectile from '@modules/game/projectile';
+import Enemy from '@modules/game/enemy';
+import Player from '@modules/game/player';
 import React, { Component, useState } from 'react';
 import { StyleSheet, Dimensions, StatusBar, View, ImageBackground, useWindowDimensions, Image } from 'react-native';
 import { Button, Dialog, FAB, Portal, Text } from 'react-native-paper';
@@ -10,7 +10,6 @@ import { router } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Wrapper from '@components/menu/Wrapper';
 import { useLevel } from '@components/LevelContext';
-import { useData } from '@components/DataContext';
 import Level from '@modules/menu/Level';
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('screen');
@@ -41,6 +40,33 @@ class SingleTouch extends Component {
 
     async componentDidMount() {
         await ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.LANDSCAPE_RIGHT);
+        
+        // Set Player Spawn
+        const level = this.props.level.current;
+        let startX = 0;
+        let startY = 0;
+
+        if (level && level.getPlayerSpawn()) {
+            const spawn = level.getPlayerSpawn();
+            PLAYER.setPos(spawn.x, spawn.y);
+        }
+
+        // Example: Set offsets (Adjust these values to center the image and align the gun)
+        //PLAYER.setImageOffset(10, 0); 
+        //PLAYER.setBulletOffset(30, 10);
+
+        if (level && level.getEnemySpawn()) {
+            const spawn = level.getEnemySpawn();
+            startX = spawn.x;
+            startY = spawn.y;
+        } else {
+            // Default if no spawn point
+            startY = Math.random() * (SCREEN_HEIGHT - 100);
+        }
+
+        // Generate the single path for this level
+        this.currentLevelPath = this.generateComplexPath(startX, startY, 5);
+
         this.startEnemySpawning();
         this.startTime = Date.now();
     }
@@ -69,17 +95,58 @@ class SingleTouch extends Component {
         if (this.enemySpawnTimeout) clearTimeout(this.enemySpawnTimeout);
     };
 
+    generateComplexPath = (startX, startY, turns) => {
+        let path = [{x: startX, y: startY}];
+        let currentX = startX;
+        let currentY = startY;
+        const segmentWidth = SCREEN_WIDTH / (turns + 1);
+
+        for (let i = 0; i < turns; i++) {
+            // Move forward
+            currentX += segmentWidth;
+            // Random Y within bounds (padding 50)
+            currentY = Math.random() * (SCREEN_HEIGHT - 100) + 50;
+            path.push({x: currentX, y: currentY});
+        }
+        
+        // Final point off screen
+        path.push({x: SCREEN_WIDTH + 100, y: currentY});
+        return path;
+    }
+
     spawnEnemy = () => {
         let enemy = new Enemy();
-        const randomY = Math.random() * (SCREEN_HEIGHT - enemy.height * 2);
-        enemy.setYPos(randomY);
+        
+        // Use the pre-generated path
+        if (this.currentLevelPath) {
+            enemy.setPath(this.currentLevelPath);
+            enemy.x = this.currentLevelPath[0].x;
+            enemy.y = this.currentLevelPath[0].y;
+        } else {
+             // Fallback if something went wrong
+            const randomY = Math.random() * (SCREEN_HEIGHT - enemy.height * 2);
+            enemy.setYPos(randomY);
+        }
+
         this.setState((prev) => ({
             enemies: [...prev.enemies, enemy],
         }));
     };
 
     fireProjectile = () => {
-        const projectile = new Projectile(PLAYER.getPos().x, PLAYER.getPos().y, PLAYER.getRotation(), 15);
+        const { x: px, y: py } = PLAYER.getPos();
+        const { x: ox, y: oy } = PLAYER.getBulletOffset();
+        const rot = PLAYER.getRotation();
+        const rad = rot * (Math.PI / 180);
+
+        // Rotate offset
+        const rotatedOx = ox * Math.cos(rad) - oy * Math.sin(rad);
+        const rotatedOy = ox * Math.sin(rad) + oy * Math.cos(rad);
+
+        const spawnX = px + rotatedOx;
+        const spawnY = py + rotatedOy;
+
+        const projectile = new Projectile(spawnX, spawnY, rot, 15);
         this.setState((prev) => ({
             projectiles: [...prev.projectiles, projectile],
         }));
@@ -203,12 +270,17 @@ class SingleTouch extends Component {
             });
 
             // ---- Filter out dead or inactive entities ----
+            // ---- Filter out dead or inactive entities ----
             const activeProjectiles = projectiles.filter((p) => p.active && !p.isOutOfBounds(SCREEN_WIDTH, SCREEN_HEIGHT));
-            const activeEnemies = enemies.filter((e) => e.active && e.hp > 0 && !e.isOutOfBounds(SCREEN_WIDTH, SCREEN_HEIGHT));
-
-            activeEnemies.forEach((e) => {
-                PLAYER.enemyOutOfBounds(e);
+            
+            // Check for out of bounds enemies and apply damage BEFORE filtering them out
+            enemies.forEach((e) => {
+                if (e.isOutOfBounds(SCREEN_WIDTH, SCREEN_HEIGHT)) {
+                    PLAYER.enemyOutOfBounds(e);
+                }
             });
+
+            const activeEnemies = enemies.filter((e) => e.active && e.hp > 0 && !e.isOutOfBounds(SCREEN_WIDTH, SCREEN_HEIGHT));
 
             // ---- Return new state ----
             return {
@@ -289,8 +361,12 @@ class SingleTouch extends Component {
                             left: PLAYER.getPos().x - PLAYER.getSize() / 2,
                             top: PLAYER.getPos().y - PLAYER.getSize() / 2,
 
-                            // Apply rotation
-                            transform: [{ rotate: `${PLAYER.getRotation()}deg` }],
+                            // Apply rotation and offsets
+                            transform: [
+                                { rotate: `${PLAYER.getRotation()}deg` },
+                                { translateX: PLAYER.getImageOffset().x },
+                                { translateY: PLAYER.getImageOffset().y }
+                            ],
                         },
                         // PLAYER.getColor(),
                     ]}
@@ -323,6 +399,7 @@ class SingleTouch extends Component {
                                 top: e.y,
                                 width: e.width,
                                 height: e.height,
+                                transform: [{ rotate: `${e.getRotation()}deg` }]
                             },
                             // e.getColor(),
                         ]}
