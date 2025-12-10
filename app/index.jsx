@@ -18,6 +18,8 @@ import { useData, getKeys } from '@components/DataContext';
 // router.back(): Navigates back to the previous screen.
 // router.navigate({ pathname: string, params: object }): Navigates to a specific path with parameters.
 
+const API_SERVER_URL = process.env.API_SERVER_URL
+
 const index = () => {
     // Lock the screen to landscape mode
     const Background = require('@assets/backgrounds/used/Main_Background.jpg');
@@ -310,7 +312,7 @@ const index = () => {
                     onSelect={(selected) => {
                         console.log('Level Selected: ' + selected.getName());
                         level.current = selected; // Set LevelContext current level
-                        router.navigate('/game'); // No need to pass parameters to Game when can use Context
+                        router.navigate('/GameScreen'); // No need to pass parameters to Game when can use Context
                     }}
                     onChange={(level) => {
                         // Add a space, because some titles don't display the second word
