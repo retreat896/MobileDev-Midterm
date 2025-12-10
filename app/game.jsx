@@ -1,6 +1,6 @@
-import Projectile from '@modules/game/projectile';
-import Enemy from '@modules/game/enemy';
-import Player from '@modules/game/player';
+import Projectile from '@modules/game/Projectile';
+import Enemy from '@modules/game/Enemy';
+import Player from '@modules/game/Player';
 import React, { Component, useState } from 'react';
 import { StyleSheet, Dimensions, StatusBar, View, ImageBackground, useWindowDimensions, Image } from 'react-native';
 import { Button, Dialog, FAB, Portal, Text } from 'react-native-paper';
@@ -53,7 +53,7 @@ class SingleTouch extends Component {
 
         // Example: Set offsets (Adjust these values to center the image and align the gun)
         //PLAYER.setImageOffset(10, 0); 
-        //PLAYER.setBulletOffset(30, 10);
+        PLAYER.setBulletOffset(30, 10);
 
         if (level && level.getEnemySpawn()) {
             const spawn = level.getEnemySpawn();
@@ -358,7 +358,8 @@ class SingleTouch extends Component {
                             height: PLAYER.getHeight().height,
 
                             // Center the player at its fixed position (playerX, playerY)
-                            left: PLAYER.getPos().x - PLAYER.getSize() / 2,
+                            // Width is size*2 (100), so shift left by size (50) to center
+                            left: PLAYER.getPos().x - PLAYER.getSize(), 
                             top: PLAYER.getPos().y - PLAYER.getSize() / 2,
 
                             // Apply rotation and offsets
@@ -374,6 +375,30 @@ class SingleTouch extends Component {
                     resizeMode='contain'
                 />
 
+                {/* Player Center Dot (Red) */}
+                <View style={{
+                    position: 'absolute',
+                    left: PLAYER.getPos().x - 2,
+                    top: PLAYER.getPos().y - 2,
+                    width: 4,
+                    height: 4,
+                    backgroundColor: 'red',
+                    zIndex: 101,
+                    borderRadius: 2
+                }} />
+
+                {/* Player Rotation Indicator (Blue) */}
+                <View style={{
+                    position: 'absolute',
+                    left: PLAYER.getPos().x + (Math.cos(PLAYER.getRotation() * (Math.PI / 180)) * 40) - 3,
+                    top: PLAYER.getPos().y + (Math.sin(PLAYER.getRotation() * (Math.PI / 180)) * 40) - 3,
+                    width: 6,
+                    height: 6,
+                    backgroundColor: 'blue',
+                    zIndex: 100,
+                    borderRadius: 3
+                }} />
+
                 {/* Projectile */}
                 {this.state.projectiles.map((p, i) => (
                     <View
@@ -385,7 +410,17 @@ class SingleTouch extends Component {
                                 top: p.y - 5,
                             },
                         ]}
-                    />
+                    >
+                        <View style={{
+                            position: 'absolute',
+                            left: 3,
+                            top: 3,
+                            width: 4,
+                            height: 4,
+                            backgroundColor: 'red',
+                            borderRadius: 2
+                        }}/>
+                    </View>
                 ))}
 
                 {/* Enemy */}

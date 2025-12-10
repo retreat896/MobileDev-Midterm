@@ -15,7 +15,9 @@ async function fetchLevels() {
 
         // Construct the image URL
         // We use the direct URL instead of fetching as blob to avoid issues
-        const imageUrl = "https://raw.githubusercontent.com/retreat896/MobileDev-Midterm/main/" + level.image;
+        // Handle leading slash in level.image
+        const imagePath = level.image.startsWith('/') ? level.image.substring(1) : level.image;
+        const imageUrl = "https://raw.githubusercontent.com/retreat896/MobileDev-Midterm/main/" + imagePath;
         
         // Set the Image using the direct URL
         levelToAdd.setImageURI(imageUrl);
