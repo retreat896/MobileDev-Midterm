@@ -192,6 +192,8 @@ export function useGameLoop() {
 		return Date.now() - startTimeRef.current;
 	}, []);
 
+	console.log(playerRef);
+
 	// Make game-loop data available to components
 	return {
 		gameState,

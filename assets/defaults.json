@@ -6,6 +6,7 @@
         "Token": ""
     },
     "gamedata": {
+        "Score": 0,
         "HighScore": 0,
         "LongestGame": 0,
         "TotalTimePlayed": 0,
