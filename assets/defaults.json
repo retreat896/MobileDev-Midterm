@@ -1,6 +1,9 @@
 {
     "userdata": {
-        "Username": "Pioneer Pete"
+        "Username": "Pioneer Pete",
+        "UUID": "",
+        "Tag": "",
+        "Token": ""
     },
     "gamedata": {
         "HighScore": 0,
