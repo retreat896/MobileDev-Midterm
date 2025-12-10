@@ -48,7 +48,6 @@ const index = () => {
 
     useEffect(() => {
         console.log('LOADING');
-
         // Data has been loaded
         if (dataLoaded) {
             // Only run when settings is being opened
@@ -81,6 +80,25 @@ const index = () => {
             }
         }
     }, [settings, stats, levelSelect]);
+
+    const handleUsernameSubmit = (text) => {
+        // Check if username is valid
+        const isValidUsername = (str) => {
+            return /^[a-zA-Z_\s]+$/.test(str);
+        };
+
+        // Act based on validity
+        if (isValidUsername(text)) {
+            console.log(`Username Submitted: ${text}`);
+            setItem('Username', text); // Update the username
+            saveItems('Username'); // Save the username
+            disableUsernameInput(true); // Hide username input
+        }
+        else {
+            console.log(`Invalid Username: ${text}`);
+            showUsernameError(true);
+        }
+    }
 
     const showSettings = () => {
         if (!settings) return null;
@@ -115,23 +133,7 @@ const index = () => {
                         value={username}
                         submitBehavior="blurAndSubmit"
                         onChangeText={(text) => changeUsername(text)}
-                        onSubmitEditing={(submit) => {
-                            // Check if username is valid
-                            const isValidUsername = (str) => {
-                                return /^[a-zA-Z_\s]+$/.test(str);
-                            };
-                            let text = submit.nativeEvent.text;
-                            if (isValidUsername(text)) {
-                                console.log(`Username Submitted: ${text}`);
-                                setItem('Username', text); // Update the username
-                                saveItems('Username'); // Save the username
-                                disableUsernameInput(true); // Hide username input
-                            }
-                            else {
-                                console.log(`Invalid Username: ${text}`);
-                                showUsernameError(true);
-                            }
-                        }}></TextInput>
+                        onSubmitEditing={(e) => handleUsernameSubmit(e.nativeEvent.text)}></TextInput>
                 </KeyboardAvoidingView>
                 {/* Edit-Username Error Dialog */}
                 <InfoDialog title="Invalid Username" info="A username may only contain a-z, A-Z, '_', and spaces. " isError={true} visible={usernameError} onConfirm={() => showUsernameError(false)} />
@@ -155,7 +157,6 @@ const index = () => {
                 />
                 {/* Reset-Username Button */}
                 <View style={styles.row}>
-
                     <Button
                         compact
                         mode="text"

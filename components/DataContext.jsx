@@ -152,7 +152,7 @@ export const DataProvider = ({ children }) => {
      */
     const saveItems = async (...keys) => {
         // Convert to string to be safe
-        keys = keys.map(key => String(key));
+        keys = keys.map(String);
         
         // No keys were provided
         if (keys.length === 0) {
