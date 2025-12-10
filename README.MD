@@ -1,6 +1,6 @@
 # 🎯 Midterm Evaluation
 
-![GitHub Commit Activity](https://img.shields.io/github/commit-activity/m/retreat896/Mobile-Midterm?color=blue&logo=github) ![Last Commit](https://img.shields.io/github/last-commit/retreat896/Mobile-Midterm?color=green)
+![GitHub Commit Activity](https://img.shields.io/github/commit-activity/m/retreat896/MobileDev-Final?color=blue&logo=github) ![Last Commit](https://img.shields.io/github/last-commit/retreat896/MobileDev-Final?color=green)
 
 ### 🔫 Shooter – A 2D Top-Down React Native Game
 
@@ -44,8 +44,8 @@ The app features:
 ### 1️⃣ Clone the Repository
 
 ```bash
-git clone https://github.com/retreat896/Mobile-Midterm.git
-cd Mobile-Midterm
+git clone https://github.com/retreat896/MobileDev-Final.git
+cd MobileDev-Final
 ````
 
 ### 2️⃣ Install Dependencies
@@ -160,13 +160,13 @@ Mobile-Midterm/
 
 ### 🔍 Contribution Overview
 
-![GitHub Commit Activity](https://img.shields.io/github/commit-activity/m/retreat896/MobileDev-Midterm?color=blue\&logo=github) ![Last Commit](https://img.shields.io/github/last-commit/retreat896/MobileDev-Midterm?color=green)
+![GitHub Commit Activity](https://img.shields.io/github/commit-activity/m/retreat896/MobileDev-Final?color=blue\&logo=github) ![Last Commit](https://img.shields.io/github/last-commit/retreat896/MobileDev-Final?color=green)
 
 ### 📈 Graphs & Analytics
 
-[![GitHub Graphs](https://github-readme-activity-graph.vercel.app/graph?username=retreat896\&repo=Mobile-Midterm\&theme=react-dark)](https://github.com/retreat896/MobileDev-Midterm)
+[![GitHub Graphs](https://github-readme-activity-graph.vercel.app/graph?username=retreat896\&repo=MobileDev-Final\&theme=react-dark)](https://github.com/retreat896/MobileDev-Final)
 
-[![GitHub Graphs](https://github-readme-activity-graph.vercel.app/graph?username=JMalland\&repo=Mobile-Midterm\&theme=react-dark)](https://github.com/retreat896/MobileDev-Midterm)
+[![GitHub Graphs](https://github-readme-activity-graph.vercel.app/graph?username=JMalland\&repo=MobileDev-Final\&theme=react-dark)](https://github.com/retreat896/MobileDev-Final)
 
 ---
 

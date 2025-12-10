@@ -70,10 +70,23 @@ export default class Enemy {
     }
 
     collidesWith(projectile) {
-        const dx = this.x - projectile.x+projectile.radius;
-        const dy = this.y - projectile.y+projectile.radius;
+        // Calculate center of enemy
+        const enemyCenterX = this.x + this.width / 2;
+        const enemyCenterY = this.y + this.height / 2;
+
+        // Calculate center of projectile (it is already x,y based on analysis)
+        const projCenterX = projectile.x;
+        const projCenterY = projectile.y;
+
+        const dx = enemyCenterX - projCenterX;
+        const dy = enemyCenterY - projCenterY;
         const distance = Math.sqrt(dx * dx + dy * dy);
-        return distance < this.width  + projectile.radius; 
+
+        // Simple circle collision
+        // Enemy radius ~ width/2 (20), Projectile radius ~ 5
+        const hitRadius = (this.width / 2) + projectile.radius;
+        
+        return distance < hitRadius; 
     }
 
     takeDamage(damage) {

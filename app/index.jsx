@@ -27,7 +27,11 @@ const index = () => {
 
     // Get the global properties and operations
     const { level, levelsLoaded, allLevels } = useLevel();
+<<<<<<< HEAD
     const { dataLoaded, getItem, getKeys, setItem, saveItems } = useData();
+=======
+    const { dataLoaded, getItem, getKeys, setItem } = useData();
+>>>>>>> goober
 
     const [settings, openSettings] = useState(false);
     const [stats, openStats] = useState(false);
@@ -46,11 +50,88 @@ const index = () => {
         console.log('RUNNING');
     }, []);
 
+<<<<<<< HEAD
+=======
+    /**
+     * Send the username to the server to log in, or create a user account otherwise
+     */
+    const signupOrLogin = async () => {
+        // Get the UUID from storage, if any
+        const uuid = getItem('UUID');
+        const username = getItem('Username');
+
+        // Determine if the username or UUID must be sent
+        const payload = uuid ? { uuid } : { username };
+
+        // Send Username submission to the server
+        // Check device storage for UUID to sign up or log in
+        const response = await fetch(`${API_SERVER_URL}/${getItem("UUID") ? "login" : "signup"}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(payload),
+        });
+
+        // Check server response
+        if (response.ok) {
+            // Process server response
+            const data = await response.json();
+            console.log(data.message);
+            
+            // Check for UUID returned
+            if (data.uuid) {
+                // Store the UUID in device storage
+                // Ensure it is saved
+                setItem('UUID', data.uuid, saveToAsyncStorage=true);
+            }
+            
+            // Check for JWT Token
+            if (data.token) {
+                // Store the token in device storage
+                // Ensure it is saved
+                setItem('Token', data.token, saveToAsyncStorage=true);
+            }
+        }
+    }
+
+    const fetchPlayerData = async () => {
+        // Attempt to fetch the player data from the server
+        const response = await fetch(`${API_SERVER_URL}/player/${getItem('UUID')}`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${getItem('Token')}`
+            }
+        })
+
+        // Check response
+        if (response.ok) {
+            // Get the player data
+            const data = await response.json();
+            
+            // Log any server message
+            if (data.message) console.log(data.message);
+
+            // Update the gamedata in the device storage
+            for (let key in data) {
+                // Save the player data
+                // Ensure it is saved
+                setItem(key, data[key], saveToAsyncStorage=true);
+            }
+        }
+        else {
+            console.log('Encountered an error fetching playerdata');
+        }
+    }
+
+>>>>>>> goober
     useEffect(() => {
         console.log('LOADING');
 
         // Data has been loaded
         if (dataLoaded) {
+<<<<<<< HEAD
             // Only run when settings is being opened
             // Username not being edited and doesn't match saved data
             if (settings && (noUsernameInput || username != getItem('Username'))) {
@@ -61,6 +142,24 @@ const index = () => {
                 if (!noUsernameInput) {
                     disableUsernameInput(true);
                 }
+=======
+            const savedUsername = getItem('Username');
+            const savedUUID = getItem('UUID');
+
+            // Only run when settings is being opened
+            // Username not being edited and doesn't match saved data
+            if (settings && noUsernameInput && username != savedUsername) {
+                console.log('Updating Username: ' + savedUsername);
+                changeUsername(savedUsername); // Update the username
+            }
+
+            // If there is a username attached to the account, have the user log in
+            if (savedUUID || savedUsername) {
+                // Login
+                signupOrLogin();
+                // Player data
+                fetchPlayerData();
+>>>>>>> goober
             }
 
             // Only run when stats is being opened
@@ -82,6 +181,30 @@ const index = () => {
         }
     }, [settings, stats, levelSelect]);
 
+<<<<<<< HEAD
+=======
+    // Handle input form submission, but only process username variable
+    const handleUsernameSubmit = async () => {
+        // Check if username is valid
+        const isValidUsername = (str) => {
+            return /^[a-zA-Z_]+$/.test(str);
+        };
+
+        // Action based on validity
+        if (!isValidUsername(username)) {
+            console.log(`Invalid Username: ${username}`);
+            showUsernameError(true);
+            return;
+        }
+
+        console.log(`Username Submitted: ${username}`);
+        setItem('Username', username, true); // Update the username
+        disableUsernameInput(true); // Hide username input
+
+        // TODO: Update username in server
+    }
+
+>>>>>>> goober
     const showSettings = () => {
         if (!settings) return null;
 
@@ -112,6 +235,7 @@ const index = () => {
                         theme={{ roundness: 10 }}
                         disabled={noUsernameInput}
                         label="Username"
+<<<<<<< HEAD
                         value={username}
                         submitBehavior="blurAndSubmit"
                         onChangeText={(text) => changeUsername(text)}
@@ -135,6 +259,16 @@ const index = () => {
                 </KeyboardAvoidingView>
                 {/* Edit-Username Error Dialog */}
                 <InfoDialog title="Invalid Username" info="A username may only contain a-z, A-Z, '_', and spaces. " isError={true} visible={usernameError} onConfirm={() => showUsernameError(false)} />
+=======
+                        value="Kristopher Adams"
+                        submitBehavior="blurAndSubmit"
+                        onChangeText={(text) => changeUsername(text)}
+                        onSubmitEditing={(e) => handleUsernameSubmit(e.nativeEvent.text)}
+                    />
+                </KeyboardAvoidingView>
+                {/* Edit-Username Error Dialog */}
+                <InfoDialog title="Invalid Username" info="A username may only contain a-z, A-Z and '_'" isError={true} visible={usernameError} onConfirm={() => showUsernameError(false)} />
+>>>>>>> goober
                 {/* Reset-Username Confirm Dialog */}
                 <ConfirmDialog
                     title="Reset Username"
@@ -155,7 +289,11 @@ const index = () => {
                 />
                 {/* Reset-Username Button */}
                 <View style={styles.row}>
+<<<<<<< HEAD
 
+=======
+                    
+>>>>>>> goober
                     <Button
                         compact
                         mode="text"
@@ -163,7 +301,11 @@ const index = () => {
                             console.log('Show Dialog');
                             showUsernameConfirm(true); // Show ConfirmDialog
                         }}>
+<<<<<<< HEAD
 
+=======
+                        
+>>>>>>> goober
                         Edit Username
                     </Button>
                 </View>
@@ -192,10 +334,16 @@ const index = () => {
                     renderItem={({ item }) => {
                         // Destructure item from the object
                         return (
+<<<<<<< HEAD
                             <View style={[styles.row, { justifyContent: 'flex-start' }]}>
                                 {/* Format the data label with spaces between Pascal case words */}
                                 <Text variant="bodyLarge">{item[0].replace(/([a-z])([A-Z])/g, '$1 $2')}:</Text>
                                 <Text variant="bodyLarge">{" " + item[1]}</Text>
+=======
+                            <View style={styles.row}>
+                                <Text variant="bodyLarge">{item[0]}:</Text>
+                                <Text variant="bodyLarge">{item[1]}</Text>
+>>>>>>> goober
                             </View>
                         );
                     }}
@@ -225,8 +373,13 @@ const index = () => {
                     levels={allLevels} // Uses the LevelContext allLevels
                     onSelect={(selected) => {
                         console.log('Level Selected: ' + selected.getName());
+<<<<<<< HEAD
                         level.current = selected; // Set LevelContext current level 
                         router.navigate('/GameScreen'); // No need to pass parameters to Game when can use Context
+=======
+                        level.current = selected; // Set LevelContext current level
+                        router.navigate('/game'); // No need to pass parameters to Game when can use Context
+>>>>>>> goober
                     }}
                     onChange={(level) => {
                         // Add a space, because some titles don't display the second word
