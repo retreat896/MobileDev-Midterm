@@ -13,6 +13,8 @@ export default class Player {
         this.height = height;
         this.size = size;
         this.rotation = 0;
+        this.bulletOffset = {x: 0, y: 0};
+        this.imageOffset = {x: 0, y: 0};
     }
 
     setScore(score) {
@@ -21,6 +23,27 @@ export default class Player {
 
     setRotation(angle) {
         this.rotation = angle;
+    }
+
+    setPos(x, y) {
+        this.x = x;
+        this.y = y;
+    }
+
+    setBulletOffset(x, y) {
+        this.bulletOffset = {x, y};
+    }
+
+    getBulletOffset() {
+        return this.bulletOffset || {x: 0, y: 0};
+    }
+
+    setImageOffset(x, y) {
+        this.imageOffset = {x, y};
+    }
+
+    getImageOffset() {
+        return this.imageOffset || {x: 0, y: 0};
     }
 
     /**
