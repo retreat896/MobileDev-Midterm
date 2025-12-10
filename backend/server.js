@@ -117,24 +117,27 @@ app.get("/", (req, res) => {
 
 app.post("/signup", async (req, res) => {
     try {
-        const { username, password } = req.body;
+        // Get the username from the request
+        const { username } = req.body;
+        
+        // 1. Generate 4-character random hex tag
+        // For uniqueness
+        const tag = randomBytes(8).toString("hex");
 
-        // 1. Check if user exists
-        const found = await usersCollection.findOne({ username });
+        // 2. Check if user exists
+        const found = await usersCollection.findOne({ username, tag });
 
+        // User already exists
         if (found) {
             return res.status(400).json({
                 detail: "User with this username already exists",
             });
         }
 
-        // 2. Hash Password
-        const hashedPw = await hashPassword(password);
-
         // 3. Create User Document
         const newUser = {
             username,
-            password: hashedPw,
+            tag,
 			uuid: new uuid(),
             created_at: new Date(),
         };
@@ -142,9 +145,10 @@ app.post("/signup", async (req, res) => {
         // 4. Insert into MongoDB
         await usersCollection.insertOne(newUser);
 
+        // Return the UUID
         res.status(201).json({
             message: "User created successfully",
-            username,
+            uuid,
         });
     } catch (e) {
         console.error("Signup error:", e);
@@ -154,19 +158,24 @@ app.post("/signup", async (req, res) => {
 
 app.post("/login", async (req, res) => {
     try {
-        const { username, password } = req.body;
+        // Get the UUID from the request body
+        const { uuid } = req.body;
 
-        const user = await usersCollection.findOne({ username: username });
+        // Verify user exists
+        const user = await usersCollection.findOne({ uuid });
 
-        if (!user || !(await verifyPassword(password, user.password))) {
-            return res.status(401).json({
-                detail: "Incorrect username or password",
+        // User does not exist
+        if (!user) {
+            return res.status(404).json({
+                detail: "User does not exist",
             });
         }
 
+        // Create a JWT access token
         const accessToken = createJwtToken({ sub: user.uuid });
 
-        res.json({ token: accessToken });
+        // Return the access token
+        res.json({ message: "Logged in successfully", token: accessToken });
     } catch (e) {
         console.error("Login error:", e);
         res.status(500).json({ detail: "Internal server error" });

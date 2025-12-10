@@ -46,16 +46,100 @@ const index = () => {
         console.log('RUNNING');
     }, []);
 
+    /**
+     * Send the username to the server to log in, or create a user account otherwise
+     */
+    const signupOrLogin = async () => {
+        // Get the UUID from storage, if any
+        const uuid = getItem('UUID');
+        const username = getItem('Username');
+
+        // Determine if the username or UUID must be sent
+        const payload = uuid ? { uuid } : { username };
+
+        // Send Username submission to the server
+        // Check device storage for UUID to sign up or log in
+        const response = await fetch(`${API_SERVER_URL}/${getItem("UUID") ? "login" : "signup"}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(payload),
+        });
+
+        // Check server response
+        if (response.ok) {
+            // Process server response
+            const data = await response.json();
+            console.log(data.message);
+            
+            // Check for UUID returned
+            if (data.uuid) {
+                // Store the UUID in device storage
+                // Ensure it is saved
+                setItem('UUID', data.uuid, saveToAsyncStorage=true);
+            }
+            
+            // Check for JWT Token
+            if (data.token) {
+                // Store the token in device storage
+                // Ensure it is saved
+                setItem('Token', data.token, saveToAsyncStorage=true);
+            }
+        }
+    }
+
+    const fetchPlayerData = async () => {
+        // Attempt to fetch the player data from the server
+        const response = await fetch(`${API_SERVER_URL}/player/${getItem('UUID')}`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${getItem('Token')}`
+            }
+        })
+
+        // Check response
+        if (response.ok) {
+            // Get the player data
+            const data = await response.json();
+            
+            // Log any server message
+            if (data.message) console.log(data.message);
+
+            // Update the gamedata in the device storage
+            for (let key in data) {
+                // Save the player data
+                // Ensure it is saved
+                setItem(key, data[key], saveToAsyncStorage=true);
+            }
+        }
+        else {
+            console.log('Encountered an error fetching playerdata');
+        }
+    }
+
     useEffect(() => {
         console.log('LOADING');
 
         // Data has been loaded
         if (dataLoaded) {
+            const savedUsername = getItem('Username');
+            const savedUUID = getItem('UUID');
+
             // Only run when settings is being opened
             // Username not being edited and doesn't match saved data
-            if (settings && noUsernameInput && username != getItem('Username')) {
-                console.log('Updating Username: ' + getItem('Username'));
-                changeUsername(getItem('Username')); // Update the username
+            if (settings && noUsernameInput && username != savedUsername) {
+                console.log('Updating Username: ' + savedUsername);
+                changeUsername(savedUsername); // Update the username
+            }
+
+            // If there is a username attached to the account, have the user log in
+            if (savedUUID || savedUsername) {
+                // Login
+                signupOrLogin();
+                // Player data
+                fetchPlayerData();
             }
 
             // Only run when stats is being opened
@@ -76,6 +160,27 @@ const index = () => {
             }
         }
     }, [settings, stats, levelSelect]);
+
+    // Handle input form submission, but only process username variable
+    const handleUsernameSubmit = async () => {
+        // Check if username is valid
+        const isValidUsername = (str) => {
+            return /^[a-zA-Z_]+$/.test(str);
+        };
+
+        // Action based on validity
+        if (!isValidUsername(username)) {
+            console.log(`Invalid Username: ${username}`);
+            showUsernameError(true);
+            return;
+        }
+
+        console.log(`Username Submitted: ${username}`);
+        setItem('Username', username, true); // Update the username
+        disableUsernameInput(true); // Hide username input
+
+        // TODO: Update username in server
+    }
 
     const showSettings = () => {
         if (!settings) return null;
@@ -110,21 +215,8 @@ const index = () => {
                         value="Kristopher Adams"
                         submitBehavior="blurAndSubmit"
                         onChangeText={(text) => changeUsername(text)}
-                        onSubmitEditing={(submit) => {
-                            // Check if username is valid
-                            const isValidUsername = (str) => {
-                                return /^[a-zA-Z_]+$/.test(str);
-                            };
-                            let text = submit.nativeEvent.text;
-                            if (isValidUsername(text)) {
-                                console.log(`Username Submitted: ${text}`);
-                                setItem('Username', text, true); // Update the username
-                                disableUsernameInput(true); // Hide username input
-                            } else {
-                                console.log(`Invalid Username: ${text}`);
-                                showUsernameError(true);
-                            }
-                        }}></TextInput>
+                        onSubmitEditing={(e) => handleUsernameSubmit(e.nativeEvent.text)}
+                    />
                 </KeyboardAvoidingView>
                 {/* Edit-Username Error Dialog */}
                 <InfoDialog title="Invalid Username" info="A username may only contain a-z, A-Z and '_'" isError={true} visible={usernameError} onConfirm={() => showUsernameError(false)} />
