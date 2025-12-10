@@ -3,7 +3,7 @@
  */
 
 // modules/game/EnemySpawner.js
-import Enemy from '@modules/game/Enemy';
+import Enemy from '@modules/game/enemy';
 
 export class EnemySpawner {
 	// Set everything private because they shouldn't be managed outside the class interactions
