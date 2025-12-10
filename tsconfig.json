@@ -16,8 +16,11 @@
       "@styles/*": [
         "styles/*"
       ],
-      "@components/*":[
+      "@components/*": [
         "components/*"
+      ],
+      "@hooks/*": [
+        "hooks/*"
       ]
     }
   },
@@ -25,7 +28,14 @@
     "app/**/*",
     "assets/**/*",
     "modules/**/*",
-    "styles/**/*"
-, "components/menu", "components/Wrapper.jsx", "components/MainMenu.jsx", "components/LevelSelect.jsx", "components/CoolerButton.jsx"  ],
+    "styles/**/*",
+    "hooks/**/*",
+    "components/**/*",
+    "components/menu",
+    "components/Wrapper.jsx",
+    "components/MainMenu.jsx",
+    "components/LevelSelect.jsx",
+    "components/CoolerButton.jsx"
+  ],
   "extends": "expo/tsconfig.base"
 }
