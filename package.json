@@ -8,7 +8,7 @@
   "scripts": {
     "start:api": "npm run start --workspaces api",
     "start:app": "expo start --tunnel",
-    "start": "start \"Expo App\" npm run start:app && start \"API Server\" npm run start:api",
+    "start": "start \"Ngrok\" ngrok http --url=mullet-deep-explicitly.ngrok-free.app 8082 && start \"Expo App\" npm run start:app && start \"API Server\" npm run start:api",
     "prebuild": "expo prebuild --clean",
     "android": "expo run:android",
     "ios": "expo run:ios"
@@ -19,6 +19,7 @@
     "@react-native-async-storage/async-storage": "2.2.0",
     "@react-native-vector-icons/material-design-icons": "^12.3.0",
     "babel-plugin-module-resolver": "^5.0.2",
+    "dotenv": "^17.2.3",
     "expo": "54.0.20",
     "expo-constants": "~18.0.9",
     "expo-font": "~14.0.9",

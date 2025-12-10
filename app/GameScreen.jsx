@@ -44,7 +44,7 @@ export default function GameScreen() {
 		const score = player.getScore();
 
 		// Save the game data to the app storage
-		setItem('Score', score, true);			
+		setItem('Score', score, true);
 		setItem('TimeElapsed', duration, true);
 		
 		// Update TotalTimePlayed
