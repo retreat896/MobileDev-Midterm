@@ -13,7 +13,7 @@ import { CollisionDetector } from '@modules/game/CollisionDetector';
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('screen');
 
 const PLAYER_START_HP = 10;
-const PLAYER = new Player(SCREEN_WIDTH - 100, SCREEN_HEIGHT / 2, PLAYER_START_HP);
+// const PLAYER = new Player(SCREEN_WIDTH - 100, SCREEN_HEIGHT / 2, PLAYER_START_HP);
 
 export function useGameLoop() {
 	const [gameState, setGameState] = useState({
@@ -22,15 +22,56 @@ export function useGameLoop() {
 		paused: false,		// Pause game indicator
 	});
 
-	const playerRef = useRef(PLAYER);
+	const playerRef = useRef(null);
+	if (!playerRef.current) {
+		playerRef.current = new Player(SCREEN_WIDTH - 100, SCREEN_HEIGHT / 2, PLAYER_START_HP);
+	}
 	const enemySpawnerRef = useRef(null);
 	const fireIntervalRef = useRef(null);
 	const startTimeRef = useRef(Date.now());
 
+	// Generate a path for the level
+	const generateComplexPath = (startX, startY, turns) => {
+		let path = [{ x: startX, y: startY }];
+		let currentX = startX;
+		let currentY = startY;
+		const segmentWidth = SCREEN_WIDTH / (turns + 1);
+
+		for (let i = 0; i < turns; i++) {
+			// Move forward
+			currentX += segmentWidth;
+			// Random Y within bounds (padding 50)
+			currentY = Math.random() * (SCREEN_HEIGHT - 100) + 50;
+			path.push({ x: currentX, y: currentY });
+		}
+
+		// Final point off screen
+		path.push({ x: SCREEN_WIDTH + 100, y: currentY });
+		return path;
+	}
+
+	const levelPathRef = useRef(null);
+
 	// Execute when loaded
 	useEffect(() => {
+		// Generate the path once
+		// Default start at random Y on left side if not specified (though we use 0,0 mostly for offscreen spawn)
+		let startY = Math.random() * (SCREEN_HEIGHT - 100);
+		levelPathRef.current = generateComplexPath(0, startY, 5);
+
 		// Initialize the EnemySpawner
 		enemySpawnerRef.current = new EnemySpawner(SCREEN_HEIGHT, (enemy) => {
+			// Apply the path
+			if (levelPathRef.current) {
+				enemy.setPath(levelPathRef.current);
+				// Set initial position to start of path
+				enemy.x = levelPathRef.current[0].x;
+				enemy.y = levelPathRef.current[0].y;
+			} else {
+				// Fallback
+				enemy.y = Math.random() * (SCREEN_HEIGHT - 100);
+			}
+
 			// Include the previous gamestate, but overwrite 'enemies' to add the spawned enemy 
 			setGameState(prev => ({
 				...prev,
@@ -128,8 +169,8 @@ export function useGameLoop() {
 	 * Update the game/render state
 	 */
 	const updateGame = useCallback(() => {
-		// Quit if the game is paused
-		if (gameState.paused) return;
+		// Quit if the game is paused or player is dead
+		if (gameState.paused || playerRef.current.getHp() <= 0) return;
 
 		// Update the game state on each execution
 		setGameState(prev => {
@@ -192,7 +233,7 @@ export function useGameLoop() {
 		return Date.now() - startTimeRef.current;
 	}, []);
 
-	console.log(playerRef);
+
 
 	// Make game-loop data available to components
 	return {

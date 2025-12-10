@@ -49,7 +49,7 @@ export default function GameOver() {
             style={styles.background}
             resizeMode="cover"
         >
-            <Wrapper style={styles.container}>
+            <Wrapper onClose={() => router.dismissAll()} style={styles.container}>
                 <View style={styles.content}>
                     <Card style={styles.card}>
                         <Card.Content>
@@ -75,7 +75,7 @@ export default function GameOver() {
                     <View style={styles.buttonContainer}>
                         <Button
                             mode="contained"
-                            onPress={() => router.replace('/game')}
+                            onPress={() => router.replace('/GameScreen')}
                             style={styles.button}
                             icon="restart"
                         >

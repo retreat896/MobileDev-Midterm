@@ -33,10 +33,35 @@ export default class Enemy {
         this.#hp = this.#maxHp;
 
         this.active = true;
+        this.path = null;
+        this.currentPathIndex = 0;
+    }
+
+    setPath(path) {
+        this.path = path;
+        this.currentPathIndex = 0;
     }
 
     update() {
-        this.x += this.#speed;
+        if (this.path && this.currentPathIndex < this.path.length) {
+            const target = this.path[this.currentPathIndex];
+            const dx = target.x - this.x;
+            const dy = target.y - this.y;
+            const distance = Math.sqrt(dx * dx + dy * dy);
+
+            if (distance < this.#speed) {
+                this.x = target.x;
+                this.y = target.y;
+                this.currentPathIndex++;
+            } else {
+                const angle = Math.atan2(dy, dx);
+                // this.rotation = angle * (180 / Math.PI); // If rotation is needed
+                this.x += Math.cos(angle) * this.#speed;
+                this.y += Math.sin(angle) * this.#speed;
+            }
+        } else {
+            this.x += this.#speed;
+        }
     }
 
     /**

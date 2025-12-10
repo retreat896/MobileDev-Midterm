@@ -3,7 +3,7 @@
  */
 
 // app/game.jsx (or your game screen file)
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { StyleSheet, Dimensions, StatusBar, ImageBackground } from 'react-native';
 import { GameLoop } from 'react-native-game-engine';
 import { router } from 'expo-router';
@@ -18,6 +18,7 @@ const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('screen');
 
 export default function GameScreen() {
 	const [loaded, setLoaded] = useState(false); // Use this to start the game after loading
+	const gameEnded = useRef(false); // Prevent multiple game over triggers
 	const { level } = useLevel();
 
 	const { 
@@ -76,8 +77,9 @@ export default function GameScreen() {
 
 	// Execute when the game ends 
 	useEffect(() => {
-		if (isGameOver) {
-			saveGamedata().then(() => router.push('/GameOver'));
+		if (isGameOver && !gameEnded.current) {
+			gameEnded.current = true;
+			saveGamedata().then(() => router.replace('/GameOver'));
 		}
 	}, [isGameOver, player.getScore(), getGameDuration]);
 

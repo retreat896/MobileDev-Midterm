@@ -13,8 +13,6 @@ import { StatusBar } from 'expo-status-bar';
 import { useLevel } from '@components/LevelContext';
 import { useData, getKeys } from '@components/DataContext';
 
-const API_SERVER_URL = process.env.API_SERVER_URL;
-
 // router.push(path): Navigates to a new screen and adds it to the navigation stack.
 // router.replace(path): Replaces the current screen in the navigation stack with the new one.
 // router.back(): Navigates back to the previous screen.
