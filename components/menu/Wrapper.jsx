@@ -11,9 +11,9 @@ const Wrapper = ({ children, title, subtitle, onOpen, onClose, style }) => {
     }, []);
 
     return (
-        <Dialog visible={true} style={[style, wrapperStyles.container]} onDismiss={onClose}>
+        <Dialog visible={true} style={[style, wrapperStyles.container]} onDismiss={onClose ? onClose : () => {}}>
             <Dialog.Actions style={wrapperStyles.close}>
-                <FAB icon="close" onPress={onClose} />
+                { onClose && <FAB icon="close" onPress={onClose} /> }
             </Dialog.Actions>
             <Dialog.Title style={wrapperStyles.title}>{title}</Dialog.Title>
             <Dialog.Content style={wrapperStyles.content}>{children}</Dialog.Content>

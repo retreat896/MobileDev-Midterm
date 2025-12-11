@@ -57,23 +57,13 @@ const validateUser = async (req, res, next) => {
 // ----- ROUTES -----
 app.post("/player", async (req, res) => {
     try {
-        // Get the username from the request
+        // 1. Get the username from the request
         const { username } = req.body;
 
-        // 2. Check if user exists
-        const found = await usersCollection.findOne({ username });
-
-        // User already exists
-        if (found) {
-            return res.status(409).json({
-                detail: "User with this username already exists",
-            });
-        }
-
-        // 3. Create a new UUID
+        // 2. Create a new UUID
         const UUID = uuid();
 
-        // 4. Create User Document
+        // 3. Create User Document
         const newUser = {
             username,
 			UUID,
@@ -81,7 +71,7 @@ app.post("/player", async (req, res) => {
             updated_at: new Date(),
         };
 
-        // 5. Insert into MongoDB
+        // 4. Insert into MongoDB
         // Insert the User document
         await usersCollection.insertOne(newUser);
         // Insert a blank playerdata document

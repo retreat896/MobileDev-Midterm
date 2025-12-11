@@ -19,12 +19,16 @@ const ConfirmDialog = ({ title, info, isError, visible, denyText, onDeny, confir
                 </Dialog.Content>
 
                 <Dialog.Actions>
-                    <Button onPress={() => { onDeny(); }}>
-                        {denyText || "Cancel"}
-                    </Button>
-                    <Button onPress={() => { onConfirm(); }}>
-                        {confirmText || "OK"}
-                    </Button>
+                    {onDeny && (
+                        <Button onPress={() => { onDeny(); }}>
+                            {denyText || "Cancel"}
+                        </Button>
+                    )}
+                    {onConfirm && (
+                        <Button onPress={() => { onConfirm(); }}>
+                            {confirmText || "OK"}
+                        </Button>
+                    )}
                 </Dialog.Actions>
             </Dialog>
         </Portal>
