@@ -1,7 +1,6 @@
-import { View, Platform, useWindowDimensions, KeyboardAvoidingView, KeyboardAvoidingViewBase, KeyboardAvoidingViewComponent, ImageBackground, FlatList } from 'react-native';
-import { Modal, Dialog, Text, Button, Chip, Card, TextInput, PaperProvider, FAB, Portal } from 'react-native-paper';
-import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
-import React, { useEffect, useState, useRef } from 'react';
+import { View, Platform, useWindowDimensions, KeyboardAvoidingView, ImageBackground, FlatList } from 'react-native';
+import { Text, Button, TextInput } from 'react-native-paper';
+import React, { useEffect, useState } from 'react';
 import { useRouter } from 'expo-router';
 import { styles } from '@styles/main';
 import LevelSelect from '@components/menu/LevelSelect';
@@ -11,13 +10,8 @@ import ConfirmDialog from '@components/menu/ConfirmDialog';
 import Wrapper from '@components/menu/Wrapper';
 import { StatusBar } from 'expo-status-bar';
 import { useLevel } from '@components/LevelContext';
-import { useData, getKeys } from '@components/DataContext';
+import { useData } from '@components/DataContext';
 import Constants from "expo-constants";
-
-// router.push(path): Navigates to a new screen and adds it to the navigation stack.
-// router.replace(path): Replaces the current screen in the navigation stack with the new one.
-// router.back(): Navigates back to the previous screen.
-// router.navigate({ pathname: string, params: object }): Navigates to a specific path with parameters.
 
 // DOTENV
 const { API_SERVER_URL } = Constants.expoConfig.extra;
@@ -36,10 +30,9 @@ const index = () => {
     const [settings, openSettings] = useState(false);
     const [stats, openStats] = useState(false);
     const [levelSelect, openLevelSelect] = useState(false);
-    const [noUsernameInput, disableUsernameInput] = useState(true);
     const [forceUsername, setForceUsername] = useState(false);
     const [usernameError, showUsernameError] = useState(false);
-    const [username, changeUsername] = useState('');
+    const [username, setUsername] = useState(null);
     const [usernameConfirm, showUsernameConfirm] = useState(false);
     const [playerStats, setPlayerStats] = useState(null);
 
@@ -90,8 +83,6 @@ const index = () => {
             
             // The user was required to submit a username
             if (forceUsername) {
-                // Prevent editing username input
-                disableUsernameInput(true);
                 // Disable the forced-username input
                 setForceUsername(false);
                 // Hide the username dialog
@@ -165,6 +156,7 @@ const index = () => {
 
     // Execute as soon as the data loads
     useEffect(() => {
+        console.log("Loading Data");
         if (!dataLoaded) return;
 
         // Get the stored Username
@@ -183,6 +175,16 @@ const index = () => {
             setForceUsername(true);
             showUsernameConfirm(true);
         }
+        // Fetch player data if the player is registered
+        else {
+            console.log("Applying Stored Username");
+            // Apply the saved username
+            setUsername(getItem('Username'));
+
+            console.log("Fetching Server Data");
+            // Update Player data
+            fetchPlayerData();
+        }
     }, [dataLoaded]);
 
     // Execute when one of the menu options is changed
@@ -191,22 +193,6 @@ const index = () => {
 
         // Data has been loaded
         if (dataLoaded) {
-            const savedUsername = getItem('Username');
-            const savedUUID = getItem('UUID');
-
-            // Only run when settings is being opened
-            // Username not being edited and doesn't match saved data
-            if (settings && (noUsernameInput || username != savedUsername)) {
-                console.log('Updating Username: ' + savedUsername);
-                changeUsername(savedUsername); // Update the username
-            }
-
-            // Fetch player data if the player is registered
-            if (savedUUID != "") {
-                // Update Player data
-                fetchPlayerData();
-            }
-
             // Only run when stats is being opened
             if (stats) {
                 // Empty array to store stats
@@ -216,9 +202,6 @@ const index = () => {
                 for (let key of getKeys('gamedata')) {
                     stats.push([key, getItem(key)]);
                 }
-
-                console.log('New Stats');
-                console.log(stats);
 
                 // Update the player stats
                 setPlayerStats(stats);
@@ -238,6 +221,11 @@ const index = () => {
         // Action based on validity
         if (!isValidUsername(username)) {
             console.log(`Invalid Username: ${username}`);
+            
+            // Reset to valid username
+            setUsername(getItem('Username'));
+            
+            // Display username error
             showUsernameError(true);
             return;
         }
@@ -252,7 +240,6 @@ const index = () => {
         if (!settings) return null;
 
         return (
-            <Portal>
             <Wrapper
                 title={wrapperTitle}
                 style={styles.wrapper}
@@ -277,14 +264,34 @@ const index = () => {
                         left={<TextInput.Icon disabled icon="account-outline" />}
                         style={{ width: '50%', alignSelf: 'center' }}
                         theme={{ roundness: 10 }}
-                        disabled={noUsernameInput}
                         label="Username"
                         value={username}
+                        autoCorrect={false} // THIS CAUSES A TEXT DUPLICATION BUG!
                         submitBehavior="blurAndSubmit"
-                        onChangeText={(text) => changeUsername(text)}
-                        onSubmitEditing={(e) => handleUsernameSubmit(e.nativeEvent.text)}
+                        onChangeText={setUsername}
+                        onSubmitEditing={handleUsernameSubmit}
                     />
                 </KeyboardAvoidingView>
+                {/* UUID Display */}
+                { getItem('UUID') &&
+                    <View style={{ marginTop: 10, alignContent: 'center', ...styles.row }}>
+                        <TextInput
+                            style={{ width: '50%', alignSelf: 'center' }}
+                            theme={{ roundness: 10 }}
+                            label="UUID"
+                            value={getItem('UUID')}
+                            editable={false}
+                            selectTextOnFocus={true}
+                        />
+                    </View>
+                }
+                {/* About The Authors -- Additional Information */}
+                <Button style={{ ...styles.row, position: 'relative', top: '90%'}} mode="text" onPress={() => {
+                    openSettings(false);
+                    router.navigate("/info");
+                }}>
+                    About The Authors
+                </Button>
                 {/* Edit-Username Error Dialog */}
                 <InfoDialog 
                     title="Invalid Username"
@@ -296,36 +303,21 @@ const index = () => {
                 {/* Reset-Username Confirm Dialog */}
                 <ConfirmDialog
                     title={ (forceUsername ? 'Enter' : 'Reset') + "Username" }
-                    info={forceUsername ? "You must enter a username to continue. You may change this in settings at any time." : "Are you sure you want to change this?"}
+                    info="You must enter a username to continue. You may change this in settings at any time."
                     visible={usernameConfirm}
                     onDeny={forceUsername ? null : () => {
                         console.log('Cancelled Username change.');
-                        disableUsernameInput(true);
                         // Hide username input
                         showUsernameConfirm(false); // Hide ConfirmDialog
                     }}
                     onConfirm={() => {
                         console.log('Enable Username Input');
-                        disableUsernameInput(false);
                         // Enable username input
                         showUsernameConfirm(false); // Hide ConfirmDialog
                     }}
                 />
                 {/* Reset-Username Button */}
-                <View style={styles.row}>
-                    <Button
-                        compact
-                        mode="text"
-                        onPress={() => {
-                            console.log('Show Dialog');
-                            showUsernameConfirm(true); // Show ConfirmDialog
-                        }}>
-                        
-                        Edit Username
-                    </Button>
-                </View>
             </Wrapper>
-            </Portal>
         );
     };
 
@@ -384,6 +376,7 @@ const index = () => {
                         console.log('Level Selected: ' + selected.getName());
                         level.current = selected; // Set LevelContext current level
                         router.navigate('/GameScreen'); // No need to pass parameters to Game when can use Context
+                        openLevelSelect(false); // Close the level select
                     }}
                     onChange={(level) => {
                         // Add a space, because some titles don't display the second word
@@ -404,8 +397,6 @@ const index = () => {
     }
 
     return (
-        // <SafeAreaProvider>
-        //     <SafeAreaView style={{ flex: 1 }}>
         <View style={styles.mainView}>
             <StatusBar hidden={true} />
             <ImageBackground
@@ -416,15 +407,11 @@ const index = () => {
             {/* <Text variant="displaySmall" style={styles.username}>Welcome {username !== '' ? username : 'John Doe'}!</Text> */}
             <MainMenu onPlay={() => openLevelSelect(true)} onSettings={() => openSettings(true)} onStats={() => openStats(true)} />
 
-            <FAB icon="information" style={styles.info} onPress={() => router.navigate('/info')}></FAB>
-
             {/* Toggle the Modal display per each option */}
             {showSettings()}
             {showLevelSelect()}
             {showStats()}
         </View>
-        //     </SafeAreaView>
-        // </SafeAreaProvider>
     );
 };
 

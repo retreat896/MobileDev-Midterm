@@ -7,6 +7,9 @@ import { Button, FAB } from 'react-native-paper';
 const info = () => {
     return (
         <View style={styles.screen}>
+            <View style={{ position: 'absolute', top: '2%', left: '2%' }}>
+                <FAB icon="backburger" onPress={()=>router.navigate("/")}/>
+            </View>
             <View style={styles.flexColumn}>
                 <Text style={styles.text}>CS3720 Mobile Applications Development</Text>
                 <View style={styles.flexColumn}>
@@ -15,8 +18,6 @@ const info = () => {
                 </View>
                 <Text style={styles.text}>Kristopher Adams | Jacob Malland</Text>
                 <Text style={styles.text}>Professor: Dr. Abraham Aldaco</Text>
-                <Text variant="labelSmall">Kristopher Adams | Jacob Malland</Text>
-                {/* <FAB icon="door-open" onPress={()=>router.navigate("/")}></FAB> */}
             </View>
         </View>
     );
