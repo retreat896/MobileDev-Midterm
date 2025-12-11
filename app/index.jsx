@@ -259,7 +259,7 @@ const index = () => {
                     console.log('Settings Opened');
                     setWrapperTitle('Settings');
                 }}
-                onClose={forceUsername ? null : () => {
+                onClose={forceUsername ? () => {} : () => {
                     console.log('Settings Closed');
                     openSettings(false);
                     setWrapperTitle('');
@@ -297,7 +297,7 @@ const index = () => {
                     title={ (forceUsername ? 'Enter' : 'Reset') + "Username" }
                     info={forceUsername ? "You must enter a username to continue. You may change this in settings at any time." : "Are you sure you want to change this?"}
                     visible={usernameConfirm}
-                    onDeny={forceUsername ? null : () => {
+                    onDeny={forceUsername ? () => {} : () => {
                         console.log('Cancelled Username change.');
                         disableUsernameInput(true);
                         // Hide username input
