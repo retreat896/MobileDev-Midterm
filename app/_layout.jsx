@@ -38,7 +38,8 @@ export default function RootLayout() {
                                     headerShown: false,
                                     detachPreviousScreen: true,
                                     unmountOnBlur: true,
-                                }}></Stack>
+                                }}
+                            />
                         </DataProvider>
                     </LevelProvider>
                 </PaperProvider>

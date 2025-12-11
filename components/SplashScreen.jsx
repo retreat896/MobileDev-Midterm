@@ -1,11 +1,21 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { View, Image, Animated, StyleSheet, Dimensions } from 'react-native';
+import { Text } from 'react-native-paper'; 
 
 const SplashScreen = ({ onFinish }) => {
     const fadeAnim = useRef(new Animated.Value(0)).current;
+    const [stage, setStage] = useState(1);
 
     useEffect(() => {
-        Animated.sequence([
+        if (stage > 3) {
+            onFinish();
+            return;
+        }
+
+        // Reset animation value to 0 at the start of each stage
+        fadeAnim.setValue(0);
+
+        const anim = Animated.sequence([
             // Fade In
             Animated.timing(fadeAnim, {
                 toValue: 1,
@@ -20,21 +30,41 @@ const SplashScreen = ({ onFinish }) => {
                 duration: 1000,
                 useNativeDriver: true,
             }),
-        ]).start(() => {
-            if (onFinish) {
-                onFinish();
-            }
-        });
-    }, [fadeAnim, onFinish]);
+        ])
+        
+        anim.start(() => {
+            console.log("Stage " + stage + " completed");
+            setStage(s => s + 1);
+        })
+
+        return () => anim.stop();
+    }, [stage]);
 
     return (
         <View style={styles.container}>
             <Animated.View style={{ opacity: fadeAnim }}>
-                <Image
-                    source={require('../assets/uwp.png')}
-                    style={styles.logo}
-                    resizeMode="contain"
-                />
+                {stage == 1 && 
+                    <View style={styles.flexColumn}>
+                        <Text style={styles.text}>UW Platteville</Text>
+                        <Image
+                            source={require('../assets/uwp.png')}
+                            style={styles.logo}
+                            resizeMode="contain"
+                        />
+                    </View>
+                }
+                {stage == 2 && 
+                    <View style={styles.flexColumn}>
+                        <Text style={styles.text}>CS3720 Mobile Applications Development</Text>
+                        <Text style={styles.text}>Professor: Dr. Abraham Aldaco</Text>
+                    </View>
+                }
+                {stage == 3 && 
+                    <View style={styles.flexColumn}>
+                        <Text style={styles.text}>Developed By:</Text>
+                        <Text style={styles.text}>Kristopher Adams | Jacob Malland</Text>
+                    </View>
+                }
             </Animated.View>
         </View>
     );
@@ -56,6 +86,20 @@ const styles = StyleSheet.create({
     logo: {
         width: 200,
         height: 200,
+    },
+    flexColumn: {
+        flexDirection: 'column',
+        justifyContent: 'center',
+        alignItems: 'center',
+        margin: 10,
+    },
+    text: {
+        fontSize: 20,
+        fontFamily: 'system-ui',
+        color:"white",
+        green:{
+            color: 'green'
+        }
     },
 });
 
