@@ -49,24 +49,33 @@ const index = () => {
     }, []);
 
     /**
-     * Send the username to the server to log in, or create a user account otherwise
+     * Register the player with the server, or update their username
+     * @example
+     * 
+     * // Player name is changed or initialized
+     * handleUsernameSubmit(newUsername) // Verifies valid username syntax
+     * /// Above function calls this:
+     * 
+     * // Update with server
+     * await registerOrUpdateName();
+     * 
+     * // Log the updated username, and print unique identifier
+     * console.log(getItem('UUID'));
+     * console.log(getItem('Username'));
+     * 
      */
-    const signupOrLogin = async () => {
-        // Get the UUID from storage, if any
+    const registerOrUpdateName = async () => {
+        // Get the UUID/Username from storage, if any
         const uuid = getItem('UUID');
         const username = getItem('Username');
 
-        // Determine if the username or UUID must be sent
-        const payload = uuid ? { uuid } : { username };
-
-        // Send Username submission to the server
-        // Check device storage for UUID to sign up or log in
-        const response = await fetch(`${API_SERVER_URL}/${getItem("UUID") ? "login" : "signup"}`, {
-            method: 'POST',
+        // Send Username submission to the server, or update the player's username
+        const response = await fetch(`${API_SERVER_URL}/player/${uuid ? uuid + '/name' : ''}`, {
+            method: uuid ? 'PUT' : 'POST',
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify(payload),
+            body: JSON.stringify({ username }),
         });
 
         // Check server response
@@ -81,25 +90,34 @@ const index = () => {
                 // Ensure it is saved
                 setItem('UUID', data.uuid, saveToAsyncStorage=true);
             }
-            
-            // Check for JWT Token
-            if (data.token) {
-                // Store the token in device storage
-                // Ensure it is saved
-                setItem('Token', data.token, saveToAsyncStorage=true);
-            }
+        }
+        else {
+            console.error(`Failed to register or update player name.`);
         }
     }
 
+    /**
+     * Update player statistics from server
+     * Otherwise use existing stored values (by default, defaults.json)
+     * @example
+     * 
+     * // When app opened, update stats to match server
+     * 
+     * // Update with server
+     * await fetchPlayerData();
+     * 
+     * // Log the latest HighScore and LongestGame values
+     * console.log(getItem('HighScore'));
+     * console.log(getItem('LongestGame'));
+     */
     const fetchPlayerData = async () => {
         // Attempt to fetch the player data from the server
         const response = await fetch(`${API_SERVER_URL}/player/${getItem('UUID')}`, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
-                'Authorization': `Bearer ${getItem('Token')}`
             }
-        })
+        });
 
         // Check response
         if (response.ok) {
@@ -136,11 +154,9 @@ const index = () => {
                 changeUsername(savedUsername); // Update the username
             }
 
-            // If there is a username attached to the account, have the user log in
-            if (savedUUID || savedUsername) {
-                // Login
-                signupOrLogin();
-                // Player data
+            // Fetch player data if the player is registered
+            if (savedUUID != "") {
+                // Update Player data
                 fetchPlayerData();
             }
 
@@ -163,25 +179,33 @@ const index = () => {
         }
     }, [settings, stats, levelSelect]);
 
-    // Handle input form submission, but only process username variable
-    const handleUsernameSubmit = async () => {
+    /**
+     * Update the stored player name, then update in server
+     * @param {string} name The submitted name value 
+     * @returns 
+     */
+    const handleUsernameSubmit = async (name) => {
         // Check if username is valid
         const isValidUsername = (str) => {
             return /^[a-zA-Z_]+$/.test(str);
         };
 
         // Action based on validity
-        if (!isValidUsername(username)) {
-            console.log(`Invalid Username: ${username}`);
+        if (!isValidUsername(name)) {
+            console.log(`Invalid Username: ${name}`);
             showUsernameError(true);
             return;
         }
 
-        console.log(`Username Submitted: ${username}`);
-        setItem('Username', username, true); // Update the username
+        console.log(`Username Submitted: ${name}`);
+
+        // Update the username
+        // Ensure it is saved
+        setItem('Username', name, saveToAsyncStorage=true);
         disableUsernameInput(true); // Hide username input
 
-        // TODO: Update username in server
+        // Update the player name (using getItem('Username'))
+        registerOrUpdateName();
     }
 
     const showSettings = () => {
