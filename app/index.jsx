@@ -90,6 +90,8 @@ const index = () => {
             
             // The user was required to submit a username
             if (forceUsername) {
+                // Prevent editing username input
+                disableUsernameInput(true);
                 // Disable the forced-username input
                 setForceUsername(false);
                 // Hide the username dialog
@@ -242,8 +244,6 @@ const index = () => {
         
         console.log(`Username Submitted: ${username}`);
         
-        disableUsernameInput(true); // Hide username input
-        
         // Update the player name (using getItem('Username'))
         registerOrUpdateName();
     }
@@ -259,7 +259,7 @@ const index = () => {
                     console.log('Settings Opened');
                     setWrapperTitle('Settings');
                 }}
-                onClose={forceUsername ? () => {} : () => {
+                onClose={forceUsername ? null : () => {
                     console.log('Settings Closed');
                     openSettings(false);
                     setWrapperTitle('');
@@ -297,7 +297,7 @@ const index = () => {
                     title={ (forceUsername ? 'Enter' : 'Reset') + "Username" }
                     info={forceUsername ? "You must enter a username to continue. You may change this in settings at any time." : "Are you sure you want to change this?"}
                     visible={usernameConfirm}
-                    onDeny={forceUsername ? () => {} : () => {
+                    onDeny={forceUsername ? null : () => {
                         console.log('Cancelled Username change.');
                         disableUsernameInput(true);
                         // Hide username input
