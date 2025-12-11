@@ -12,32 +12,44 @@ export const styles = StyleSheet.create({
         backgroundColor: '#1c1c1cff',
         borderWidth: 1,
     },
-    wrapper: {
-    },
+    // UNIMPLEMENTEED STYLE 
+    // wrapper: {
+    // }, 
     row: {
         flexDirection: 'row',
         justifyContent: 'center',
         alignItems: 'center',
     },
-    debug: {
-        borderColor: 'blue',
-    },
-    portal: {
-        width: '100%',
-    },
-    usernameModal: {
-        position: 'absolute',
+    //                                      UNIMPLEMENTED STYLE
+    // debug: {
+    //     borderColor: 'blue',
+    // },
+    //                                      UNIMPLEMENTED STYLE
+    // portal: {
+    //     width: '100%',
+    // },
+    dialog: {
+        width: '66%',
+        height: 'auto',
+        flexDirection: 'column',
         justifyContent: 'center',
-        marginHorizontal: '10%',
-        width: '80%',
-        backgroundColor: 'white',
+        alignSelf: 'center'
+    },
+    //                                      UNIMPLEMENTED STYLE
+    // usernameModal: {
+    //     position: 'absolute',
+    //     justifyContent: 'center',
+    //     marginHorizontal: '10%',
+    //     width: '80%',
+    //     backgroundColor: 'white',
 
-        borderRadius: 8,
-    },
-    username: {
-        color: 'red',
-        fontFamily: 'Honk',
-    },
+    //     borderRadius: 8,
+    // },
+    //                                      UNIMPLEMENTED STYLE
+    // username: {
+    //     color: 'red',
+    //     fontFamily: 'Honk',
+    // },
     imageFullDisplay: {
         width: '100%',
         height: '100%',
