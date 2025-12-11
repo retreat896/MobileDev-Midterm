@@ -8,7 +8,7 @@
   "scripts": {
     "start:api": "npm run start --workspaces api",
     "start:app": "expo start --tunnel",
-    "start": "start \"Ngrok\" ngrok http --url=mullet-deep-explicitly.ngrok-free.app 8082 && start \"Expo App\" npm run start:app && start \"API Server\" npm run start:api",
+    "start": "start \"Ngrok\" && start \"Expo App\" npm run start:app && npm run start:api",
     "prebuild": "expo prebuild --clean",
     "android": "expo run:android",
     "ios": "expo run:ios"

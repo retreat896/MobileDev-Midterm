@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "type": "module",
   "scripts": {
-    "start": "node server"
+    "start": "start \"NGROK\" ngrok http --url=mullet-deep-explicitly.ngrok-free.app 3000 && nodemon server "
   },
   "dependencies": {
     "bcrypt": "^6.0.0",
@@ -12,11 +12,13 @@
     "express": "^5.2.1",
     "jsonwebtoken": "^9.0.3",
     "mongodb": "^7.0.0",
-    "nodemon": "^3.1.11"
+    "nodemon": "^3.1.11",
+    "uuid": "^7.0.3"
   },
   "private": true,
   "devDependencies": {
     "@types/react": "~19.1.10",
+    "@types/uuid": "^10.0.0",
     "typescript": "~5.9.2"
   }
 }
