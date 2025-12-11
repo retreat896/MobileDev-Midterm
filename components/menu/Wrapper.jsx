@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { View, useWindowDimensions, StyleSheet } from 'react-native';
-import { Button, Card, Dialog, FAB, Text } from 'react-native-paper';
+import { Button, Card, Dialog, FAB, Text, Portal } from 'react-native-paper';
 
 const Wrapper = ({ children, title, subtitle, onOpen, onClose, style }) => {
     const { width, height } = useWindowDimensions();
@@ -11,13 +11,15 @@ const Wrapper = ({ children, title, subtitle, onOpen, onClose, style }) => {
     }, []);
 
     return (
-        <Dialog visible={true} style={[style, wrapperStyles.container]} onDismiss={onClose ? onClose : () => {}}>
-            <Dialog.Actions style={wrapperStyles.close}>
-                { onClose && <FAB icon="close" onPress={onClose} /> }
-            </Dialog.Actions>
-            <Dialog.Title style={wrapperStyles.title}>{title}</Dialog.Title>
-            <Dialog.Content style={wrapperStyles.content}>{children}</Dialog.Content>
-        </Dialog>
+        <Portal>
+            <Dialog visible={true} style={[style, wrapperStyles.container]} onDismiss={onClose ? onClose : () => { }}>
+                <Dialog.Actions style={wrapperStyles.close}>
+                    {onClose && <FAB icon="close" onPress={onClose} />}
+                </Dialog.Actions>
+                <Dialog.Title style={wrapperStyles.title}>{title}</Dialog.Title>
+                <Dialog.Content style={wrapperStyles.content}>{children}</Dialog.Content>
+            </Dialog>
+        </Portal>
     );
 };
 

@@ -46,7 +46,7 @@ export default function GameScreen() {
 
 		// Save the game data to the app storage
 		setItem('Score', score, true);
-		setItem('TimeElapsed', duration, true);
+		setItem('Duration', duration, true);
 		
 		// Update TotalTimePlayed
 		let totalTimePlayed = parseInt(getItem('TotalTimePlayed'));
@@ -65,7 +65,7 @@ export default function GameScreen() {
 		}
 
 		// Wait for the storage to sync
-		await saveItems('Score', 'HighScore', 'TimeElapsed', 'TotalTimePlayed', 'LongestGame')
+		await saveItems('Score', 'HighScore', 'Duration', 'TotalTimePlayed', 'LongestGame')
 			.catch(err => console.error('Failed to save game: ', err));
 	}
 

@@ -1,5 +1,5 @@
 import { View, Platform, useWindowDimensions, KeyboardAvoidingView, KeyboardAvoidingViewBase, KeyboardAvoidingViewComponent, ImageBackground, FlatList } from 'react-native';
-import { Modal, Dialog, Text, Button, Chip, Card, TextInput, PaperProvider, FAB } from 'react-native-paper';
+import { Modal, Dialog, Text, Button, Chip, Card, TextInput, PaperProvider, FAB, Portal } from 'react-native-paper';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import React, { useEffect, useState, useRef } from 'react';
 import { useRouter } from 'expo-router';
@@ -252,6 +252,7 @@ const index = () => {
         if (!settings) return null;
 
         return (
+            <Portal>
             <Wrapper
                 title={wrapperTitle}
                 style={styles.wrapper}
@@ -324,6 +325,7 @@ const index = () => {
                     </Button>
                 </View>
             </Wrapper>
+            </Portal>
         );
     };
 
@@ -414,11 +416,12 @@ const index = () => {
             {/* <Text variant="displaySmall" style={styles.username}>Welcome {username !== '' ? username : 'John Doe'}!</Text> */}
             <MainMenu onPlay={() => openLevelSelect(true)} onSettings={() => openSettings(true)} onStats={() => openStats(true)} />
 
+            <FAB icon="information" style={styles.info} onPress={() => router.navigate('/info')}></FAB>
+
             {/* Toggle the Modal display per each option */}
             {showSettings()}
             {showLevelSelect()}
             {showStats()}
-            <FAB icon="information" style={styles.info} onPress={() => router.navigate('/info')}></FAB>
         </View>
         //     </SafeAreaView>
         // </SafeAreaProvider>

@@ -24,7 +24,15 @@ export function useGameLoop() {
 
 	const playerRef = useRef(null);
 	if (!playerRef.current) {
-		playerRef.current = new Player(SCREEN_WIDTH - 100, SCREEN_HEIGHT / 2, PLAYER_START_HP);
+		playerRef.current = new Player(
+			SCREEN_WIDTH - 100,
+			SCREEN_HEIGHT / 2,
+			PLAYER_START_HP,
+			50,
+			50,
+			{ x: 0, y: 0 }, // Image Offset
+			{ x: 0, y: 0 }  // Spawn Offset
+		);
 	}
 	const enemySpawnerRef = useRef(null);
 	const fireIntervalRef = useRef(null);
@@ -112,9 +120,11 @@ export function useGameLoop() {
 	 */
 	const fireProjectile = useCallback(() => {
 		const player = playerRef.current;
+		const { x, y } = player.getProjectileSpawnLocation();
+
 		const projectile = new Projectile(
-			player.x,
-			player.y,
+			x,
+			y,
 			player.rotation
 		);
 

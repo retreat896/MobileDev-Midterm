@@ -1,4 +1,5 @@
-import { Image, StyleSheet, Text, View } from 'react-native';
+import { Image, StyleSheet, View } from 'react-native';
+import { Text } from 'react-native-paper';
 import React from 'react';
 import { router } from 'expo-router';
 import { Button, FAB } from 'react-native-paper';
@@ -14,7 +15,8 @@ const info = () => {
                 </View>
                 <Text style={styles.text}>Kristopher Adams | Jacob Malland</Text>
                 <Text style={styles.text}>Professor: Dr. Abraham Aldaco</Text>
-                <FAB icon="door-open" onPress={()=>router.navigate("/")}></FAB>
+                <Text variant="labelSmall">Kristopher Adams | Jacob Malland</Text>
+                {/* <FAB icon="door-open" onPress={()=>router.navigate("/")}></FAB> */}
             </View>
         </View>
     );

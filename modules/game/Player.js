@@ -16,12 +16,23 @@ export default class Player {
      * @param {Number} width The display width
      * @param {Number} height The display height
      */
-    constructor(x, y, maxHp=100, width=50, height=50) {
+    /**
+     * @param {Number} x The x coordinate
+     * @param {Number} y The y coordinate
+     * @param {Number} maxHp Maximum health
+     * @param {Number} width The display width
+     * @param {Number} height The display height
+     * @param {Object} imageOffset The offset for the image rendering {x, y}
+     * @param {Object} spawnOffset The offset for the projectile spawn {x, y}
+     */
+    constructor(x, y, maxHp=100, width=50, height=50, imageOffset={x:0, y:0}, spawnOffset={x:0, y:0}) {
         // Publically Accessible Values
         // X and Y are NOT optional
         this.x = x;
         this.y = y;
         this.rotation = 0;
+        this.imageOffset = imageOffset;
+        this.spawnOffset = spawnOffset;
 
         // These are private because they don't need to be managed by an outside class.
         // X, Y, and rotation all can be adjusted up or down. 
@@ -116,7 +127,7 @@ export default class Player {
      * @returns The displayed x-position
      */
     getDisplayX() {
-        return this.x - this.#width;
+        return this.x - this.#width + this.imageOffset.x;
     }
 
     /**
@@ -124,7 +135,20 @@ export default class Player {
      * @returns The displayed y-position
      */
     getDisplayY() {
-        return this.y - this.#height;
+        return this.y - this.#height + this.imageOffset.y;
+    }
+    
+    /**
+     * Get the spawn location for the projectile
+     * @returns {Object} {x, y}
+     */
+    getProjectileSpawnLocation() {
+        // Calculate the spawn location based on the rotation
+        const angle = this.rotation * (Math.PI / 180);
+        const x = this.x + (this.spawnOffset.x * Math.cos(angle)) - (this.spawnOffset.y * Math.sin(angle));
+        const y = this.y + (this.spawnOffset.x * Math.sin(angle)) + (this.spawnOffset.y * Math.cos(angle));
+
+        return { x, y };
     }
 
     /**
