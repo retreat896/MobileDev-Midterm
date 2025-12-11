@@ -6,7 +6,7 @@ import jwt from "jsonwebtoken";
 import { MongoClient, ObjectId } from "mongodb";
 import path from "path";
 import { fileURLToPath } from "url";
-import { v4 as UUIDv4 } from 'uuid';
+import { v4 as uuid } from 'uuid';
 
 // ----- Database Setup -----
 const uri = process.env.DB_LINK;
@@ -71,12 +71,12 @@ app.post("/player", async (req, res) => {
         }
 
         // 3. Create a new UUID
-        const uuid = UUIDv4();
+        const UUID = uuid();
 
         // 4. Create User Document
         const newUser = {
             username,
-			uuid,
+			UUID,
             created_at: new Date(),
             updated_at: new Date(),
         };
@@ -85,12 +85,12 @@ app.post("/player", async (req, res) => {
         // Insert the User document
         await usersCollection.insertOne(newUser);
         // Insert a blank playerdata document
-        await playerdataCollection.insertOne({ uuid });
+        await playerdataCollection.insertOne({ UUID });
 
         // Return the UUID
         res.status(201).json({
             message: "User created successfully",
-            uuid,
+            UUID,
         });
     } catch (e) {
         console.error("Signup error:", e);
@@ -106,7 +106,7 @@ app.put("/player/:uuid/name", validateUser, async (req, res) => {
         const { username } = req.body;
 
         // Check if user exists
-        const found = await usersCollection.findOne({ uuid });
+        const found = await usersCollection.findOne({ UUID: uuid });
 
         // User does not exist
         if (!found) {
@@ -137,7 +137,10 @@ app.get("/player/:uuid", validateUser, async (req, res) => {
 		// Get the UUID from the path
 		const { uuid } = req.params;
 
-        const playerdata = await playerdataCollection.findOne({ uuid });
+        const playerdata = await playerdataCollection.findOne({ UUID: uuid });
+
+        // Remove the document ID
+        delete playerdata._id;
 
         if (!playerdata) {
             return res.status(404).json({ detail: "Player not found" });
@@ -184,7 +187,7 @@ app.put("/player/:uuid", validateUser, async (req, res) => {
             };
 
             // Update document in MongoDB
-            await playerdataCollection.updateOne({ uuid }, { $set: updates });
+            await playerdataCollection.updateOne({ UUID: uuid }, { $set: updates });
 
             res.json({ message: "Playerdata updated successfully" });
         }

@@ -12,13 +12,15 @@ import Wrapper from '@components/menu/Wrapper';
 import { StatusBar } from 'expo-status-bar';
 import { useLevel } from '@components/LevelContext';
 import { useData, getKeys } from '@components/DataContext';
+import Constants from "expo-constants";
 
 // router.push(path): Navigates to a new screen and adds it to the navigation stack.
 // router.replace(path): Replaces the current screen in the navigation stack with the new one.
 // router.back(): Navigates back to the previous screen.
 // router.navigate({ pathname: string, params: object }): Navigates to a specific path with parameters.
 
-const API_SERVER_URL = process.env.API_SERVER_URL
+// DOTENV
+const { API_SERVER_URL } = Constants.expoConfig.extra;
 
 const index = () => {
     // Lock the screen to landscape mode
@@ -29,14 +31,15 @@ const index = () => {
 
     // Get the global properties and operations
     const { level, levelsLoaded, allLevels } = useLevel();
-    const { dataLoaded, getItem, getKeys, setItem } = useData();
+    const { dataLoaded, getItem, getKeys, setItem, saveItems } = useData();
 
     const [settings, openSettings] = useState(false);
     const [stats, openStats] = useState(false);
     const [levelSelect, openLevelSelect] = useState(false);
     const [noUsernameInput, disableUsernameInput] = useState(true);
+    const [forceUsername, setForceUsername] = useState(false);
     const [usernameError, showUsernameError] = useState(false);
-    const [username, changeUsername] = useState(null);
+    const [username, changeUsername] = useState('');
     const [usernameConfirm, showUsernameConfirm] = useState(false);
     const [playerStats, setPlayerStats] = useState(null);
 
@@ -67,7 +70,8 @@ const index = () => {
     const registerOrUpdateName = async () => {
         // Get the UUID/Username from storage, if any
         const uuid = getItem('UUID');
-        const username = getItem('Username');
+        
+        console.log("Fetching: " + `${API_SERVER_URL}/player/${uuid ? uuid + '/name' : ''}`);
 
         // Send Username submission to the server, or update the player's username
         const response = await fetch(`${API_SERVER_URL}/player/${uuid ? uuid + '/name' : ''}`, {
@@ -76,7 +80,7 @@ const index = () => {
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify({ username }),
-        });
+        }).catch(e => console.error);
 
         // Check server response
         if (response.ok) {
@@ -84,12 +88,29 @@ const index = () => {
             const data = await response.json();
             console.log(data.message);
             
+            // The user was required to submit a username
+            if (forceUsername) {
+                // Disable the forced-username input
+                setForceUsername(false);
+                // Hide the username dialog
+                showUsernameConfirm(false);
+                // Close settings
+                openSettings(false);
+            }
+
+            // Update the username
+            // Ensure it is saved
+            setItem('Username', username);
+            
             // Check for UUID returned
-            if (data.uuid) {
+            if (data.UUID) {
                 // Store the UUID in device storage
                 // Ensure it is saved
-                setItem('UUID', data.uuid, saveToAsyncStorage=true);
+                setItem('UUID', data.UUID);
             }
+
+            // Save the updated User and UUID data
+            await saveItems('Username', 'UUID');
         }
         else {
             console.error(`Failed to register or update player name.`);
@@ -131,7 +152,8 @@ const index = () => {
             for (let key in data) {
                 // Save the player data
                 // Ensure it is saved
-                setItem(key, data[key], saveToAsyncStorage=true);
+                setItem(key, data[key]);
+                await saveItems(key);
             }
         }
         else {
@@ -139,6 +161,29 @@ const index = () => {
         }
     }
 
+    // Execute as soon as the data loads
+    useEffect(() => {
+        if (!dataLoaded) return;
+
+        // Get the stored Username
+        const savedUUID = getItem('UUID');
+
+        console.log("UUID: " + savedUUID);
+
+        // NO DATA
+        // No username has been saved
+        if (savedUUID == "") {
+            console.log("Showing Stetings")
+            // Display the settings menu
+            openSettings(true);
+            showSettings();
+            // Force username input
+            setForceUsername(true);
+            showUsernameConfirm(true);
+        }
+    }, [dataLoaded]);
+
+    // Execute when one of the menu options is changed
     useEffect(() => {
         console.log('LOADING');
 
@@ -149,7 +194,7 @@ const index = () => {
 
             // Only run when settings is being opened
             // Username not being edited and doesn't match saved data
-            if (settings && noUsernameInput && username != savedUsername) {
+            if (settings && (noUsernameInput || username != savedUsername)) {
                 console.log('Updating Username: ' + savedUsername);
                 changeUsername(savedUsername); // Update the username
             }
@@ -180,30 +225,25 @@ const index = () => {
     }, [settings, stats, levelSelect]);
 
     /**
-     * Update the stored player name, then update in server
-     * @param {string} name The submitted name value 
-     * @returns 
+     * Verify the submitted username, then update in server
      */
-    const handleUsernameSubmit = async (name) => {
+    const handleUsernameSubmit = async () => {
         // Check if username is valid
         const isValidUsername = (str) => {
-            return /^[a-zA-Z_]+$/.test(str);
+            return /^[a-zA-Z_\s]+$/.test(str);
         };
 
         // Action based on validity
-        if (!isValidUsername(name)) {
-            console.log(`Invalid Username: ${name}`);
+        if (!isValidUsername(username)) {
+            console.log(`Invalid Username: ${username}`);
             showUsernameError(true);
             return;
         }
-
-        console.log(`Username Submitted: ${name}`);
-
-        // Update the username
-        // Ensure it is saved
-        setItem('Username', name, saveToAsyncStorage=true);
+        
+        console.log(`Username Submitted: ${username}`);
+        
         disableUsernameInput(true); // Hide username input
-
+        
         // Update the player name (using getItem('Username'))
         registerOrUpdateName();
     }
@@ -219,7 +259,7 @@ const index = () => {
                     console.log('Settings Opened');
                     setWrapperTitle('Settings');
                 }}
-                onClose={() => {
+                onClose={forceUsername ? null : () => {
                     console.log('Settings Closed');
                     openSettings(false);
                     setWrapperTitle('');
@@ -238,20 +278,26 @@ const index = () => {
                         theme={{ roundness: 10 }}
                         disabled={noUsernameInput}
                         label="Username"
-                        value="Kristopher Adams"
+                        value={username}
                         submitBehavior="blurAndSubmit"
                         onChangeText={(text) => changeUsername(text)}
                         onSubmitEditing={(e) => handleUsernameSubmit(e.nativeEvent.text)}
                     />
                 </KeyboardAvoidingView>
                 {/* Edit-Username Error Dialog */}
-                <InfoDialog title="Invalid Username" info="A username may only contain a-z, A-Z and '_'" isError={true} visible={usernameError} onConfirm={() => showUsernameError(false)} />
+                <InfoDialog 
+                    title="Invalid Username"
+                    info="A username may only contain a-z, A-Z, '_', and spaces." 
+                    isError={true}
+                    visible={usernameError}
+                    onConfirm={() => showUsernameError(false)}
+                />
                 {/* Reset-Username Confirm Dialog */}
                 <ConfirmDialog
-                    title="Reset Username"
-                    info="Are you sure you want to change this?"
+                    title={ (forceUsername ? 'Enter' : 'Reset') + "Username" }
+                    info={forceUsername ? "You must enter a username to continue. You may change this in settings at any time." : "Are you sure you want to change this?"}
                     visible={usernameConfirm}
-                    onDeny={() => {
+                    onDeny={forceUsername ? null : () => {
                         console.log('Cancelled Username change.');
                         disableUsernameInput(true);
                         // Hide username input
@@ -266,7 +312,6 @@ const index = () => {
                 />
                 {/* Reset-Username Button */}
                 <View style={styles.row}>
-                    
                     <Button
                         compact
                         mode="text"
