@@ -10,9 +10,13 @@ export default class Projectile {
     constructor(x, y, angle, speed=10, damage=1, radius=15) {
         this.x = x;
         this.y = y;
-
+        this.bloom = 0;
+        this.bloomMax = 0.05;
+        this.bloomMin = -0.05;
+        let randomBloom = Math.random() * (this.bloomMax - this.bloomMin) + this.bloomMin;
+        this.bloom += randomBloom;
         // Private Values
-        this.#angle = angle * (Math.PI / 180);
+        this.#angle = angle * (Math.PI / 180)+this.bloom;
         this.#speed = speed;
         this.#damage = damage;
         this.#radius = radius;

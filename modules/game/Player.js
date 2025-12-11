@@ -103,6 +103,14 @@ export default class Player {
         return this.#height;
     }
 
+    setOffset(offset){
+        this.offset = offset;
+    }
+
+    getOffset(){
+        return this.offset
+    }
+
     /**
      * Get the position the object is displayed at
      * @returns The displayed x-position
