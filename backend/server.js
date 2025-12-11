@@ -156,7 +156,7 @@ app.put("/player/:uuid", validateUser, async (req, res) => {
 		const { uuid } = req.params;
 		
 		// TODO: Add correct playerdata scores
-        const { HighScore, TotalTimePlayed, LongestGame, TimeElapsed } = req.body;
+        const { HighScore, TotalTimePlayed, LongestGame, Duration } = req.body;
 
         // Find the playerdata
         const playerdata = await playerdataCollection.findOne({ uuid });
@@ -172,7 +172,7 @@ app.put("/player/:uuid", validateUser, async (req, res) => {
             const updates = {
                 HighScore: Number.parseInt(HighScore),
                 TotalTimePlayed: Number.parseInt(TotalTimePlayed),
-                TimeElapsed: Number.parseInt(TimeElapsed),
+                Duration: Number.parseInt(Duration),
                 LongestGame: Number.parseInt(LongestGame),
             };
 
