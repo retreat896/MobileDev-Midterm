@@ -6,7 +6,7 @@
     - Implement retreive/update player data.
     - Implement retreive level data
 
-- [ ] **Implement Username on inital load.**
+- [X] **Implement Username on inital load.**
     - Implement a username input screen that is displayed on initial load.
     - Implement a username storage system that stores the username in the database.
     - Implement a username changing system that allows the user to change their username.
@@ -21,11 +21,10 @@
 
 ## Medium Priority
 
-- [ ] **Finish path tracing to have an end point that causes damage.**
-    - Implement a raycast/laser mechanic that instantly hits the first enemy in its path.
+- [X] **Finish path tracing to have an end point that causes damage.**
     - Ensure it deals damage correctly.
 
-- [ ] **Add bullet bloom (small amount).**
+- [X] **Add bullet bloom (small amount).**
     - Add a small random variation to the projectile's firing angle in `SingleTouch.fireProjectile`.
 
 - [ ] **Fix bullet offset and player image offset.**
@@ -33,7 +32,7 @@
 
 ## Suggested Improvements
 
-- [ ] **Implement Game Over Screen.**
+- [X] **Implement Game Over Screen.**
     - `app/GameOver.jsx` is currently empty. Create a screen that shows the final score, high score, and allows restarting or returning to the main menu.
 
 - [ ] **Add Audio/Sound Effects.**
@@ -49,6 +48,6 @@
 - [ ] **Power-ups.**
     - Add power-ups (e.g., rapid fire, health packs, spread shot) to make the game more engaging.
 
-- [x] **Add a loading screen pre-app launch.**
+- [X] **Add a loading screen pre-app launch.**
     - Implement a splash screen or loading animation that displays before the main game content is fully loaded.
   
