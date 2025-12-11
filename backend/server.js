@@ -6,10 +6,7 @@ import jwt from "jsonwebtoken";
 import { MongoClient, ObjectId } from "mongodb";
 import path from "path";
 import { fileURLToPath } from "url";
-import { v4 as uuid } from 'uuid';
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+import { v4 as UUIDv4 } from 'uuid';
 
 // ----- Database Setup -----
 const uri = process.env.DB_LINK;
@@ -19,43 +16,13 @@ if (!uri) {
 }
 
 // Initialize database stuff
-let db,
-    usersCollection,
-    playerdataCollection,
-    leveldataCollection;
-
-try {
-    const client = new MongoClient(uri);
-    await client.connect();
-    db = client.db("cs3720db");
-    usersCollection = db.collection("users");
-    playerdataCollection = db.collection("playerdata");
-	leveldataCollection = db.collection("leveldata");
-    console.log("Connected to MongoDB");
-} catch (e) {
-    console.log(`Error connecting to MongoDB: ${e}`);
-}
-
-// ----- Helper Functions -----
-
-const hashPassword = async (password) => {
-    const salt = await bcrypt.genSalt(10);
-    const hashed = await bcrypt.hash(password, salt);
-    return hashed;
-};
-
-const verifyPassword = async (plainPassword, hashedPassword) => {
-    return await bcrypt.compare(plainPassword, hashedPassword);
-};
-
-const createJwtToken = (data, expiresIn = null) => {
-    const secret = process.env.SECRET_KEY || "default_secret_please_change";
-	const expiry = process.env.ACCESS_TOKEN_EXPIRY || "15m";
-
-    const options = { expiresIn: expiry };
-
-    return jwt.sign(data, secret, options);
-};
+const client = new MongoClient(uri);
+await client.connect();
+const db = client.db("MobileFinal");
+const usersCollection = db.collection("users");
+const playerdataCollection = db.collection("playerdata");
+const leveldataCollection = db.collection("leveldata");
+console.log("Connected to MongoDB");
 
 // ----- Express App -----
 const app = express();
@@ -70,80 +37,55 @@ app.use(
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// ----- Auth Middleware -----
-const authenticateToken = async (req, res, next) => {
-    const authHeader = req.headers["authorization"];
-    const token = authHeader && authHeader.split(" ")[1];
+// ----- (INSECURE) Auth Middleware -----
+const validateUser = async (req, res, next) => {
+    // Pull the UUID from the request body, otherwise the request path
+    const { uuid } = req.body || req.params;
+    
+    // Check the user exists
+    const user = usersCollection.findOne({ uuid });
 
-    if (!token) {
-        return res.status(401).json({
-            detail: "Could not validate credentials",
+    if (!user) {
+        return res.status(404).json({
+            detail: "Player not found"
         });
     }
 
-    try {
-        const secret = process.env.SECRET_KEY || "default_secret_please_change";
-        const algorithm = process.env.ALGORITHM || "HS256";
-        const payload = jwt.verify(token, secret, { algorithms: [algorithm] });
-
-        if (!payload.sub) {
-            return res.status(401).json({
-                detail: "Could not validate credentials",
-            });
-        }
-
-        req.user = payload.sub;
-        next();
-    } catch {
-        return res.status(401).json({
-            detail: "Could not validate credentials",
-        });
-    }
+    next();
 };
 
 // ----- ROUTES -----
-
-app.get("/", (req, res) => {
-    const indexPath = path.join(__dirname, "index.html");
-
-    res.sendFile(indexPath, (err) => {
-        if (err) {
-            res.json({
-                message: "Welcome to the Robot API (index.html not found)",
-            });
-        }
-    });
-});
-
-app.post("/signup", async (req, res) => {
+app.post("/player", async (req, res) => {
     try {
         // Get the username from the request
         const { username } = req.body;
-        
-        // 1. Generate 4-character random hex tag
-        // For uniqueness
-        const tag = randomBytes(8).toString("hex");
 
         // 2. Check if user exists
-        const found = await usersCollection.findOne({ username, tag });
+        const found = await usersCollection.findOne({ username });
 
         // User already exists
         if (found) {
-            return res.status(400).json({
+            return res.status(409).json({
                 detail: "User with this username already exists",
             });
         }
 
-        // 3. Create User Document
+        // 3. Create a new UUID
+        const uuid = UUIDv4();
+
+        // 4. Create User Document
         const newUser = {
             username,
-            tag,
-			uuid: new uuid(),
+			uuid,
             created_at: new Date(),
+            updated_at: new Date(),
         };
 
-        // 4. Insert into MongoDB
+        // 5. Insert into MongoDB
+        // Insert the User document
         await usersCollection.insertOne(newUser);
+        // Insert a blank playerdata document
+        await playerdataCollection.insertOne({ uuid });
 
         // Return the UUID
         res.status(201).json({
@@ -156,40 +98,50 @@ app.post("/signup", async (req, res) => {
     }
 });
 
-app.post("/login", async (req, res) => {
-    try {
-        // Get the UUID from the request body
-        const { uuid } = req.body;
 
-        // Verify user exists
-        const user = await usersCollection.findOne({ uuid });
+app.put("/player/:uuid/name", validateUser, async (req, res) => {
+    try {
+        // Get the UUID & Username from the request
+        const { uuid } = req.params;
+        const { username } = req.body;
+
+        // Check if user exists
+        const found = await usersCollection.findOne({ uuid });
 
         // User does not exist
-        if (!user) {
-            return res.status(404).json({
-                detail: "User does not exist",
-            });
+        if (!found) {
+            return res.status(404).json({ detail: "Player not found" });
         }
 
-        // Create a JWT access token
-        const accessToken = createJwtToken({ sub: user.uuid });
-
-        // Return the access token
-        res.json({ message: "Logged in successfully", token: accessToken });
+        // Update the User document
+        await usersCollection.updateOne({ uuid }, {
+            $set: {
+                username,
+                updated_at: new Date()
+            }
+        });
+        
+        // Return the UUID
+        res.status(201).json({
+            message: "Username updated successfully"
+        });
     } catch (e) {
-        console.error("Login error:", e);
-        res.status(500).json({ detail: "Internal server error" });
+        console.error("Username error:", e);
+        res.status(500).json({ detail: `Database error: ${e.message}` });
     }
 });
 
 // ----- Playerdata Routes -----
-
-app.get("/player/:uuid", authenticateToken, async (req, res) => {
+app.get("/player/:uuid", validateUser, async (req, res) => {
     try {
 		// Get the UUID from the path
 		const { uuid } = req.params;
 
         const playerdata = await playerdataCollection.findOne({ uuid });
+
+        if (!playerdata) {
+            return res.status(404).json({ detail: "Player not found" });
+        }
 
         res.json(playerdata);
     } catch (e) {
@@ -203,49 +155,15 @@ app.get("/player/:uuid", authenticateToken, async (req, res) => {
     }
 });
 
-app.post("/player/:uuid", authenticateToken, async (req, res) => {
-    try {
-		// Get the UUID from the path
-		const { uuid } = req.params;
-
-		// TODO: Add correct playerdata scores
-        const { highscore, totalTimeElapsed, longestGamePlayed } = req.body;
-
-        // Verify user exists
-        const user = await usersCollection.findOne({ uuid });
-
-        if (!user) {
-            return res.status(409).json({
-                detail: "Player does not exist",
-            });
-        }
-
-        // Insert into database
-        await playerdataCollection.insertOne({
-            highscore,
-            totalTimeElapsed,
-            longestGamePlayed,
-        });
-
-        res.status(201).json({ message: "Playerdata added successfully" });
-    } catch (e) {
-        console.error("Database error:", e);
-
-        if (e.name === "MongoError" || e.name === "MongoServerError") {
-            res.status(503).json({ detail: "Database not reachable" });
-        } else {
-            res.status(500).json({ detail: "Internal server error" });
-        }
-    }
-});
-
-app.put("/player/:uuid", authenticateToken, async (req, res) => {
+// Use PUT because the server automatically creates an existing entry in MongoDB
+// No need to POST (Create) it.
+app.put("/player/:uuid", validateUser, async (req, res) => {
     try {
 		// Get the UUID from the path
 		const { uuid } = req.params;
 		
 		// TODO: Add correct playerdata scores
-        const { highscore, totalTimeElapsed, longestGamePlayed } = req.body;
+        const { HighScore, TotalTimePlayed, LongestGame, TimeElapsed } = req.body;
 
         // Find the playerdata
         const playerdata = await playerdataCollection.findOne({ uuid });
@@ -255,16 +173,25 @@ app.put("/player/:uuid", authenticateToken, async (req, res) => {
             return res.status(404).json({ detail: "Player not found" });
         }
 
-        // Update the scores
-        const updates = {
-            highscore,
-            totalTimeElapsed,
-            longestGamePlayed,
-        };
+        // Use Try-Catch to prevent malicious data
+        try {
+            // Update the scores
+            const updates = {
+                HighScore: Number.parseInt(HighScore),
+                TotalTimePlayed: Number.parseInt(TotalTimePlayed),
+                TimeElapsed: Number.parseInt(TimeElapsed),
+                LongestGame: Number.parseInt(LongestGame),
+            };
 
-        await playerdataCollection.updateOne({ uuid }, { $set: updates });
+            // Update document in MongoDB
+            await playerdataCollection.updateOne({ uuid }, { $set: updates });
 
-        res.json({ message: "Playerdata updated successfully" });
+            res.json({ message: "Playerdata updated successfully" });
+        }
+        catch {
+            return res.status(400).json({ detail: "Something went wrong saving data" });
+        }
+
     } catch (e) {
         console.error("Update error:", e);
 
@@ -277,8 +204,7 @@ app.put("/player/:uuid", authenticateToken, async (req, res) => {
 });
 
 // ----- Leveldata Routes -----
-
-app.get("/level/:key", authenticateToken, async (req, res) => {
+app.get("/level/:key", validateUser, async (req, res) => {
     try {
 		// TODO: Implement key for leveldata
 		const { key } = req.params;
