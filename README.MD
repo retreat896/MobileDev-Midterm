@@ -187,7 +187,7 @@ Mobile-Midterm/
 * 📘 Course: CS3720 Mobile Application Development
 * 🧑‍🏫 Instructor: Dr. Abraham Aldaco
 * 🗓️ Term: Fall 2025
-* 🧩 Assignment: Exam 1 – Multi-Screen React Native App (Shooter Game)
+* 🧩 Assignment: Final Project - Multi-Screen React Native App (Shooter Game)
 
 ---
 
