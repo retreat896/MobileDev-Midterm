@@ -12,244 +12,242 @@ import { CollisionDetector } from '@modules/game/CollisionDetector';
 const PLAYER_START_HP = 10;
 // const PLAYER = new Player(SCREEN_WIDTH - 100, SCREEN_HEIGHT / 2, PLAYER_START_HP);
 
-export function useGameLoop({ width, height }) {
-	const [gameState, setGameState] = useState({
-		projectiles: [],	// List of projectiles
-		enemies: [],		// List of enemies
-		paused: false,		// Pause game indicator
-	});
+export function useGameLoop({ width, height, offsetX = 0, offsetY = 0 }) {
+    // ... (state init)
 
-	const playerRef = useRef(null);
-	if (!playerRef.current) {
-		playerRef.current = new Player(
-			width - 100,
-			height / 2,
-			PLAYER_START_HP,
-			50,
-			50,
-			{ x: 0, y: 0 }, // Image Offset
-			{ x: 0, y: 0 }  // Spawn Offset
-		);
-	}
-	const enemySpawnerRef = useRef(null);
-	const fireIntervalRef = useRef(null);
-	const startTimeRef = useRef(Date.now());
+    const [gameState, setGameState] = useState({
+        projectiles: [], // List of projectiles
+        enemies: [], // List of enemies
+        paused: false, // Pause game indicator
+    });
 
-	// Generate a path for the level
-	const generateComplexPath = (startX, startY, turns) => {
-		let path = [{ x: startX, y: startY }];
-		let currentX = startX;
-		let currentY = startY;
-		const segmentWidth = width / (turns + 1);
+    const playerRef = useRef(null);
+    if (!playerRef.current) {
+        playerRef.current = new Player(
+            width - 100,
+            height / 2,
+            PLAYER_START_HP,
+            50,
+            50,
+            { x: 0, y: 0 }, // Image Offset
+            { x: 30, y: 15 } // Spawn Offset - Adjusted to match weapon position
+        );
+    }
+    const enemySpawnerRef = useRef(null);
+    const fireIntervalRef = useRef(null);
+    const startTimeRef = useRef(Date.now());
 
-		for (let i = 0; i < turns; i++) {
-			// Move forward
-			currentX += segmentWidth;
-			// Random Y within bounds (padding 50)
-			currentY = Math.random() * (height - 100) + 50;
-			path.push({ x: currentX, y: currentY });
-		}
+    // Generate a path for the level
+    const generateComplexPath = (startX, startY, turns) => {
+        let path = [{ x: startX, y: startY }];
+        let currentX = startX;
+        let currentY = startY;
+        const segmentWidth = width / (turns + 1);
 
-		// Final point off screen
-		path.push({ x: width + 100, y: currentY });
-		return path;
-	}
+        for (let i = 0; i < turns; i++) {
+            // Move forward
+            currentX += segmentWidth;
+            // Random Y within bounds (padding 50)
+            currentY = Math.random() * (height - 100) + 50;
+            path.push({ x: currentX, y: currentY });
+        }
 
-	const levelPathRef = useRef(null);
+        // Final point off screen
+        path.push({ x: width + 100, y: currentY });
+        return path;
+    };
 
-	// Execute when loaded
-	useEffect(() => {
-		// Generate the path once
-		// Default start at random Y on left side if not specified (though we use 0,0 mostly for offscreen spawn)
-		let startY = Math.random() * (height - 100);
-		levelPathRef.current = generateComplexPath(0, startY, 5);
+    const levelPathRef = useRef(null);
 
-		// Initialize the EnemySpawner
-		enemySpawnerRef.current = new EnemySpawner(height, (enemy) => {
-			// Apply the path
-			if (levelPathRef.current) {
-				enemy.setPath(levelPathRef.current);
-				// Set initial position to start of path
-				enemy.x = levelPathRef.current[0].x;
-				enemy.y = levelPathRef.current[0].y;
-			} else {
-				// Fallback
-				enemy.y = Math.random() * (height - 100);
-			}
+    // Execute when loaded
+    useEffect(() => {
+        // Generate the path once
+        // Default start at random Y on left side if not specified (though we use 0,0 mostly for offscreen spawn)
+        let startY = Math.random() * (height - 100);
+        levelPathRef.current = generateComplexPath(0, startY, 5);
 
-			// Include the previous gamestate, but overwrite 'enemies' to add the spawned enemy 
-			setGameState(prev => ({
-				...prev,
-				enemies: [...prev.enemies, enemy]
-			}));
-		});
+        // Initialize the EnemySpawner
+        enemySpawnerRef.current = new EnemySpawner(height, (enemy) => {
+            // Apply the path
+            if (levelPathRef.current) {
+                enemy.setPath(levelPathRef.current);
+                // Set initial position to start of path
+                enemy.x = levelPathRef.current[0].x;
+                enemy.y = levelPathRef.current[0].y;
+            } else {
+                // Fallback
+                enemy.y = Math.random() * (height - 100);
+            }
 
-		// Enable enemy spawning
-		enemySpawnerRef.current.start();
+            // Include the previous gamestate, but overwrite 'enemies' to add the spawned enemy
+            setGameState((prev) => ({
+                ...prev,
+                enemies: [...prev.enemies, enemy],
+            }));
+        });
 
-		return () => { // Execute this when the game is closed
-			// Stop enemies and projectiles from spawning
-			enemySpawnerRef.current.stop();
-			if (fireIntervalRef.current) {
-				clearInterval(fireIntervalRef.current);
-			}
-		};
-	}, []);
+        // Enable enemy spawning
+        enemySpawnerRef.current.start();
 
-	// Handle pause/unpause
-	useEffect(() => {
-		if (gameState.paused) { // The game is paused
-			// Prevent enemy and projectile spawning
-			enemySpawnerRef.current?.stop();
-			if (fireIntervalRef.current) {
-				clearInterval(fireIntervalRef.current);
-				fireIntervalRef.current = null;
-			}
-		}
-		else { // The game was resumed
-			// Resume enemy spawning
-			enemySpawnerRef.current?.start();
-		}
-	}, [gameState.paused]);
+        return () => {
+            // Execute this when the game is closed
+            // Stop enemies and projectiles from spawning
+            enemySpawnerRef.current.stop();
+            if (fireIntervalRef.current) {
+                clearInterval(fireIntervalRef.current);
+            }
+        };
+    }, []);
 
-	/**
-	 * Fire a projectile from the player's location
-	 */
-	const fireProjectile = useCallback(() => {
-		const player = playerRef.current;
-		const { x, y } = player.getProjectileSpawnLocation();
+    // Handle pause/unpause
+    useEffect(() => {
+        if (gameState.paused) {
+            // The game is paused
+            // Prevent enemy and projectile spawning
+            enemySpawnerRef.current?.stop();
+            if (fireIntervalRef.current) {
+                clearInterval(fireIntervalRef.current);
+                fireIntervalRef.current = null;
+            }
+        } else {
+            // The game was resumed
+            // Resume enemy spawning
+            enemySpawnerRef.current?.start();
+        }
+    }, [gameState.paused]);
 
-		const projectile = new Projectile(
-			x,
-			y,
-			player.rotation
-		);
+    /**
+     * Fire a projectile from the player's location
+     */
+    const fireProjectile = useCallback(() => {
+        const player = playerRef.current;
+        const { x, y } = player.getProjectileSpawnLocation();
 
-		setGameState(prev => ({
-			...prev,
-			projectiles: [...prev.projectiles, projectile]
-		}));
-	}, []);
+        const projectile = new Projectile(x, y, player.rotation);
 
-	/**
-	 * Process touch inputs. Determines player & projectile angle.
-	 */
-	const handleTouch = useCallback((touches) => {
-		// Quit if the game is paused
-		if (gameState.paused) return;
+        setGameState((prev) => ({
+            ...prev,
+            projectiles: [...prev.projectiles, projectile],
+        }));
+    }, []);
 
-		// Determine the touch input statistics
-		const start = touches.find(t => t.type === 'start');
-		const end = touches.find(t => t.type === 'end');
-		const press = touches.find(t => t.type === 'press');
-		const touch = touches.find(t => t.type === 'start' || t.type === 'move');
+    /**
+     * Process touch inputs. Determines player & projectile angle.
+     */
+    const handleTouch = useCallback(
+        (touches) => {
+            // Quit if the game is paused
+            if (gameState.paused) return;
 
-		// Handle firing
-		if (start) { // When held down, fire at an interval
-			fireIntervalRef.current = setInterval(fireProjectile, 100);
-		}
-		if (press) { // When pressed, fire once
-			fireProjectile();
-		}
-		// When the touch ends, stop firing
-		if (end && fireIntervalRef.current) {
-			clearInterval(fireIntervalRef.current);
-			fireIntervalRef.current = null;
-		}
+            // Determine the touch input statistics
+            const start = touches.find((t) => t.type === 'start');
+            const end = touches.find((t) => t.type === 'end');
+            const press = touches.find((t) => t.type === 'press');
+            const touch = touches.find((t) => t.type === 'start' || t.type === 'move');
 
-		// Handle player rotation
-		if (touch) {
-			const player = playerRef.current;
-			// Touch location
-			const touchX = touch.event.pageX;
-			const touchY = touch.event.pageY;
-			// Distance between player & touch
-			const dx = touchX - player.x;
-			const dy = touchY - player.y;
-			// Distance angle, update player rotation
-			const angle = Math.atan2(dy, dx) * (180 / Math.PI);
-			player.rotation = angle;
-		}
-	}, [gameState.paused, fireProjectile]);
+            // Handle firing
+            if (start) {
+                // When held down, fire at an interval
+                // Only start if not already firing to prevent duplicates/sticking
+                if (!fireIntervalRef.current) {
+                    fireIntervalRef.current = setInterval(fireProjectile, 100);
+                }
+            }
+            if (press) {
+                // When pressed, fire once
+                fireProjectile();
+            }
+            // When the touch ends, stop firing
+            if (end && fireIntervalRef.current) {
+                clearInterval(fireIntervalRef.current);
+                fireIntervalRef.current = null;
+            }
 
-	/**
-	 * Update the game/render state
-	 */
-	const updateGame = useCallback(() => {
-		// Quit if the game is paused or player is dead
-		if (gameState.paused || playerRef.current.getHp() <= 0) return;
+            // Handle player rotation
+            if (touch) {
+                const player = playerRef.current;
+                // Touch location
+                const touchX = touch.event.pageX - offsetX;
+                const touchY = touch.event.pageY - offsetY;
+                // Distance between player & touch
+                const dx = touchX - player.x;
+                const dy = touchY - player.y;
+                // Distance angle, update player rotation
+                const angle = Math.atan2(dy, dx) * (180 / Math.PI);
+                player.rotation = angle;
+            }
+        },
+        [gameState.paused, fireProjectile, offsetX, offsetY]
+    );
 
-		// Update the game state on each execution
-		setGameState(prev => {
-			// Update all entities
-			const updatedProjectiles = prev.projectiles.map(p => {
-				p.update();
-				return p;
-			});
-			const updatedEnemies = prev.enemies.map(e => {
-				e.update();
-				return e;
-			});
+    /**
+     * Update the game/render state
+     */
+    const updateGame = useCallback(() => {
+        // Quit if the game is paused or player is dead
+        if (gameState.paused || playerRef.current.getHp() <= 0) return;
 
-			// Check collisions
-			const scoreGained = CollisionDetector.checkProjectileEnemyCollisions(
-				updatedProjectiles,
-				updatedEnemies
-			);
+        // Update the game state on each execution
+        setGameState((prev) => {
+            // Update all entities
+            const updatedProjectiles = prev.projectiles.map((p) => {
+                p.update();
+                return p;
+            });
+            const updatedEnemies = prev.enemies.map((e) => {
+                e.update();
+                return e;
+            });
 
-			// Filter active entities
-			const { activeProjectiles, activeEnemies } = CollisionDetector.filterActiveEntities(
-				updatedProjectiles,
-				updatedEnemies,
-				width,
-				height
-			);
+            // Check collisions
+            const scoreGained = CollisionDetector.checkProjectileEnemyCollisions(updatedProjectiles, updatedEnemies);
 
-			// Check if enemies escaped
-			activeEnemies.forEach(e => {
-				let outOfBounds = playerRef.current.enemyOutOfBounds(e);
+            // Filter active entities
+            const { activeProjectiles, activeEnemies } = CollisionDetector.filterActiveEntities(updatedProjectiles, updatedEnemies, width, height);
 
-				// The enemy passed the player
-				if (outOfBounds) {
-					// Apply damage to the player
-					playerRef.current.takeDamage(e.getDamage());
-					
-					// Disable the enemy
-					e.active = false;
-				}
-			});
+            // Check if enemies escaped
+            activeEnemies.forEach((e) => {
+                let outOfBounds = playerRef.current.enemyOutOfBounds(e);
 
-			// Increment the player's score
-			if (playerRef.current) playerRef.current.addScore(scoreGained);
+                // The enemy passed the player
+                if (outOfBounds) {
+                    // Apply damage to the player
+                    playerRef.current.takeDamage(e.getDamage());
 
-			return {
-				...prev,
-				projectiles: activeProjectiles,
-				enemies: activeEnemies
-			};
-		});
-	}, [gameState.paused]);
+                    // Disable the enemy
+                    e.active = false;
+                }
+            });
 
-	// Pause/Unpause the game
-	const togglePause = useCallback(() => {
-		setGameState(prev => ({ ...prev, paused: !prev.paused }));
-	}, []);
+            // Increment the player's score
+            if (playerRef.current) playerRef.current.addScore(scoreGained);
 
-	// Gameplay duration
-	const getGameDuration = useCallback(() => {
-		return Date.now() - startTimeRef.current;
-	}, []);
+            return {
+                ...prev,
+                projectiles: activeProjectiles,
+                enemies: activeEnemies,
+            };
+        });
+    }, [gameState.paused]);
 
+    // Pause/Unpause the game
+    const togglePause = useCallback(() => {
+        setGameState((prev) => ({ ...prev, paused: !prev.paused }));
+    }, []);
 
+    // Gameplay duration
+    const getGameDuration = useCallback(() => {
+        return Date.now() - startTimeRef.current;
+    }, []);
 
-	// Make game-loop data available to components
-	return {
-		gameState,
-		player: playerRef.current,
-		handleTouch,
-		updateGame,
-		togglePause,
-		getGameDuration,
-		isGameOver: playerRef.current.getHp() <= 0,
-	};
+    // Make game-loop data available to components
+    return {
+        gameState,
+        player: playerRef.current,
+        handleTouch,
+        updateGame,
+        togglePause,
+        getGameDuration,
+        isGameOver: playerRef.current.getHp() <= 0,
+    };
 }

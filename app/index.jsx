@@ -1,5 +1,5 @@
-import { View, Platform, useWindowDimensions, KeyboardAvoidingView, ImageBackground, FlatList } from 'react-native';
-import { Text, Button, TextInput } from 'react-native-paper';
+import { View, Platform, useWindowDimensions, KeyboardAvoidingView, ImageBackground, FlatList, ScrollView } from 'react-native';
+import { Text, Button, TextInput, DataTable } from 'react-native-paper';
 import React, { useEffect, useState } from 'react';
 import { useRouter } from 'expo-router';
 import { styles } from '@styles/main';
@@ -11,7 +11,7 @@ import Wrapper from '@components/menu/Wrapper';
 import { StatusBar } from 'expo-status-bar';
 import { useLevel } from '@components/LevelContext';
 import { useData } from '@components/DataContext';
-import Constants from "expo-constants";
+import Constants from 'expo-constants';
 
 // DOTENV
 const { API_SERVER_URL } = Constants.expoConfig.extra;
@@ -47,24 +47,24 @@ const index = () => {
     /**
      * Register the player with the server, or update their username
      * @example
-     * 
+     *
      * // Player name is changed or initialized
      * handleUsernameSubmit(newUsername) // Verifies valid username syntax
      * /// Above function calls this:
-     * 
+     *
      * // Update with server
      * await registerOrUpdateName();
-     * 
+     *
      * // Log the updated username, and print unique identifier
      * console.log(getItem('UUID'));
      * console.log(getItem('Username'));
-     * 
+     *
      */
     const registerOrUpdateName = async () => {
         // Get the UUID/Username from storage, if any
         const uuid = getItem('UUID');
-        
-        console.log("Fetching: " + `${API_SERVER_URL}/player/${uuid ? uuid + '/name' : ''}`);
+
+        console.log('Fetching: ' + `${API_SERVER_URL}/player/${uuid ? uuid + '/name' : ''}`);
 
         // Send Username submission to the server, or update the player's username
         const response = await fetch(`${API_SERVER_URL}/player/${uuid ? uuid + '/name' : ''}`, {
@@ -73,14 +73,14 @@ const index = () => {
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify({ username }),
-        }).catch(e => console.error);
+        }).catch((e) => console.error);
 
         // Check server response
         if (response.ok) {
             // Process server response
             const data = await response.json();
             console.log(data.message);
-            
+
             // The user was required to submit a username
             if (forceUsername) {
                 // Disable the forced-username input
@@ -94,7 +94,7 @@ const index = () => {
             // Update the username
             // Ensure it is saved
             setItem('Username', username);
-            
+
             // Check for UUID returned
             if (data.UUID) {
                 // Store the UUID in device storage
@@ -104,22 +104,21 @@ const index = () => {
 
             // Save the updated User and UUID data
             await saveItems('Username', 'UUID');
-        }
-        else {
+        } else {
             console.error(`Failed to register or update player name.`);
         }
-    }
+    };
 
     /**
      * Update player statistics from server
      * Otherwise use existing stored values (by default, defaults.json)
      * @example
-     * 
+     *
      * // When app opened, update stats to match server
-     * 
+     *
      * // Update with server
      * await fetchPlayerData();
-     * 
+     *
      * // Log the latest HighScore and LongestGame values
      * console.log(getItem('HighScore'));
      * console.log(getItem('LongestGame'));
@@ -130,14 +129,14 @@ const index = () => {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
-            }
+            },
         });
 
         // Check response
         if (response.ok) {
             // Get the player data
             const data = await response.json();
-            
+
             // Log any server message
             if (data.message) console.log(data.message);
 
@@ -148,26 +147,25 @@ const index = () => {
                 setItem(key, data[key]);
                 await saveItems(key);
             }
-        }
-        else {
+        } else {
             console.log('Encountered an error fetching playerdata');
         }
-    }
+    };
 
     // Execute as soon as the data loads
     useEffect(() => {
-        console.log("Loading Data");
+        console.log('Loading Data');
         if (!dataLoaded) return;
 
         // Get the stored Username
         const savedUUID = getItem('UUID');
 
-        console.log("UUID: " + savedUUID);
+        console.log('UUID: ' + savedUUID);
 
         // NO DATA
         // No username has been saved
-        if (savedUUID == "") {
-            console.log("Showing Stetings")
+        if (savedUUID == '') {
+            console.log('Showing Stetings');
             // Display the settings menu
             openSettings(true);
             showSettings();
@@ -177,11 +175,11 @@ const index = () => {
         }
         // Fetch player data if the player is registered
         else {
-            console.log("Applying Stored Username");
+            console.log('Applying Stored Username');
             // Apply the saved username
             setUsername(getItem('Username'));
 
-            console.log("Fetching Server Data");
+            console.log('Fetching Server Data');
             // Update Player data
             fetchPlayerData();
         }
@@ -221,20 +219,20 @@ const index = () => {
         // Action based on validity
         if (!isValidUsername(username)) {
             console.log(`Invalid Username: ${username}`);
-            
+
             // Reset to valid username
             setUsername(getItem('Username'));
-            
+
             // Display username error
             showUsernameError(true);
             return;
         }
-        
+
         console.log(`Username Submitted: ${username}`);
-        
+
         // Update the player name (using getItem('Username'))
         registerOrUpdateName();
-    }
+    };
 
     const showSettings = () => {
         if (!settings) return null;
@@ -247,11 +245,15 @@ const index = () => {
                     console.log('Settings Opened');
                     setWrapperTitle('Settings');
                 }}
-                onClose={forceUsername ? null : () => {
-                    console.log('Settings Closed');
-                    openSettings(false);
-                    setWrapperTitle('');
-                }}>
+                onClose={
+                    forceUsername
+                        ? null
+                        : () => {
+                              console.log('Settings Closed');
+                              openSettings(false);
+                              setWrapperTitle('');
+                          }
+                }>
                 {/* Settings Components */}
                 <KeyboardAvoidingView
                     behavior={Platform.OS === 'ios' ? 'padding' : 'height'} // Or 'position' for Android if 'height' doesn't work
@@ -273,43 +275,37 @@ const index = () => {
                     />
                 </KeyboardAvoidingView>
                 {/* UUID Display */}
-                { getItem('UUID') &&
+                {getItem('UUID') && (
                     <View style={{ marginTop: 10, alignContent: 'center', ...styles.row }}>
-                        <TextInput
-                            style={{ width: '50%', alignSelf: 'center' }}
-                            theme={{ roundness: 10 }}
-                            label="UUID"
-                            value={getItem('UUID')}
-                            editable={false}
-                            selectTextOnFocus={true}
-                        />
+                        <TextInput style={{ width: '50%', alignSelf: 'center' }} theme={{ roundness: 10 }} label="UUID" value={getItem('UUID')} editable={false} selectTextOnFocus={true} />
                     </View>
-                }
+                )}
                 {/* About The Authors -- Additional Information */}
-                <Button style={{ ...styles.row, position: 'relative', top: '90%'}} mode="text" onPress={() => {
-                    openSettings(false);
-                    router.navigate("/info");
-                }}>
+                <Button
+                    style={{ ...styles.row, position: 'relative', top: '90%' }}
+                    mode="text"
+                    onPress={() => {
+                        openSettings(false);
+                        router.navigate('/info');
+                    }}>
                     About The Authors
                 </Button>
                 {/* Edit-Username Error Dialog */}
-                <InfoDialog 
-                    title="Invalid Username"
-                    info="A username may only contain a-z, A-Z, '_', and spaces." 
-                    isError={true}
-                    visible={usernameError}
-                    onConfirm={() => showUsernameError(false)}
-                />
+                <InfoDialog title="Invalid Username" info="A username may only contain a-z, A-Z, '_', and spaces." isError={true} visible={usernameError} onConfirm={() => showUsernameError(false)} />
                 {/* Reset-Username Confirm Dialog */}
                 <ConfirmDialog
-                    title={ (forceUsername ? 'Enter' : 'Reset') + "Username" }
+                    title={(forceUsername ? 'Enter' : 'Reset') + 'Username'}
                     info="You must enter a username to continue. You may change this in settings at any time."
                     visible={usernameConfirm}
-                    onDeny={forceUsername ? null : () => {
-                        console.log('Cancelled Username change.');
-                        // Hide username input
-                        showUsernameConfirm(false); // Hide ConfirmDialog
-                    }}
+                    onDeny={
+                        forceUsername
+                            ? null
+                            : () => {
+                                  console.log('Cancelled Username change.');
+                                  // Hide username input
+                                  showUsernameConfirm(false); // Hide ConfirmDialog
+                              }
+                    }
                     onConfirm={() => {
                         console.log('Enable Username Input');
                         // Enable username input
@@ -337,19 +333,22 @@ const index = () => {
                     openStats(false);
                     setWrapperTitle('');
                 }}>
-                <FlatList
-                    data={playerStats}
-                    renderItem={({ item }) => {
-                        // Destructure item from the object
-                        return (
-                            <View style={styles.row}>
-                                <Text variant="bodyLarge">{item[0]}:</Text>
-                                <Text variant="bodyLarge">{item[1]}</Text>
-                            </View>
-                        );
-                    }}
-                    keyExtractor={(item, index) => index.toString()}
-                />
+                <ScrollView>
+                    <DataTable>
+                        <DataTable.Header>
+                            <DataTable.Title>Statistic</DataTable.Title>
+                            <DataTable.Title numeric>Value</DataTable.Title>
+                        </DataTable.Header>
+
+                        {playerStats &&
+                            playerStats.map((item, index) => (
+                                <DataTable.Row key={index}>
+                                    <DataTable.Cell>{item[0]}</DataTable.Cell>
+                                    <DataTable.Cell numeric>{item[1]}</DataTable.Cell>
+                                </DataTable.Row>
+                            ))}
+                    </DataTable>
+                </ScrollView>
             </Wrapper>
         );
     };

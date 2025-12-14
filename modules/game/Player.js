@@ -143,10 +143,19 @@ export default class Player {
      * @returns {Object} {x, y}
      */
     getProjectileSpawnLocation() {
-        // Calculate the spawn location based on the rotation
+        // Calculate the center of the player visual
+        const centerX = this.x;
+        const centerY = this.y - (this.#height / 2);
+
+        // Calculate the spawn location based on the rotation around the center
         const angle = this.rotation * (Math.PI / 180);
-        const x = this.x + (this.spawnOffset.x * Math.cos(angle)) - (this.spawnOffset.y * Math.sin(angle));
-        const y = this.y + (this.spawnOffset.x * Math.sin(angle)) + (this.spawnOffset.y * Math.cos(angle));
+
+        // Apply rotation to the offset
+        const rotatedOffsetX = (this.spawnOffset.x * Math.cos(angle)) - (this.spawnOffset.y * Math.sin(angle));
+        const rotatedOffsetY = (this.spawnOffset.x * Math.sin(angle)) + (this.spawnOffset.y * Math.cos(angle));
+
+        const x = centerX + rotatedOffsetX;
+        const y = centerY + rotatedOffsetY;
 
         return { x, y };
     }

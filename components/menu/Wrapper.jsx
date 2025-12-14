@@ -12,11 +12,15 @@ const Wrapper = ({ children, title, subtitle, onOpen, onClose, style }) => {
 
     return (
         <Portal>
-            <Dialog visible={true} style={[style, wrapperStyles.container]} onDismiss={onClose ? onClose : () => { }}>
-                <Dialog.Actions style={wrapperStyles.close}>
-                    {onClose && <FAB icon="close" onPress={onClose} />}
-                </Dialog.Actions>
-                <Dialog.Title style={wrapperStyles.title}>{title}</Dialog.Title>
+            <Dialog visible={true} style={[style, wrapperStyles.container]} onDismiss={onClose ? onClose : () => {}}>
+                <View style={wrapperStyles.headerContainer}>
+                    <Dialog.Title style={wrapperStyles.title}>{title}</Dialog.Title>
+                    {onClose && (
+                        <View style={wrapperStyles.closeButtonContainer}>
+                            <FAB icon="close" onPress={onClose} />
+                        </View>
+                    )}
+                </View>
                 <Dialog.Content style={wrapperStyles.content}>{children}</Dialog.Content>
             </Dialog>
         </Portal>
@@ -27,25 +31,32 @@ const wrapperStyles = StyleSheet.create({
     container: {
         width: '80%',
         height: '90%',
-        alignSelf: 'center'
+        alignSelf: 'center',
+        overflow: 'hidden',
     },
-    close: {
-        position: 'absolute',
-        alignSelf: 'flex-end',
-        zIndex: 1,
-        opacity: 1,
+    headerContainer: {
+        flexDirection: 'row',
+        alignItems: 'flex-start',
+        justifyContent: 'center',
+        paddingVertical: 10,
+        minHeight: 80,
+        zIndex: 2,
+        marginTop: 0,
     },
     title: {
+        margin: 0, // Remove default margin
+        textAlign: 'center',
+    },
+    closeButtonContainer: {
         position: 'absolute',
-        top: -10,
-        alignSelf: 'center',
-        zIndex: 2,
-        padding: 0,
-        opacity: 1,
+        right: 12,
+        top: 0,
+        bottom: 0,
+        justifyContent: 'center',
     },
     content: {
-        opacity: 1,
-        marginTop:50
+        flex: 1,
+        marginTop: 0, // Removed fixed margin
     },
 });
 
