@@ -1,10 +1,27 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { View, Image, Animated, StyleSheet, Dimensions } from 'react-native';
+import { View, Image, Animated, StyleSheet, Pressable } from 'react-native';
 import { Text } from 'react-native-paper'; 
 
 const SplashScreen = ({ onFinish }) => {
     const fadeAnim = useRef(new Animated.Value(0)).current;
+    const currentAnim = useRef(null);
     const [stage, setStage] = useState(1);
+
+    const skipAnimation = () => {
+        if (currentAnim.current) {
+            currentAnim.current.stop();
+            // Immediately fade out to skip the delay
+            Animated.timing(fadeAnim, {
+                toValue: 0,
+                duration: 300,
+                useNativeDriver: true,
+            }).start(({ finished }) => {
+                if (finished) {
+                    setStage(s => s + 1);
+                }
+            });
+        }
+    };
 
     useEffect(() => {
         if (stage > 3) {
@@ -30,18 +47,22 @@ const SplashScreen = ({ onFinish }) => {
                 duration: 1000,
                 useNativeDriver: true,
             }),
-        ])
+        ]);
+
+        currentAnim.current = anim;
         
-        anim.start(() => {
-            console.log("Stage " + stage + " completed");
-            setStage(s => s + 1);
-        })
+        anim.start(({ finished }) => {
+            if (finished) {
+                console.log("Stage " + stage + " completed");
+                setStage(s => s + 1);
+            }
+        });
 
         return () => anim.stop();
     }, [stage]);
 
     return (
-        <View style={styles.container}>
+        <Pressable style={styles.container} onPress={skipAnimation}>
             <Animated.View style={{ opacity: fadeAnim }}>
                 {stage == 1 && 
                     <View style={styles.flexColumn}>
@@ -66,7 +87,7 @@ const SplashScreen = ({ onFinish }) => {
                     </View>
                 }
             </Animated.View>
-        </View>
+        </Pressable>
     );
 };
 
@@ -96,10 +117,7 @@ const styles = StyleSheet.create({
     text: {
         fontSize: 20,
         fontFamily: 'system-ui',
-        color:"white",
-        green:{
-            color: 'green'
-        }
+        color: "white"
     },
 });
 

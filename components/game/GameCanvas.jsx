@@ -5,8 +5,6 @@
 // components/game/GameCanvas.jsx
 import React from 'react';
 import { StyleSheet, View, Image, Dimensions } from 'react-native';
- 
-const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('screen');
 
 const guy = require("../../assets/guy.png");
 const bad_guy = require("../../assets/bad_guy.png");

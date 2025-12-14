@@ -12,7 +12,7 @@ import { v4 as uuid } from 'uuid';
 const uri = process.env.DB_LINK;
 
 if (!uri) {
-    console.log("Warning: DB_LINK not found in .env");
+    console.log("[Warning] DB_LINK not found in .env");
 }
 
 // Initialize database stuff
@@ -39,6 +39,7 @@ app.use(express.urlencoded({ extended: true }));
 
 // ----- (INSECURE) Auth Middleware -----
 const validateUser = async (req, res, next) => {
+    console.log("[validateUser] Validating user");
     // Pull the UUID from the request body, otherwise the request path
     const { uuid } = req.body || req.params;
     
@@ -46,17 +47,20 @@ const validateUser = async (req, res, next) => {
     const user = usersCollection.findOne({ uuid });
 
     if (!user) {
+        console.warn("[validateUser] Player not found");
         return res.status(404).json({
             detail: "Player not found"
         });
     }
 
+    console.log("[validateUser] User validated");
     next();
 };
 
 // ----- ROUTES -----
 app.post("/player", async (req, res) => {
     try {
+        console.log("[POST /player] Creating player");
         // 1. Get the username from the request
         const { username } = req.body;
 
@@ -78,12 +82,13 @@ app.post("/player", async (req, res) => {
         await playerdataCollection.insertOne({ UUID });
 
         // Return the UUID
+        console.log("[POST /player] Player created successfully");
         res.status(201).json({
-            message: "User created successfully",
+            message: "Player created successfully",
             UUID,
         });
     } catch (e) {
-        console.error("Signup error:", e);
+        console.error("[POST /player] Signup error:", e);
         res.status(500).json({ detail: `Database error: ${e.message}` });
     }
 });
@@ -95,11 +100,13 @@ app.put("/player/:uuid/name", validateUser, async (req, res) => {
         const { uuid } = req.params;
         const { username } = req.body;
 
+        console.log(`[PUT /player/${uuid}/name] Updating player name`);
         // Check if user exists
         const found = await usersCollection.findOne({ UUID: uuid });
 
         // User does not exist
         if (!found) {
+            console.warn(`[PUT /player/${uuid}/name] Player not found`);
             return res.status(404).json({ detail: "Player not found" });
         }
 
@@ -112,11 +119,12 @@ app.put("/player/:uuid/name", validateUser, async (req, res) => {
         });
         
         // Return the UUID
+        console.log(`[PUT /player/${uuid}/name] Player name updated successfully`);
         res.status(201).json({
             message: "Username updated successfully"
         });
     } catch (e) {
-        console.error("Username error:", e);
+        console.error(`[PUT /player/${uuid}/name] Username error:`, e);
         res.status(500).json({ detail: `Database error: ${e.message}` });
     }
 });
@@ -124,21 +132,24 @@ app.put("/player/:uuid/name", validateUser, async (req, res) => {
 // ----- Playerdata Routes -----
 app.get("/player/:uuid", validateUser, async (req, res) => {
     try {
+       
 		// Get the UUID from the path
 		const { uuid } = req.params;
-
+ console.log(`[GET /player/${uuid}] Getting player data`);
         const playerdata = await playerdataCollection.findOne({ UUID: uuid });
 
         // Remove the document ID
         delete playerdata._id;
 
         if (!playerdata) {
+            console.warn(`[GET /player/${uuid}] Player not found`);
             return res.status(404).json({ detail: "Player not found" });
         }
 
+        console.log(`[GET /player/${uuid}] Player data retrieved successfully`);
         res.json(playerdata);
     } catch (e) {
-        console.error("Database error:", e);
+        console.error(`[GET /player/${uuid}] Database error:`, e);
 
         if (e.name === "MongoError" || e.name === "MongoServerError") {
             res.status(503).json({ detail: "Database not reachable" });
@@ -152,9 +163,10 @@ app.get("/player/:uuid", validateUser, async (req, res) => {
 // No need to POST (Create) it.
 app.put("/player/:uuid", validateUser, async (req, res) => {
     try {
+        
 		// Get the UUID from the path
 		const { uuid } = req.params;
-		
+		console.log(`[PUT /player/${uuid}] Updating player data`);
 		// TODO: Add correct playerdata scores
         const { HighScore, TotalTimePlayed, LongestGame, Duration } = req.body;
 
@@ -162,10 +174,11 @@ app.put("/player/:uuid", validateUser, async (req, res) => {
         const playerdata = await playerdataCollection.findOne({ uuid });
 
         if (!playerdata) {
-            console.log("Player not found");
+            console.warn(`[PUT /player/${uuid}] Player not found`);
             return res.status(404).json({ detail: "Player not found" });
         }
 
+        console.log(`[PUT /player/${uuid}] Player data updated successfully`);
         // Use Try-Catch to prevent malicious data
         try {
             // Update the scores
@@ -176,17 +189,21 @@ app.put("/player/:uuid", validateUser, async (req, res) => {
                 LongestGame: Number.parseInt(LongestGame),
             };
 
+            console.log(`[PUT /player/${uuid}] Updating player data`);
+
             // Update document in MongoDB
             await playerdataCollection.updateOne({ UUID: uuid }, { $set: updates });
 
+            console.log(`[PUT /player/${uuid}] Player data updated successfully`);    
             res.json({ message: "Playerdata updated successfully" });
         }
         catch {
+            console.warn(`[PUT /player/${uuid}] Something went wrong saving data`);
             return res.status(400).json({ detail: "Something went wrong saving data" });
         }
 
     } catch (e) {
-        console.error("Update error:", e);
+        console.error(`[PUT /player/${uuid}] Update error:`, e);
 
         if (e.name === "MongoError" || e.name === "MongoServerError") {
             res.status(503).json({ detail: "Database not reachable" });
@@ -201,19 +218,20 @@ app.get("/level/:key", validateUser, async (req, res) => {
     try {
 		// TODO: Implement key for leveldata
 		const { key } = req.params;
-
+        console.log(`[GET /level/${key}] Getting leveldata`);
 		// Get the leveldata
         const leveldata = await leveldataCollection.findOne({ key });
 
 		if (!leveldata) {
-			console.log("Leveldata not found!");
+			console.warn(`[GET /level/${key}] Leveldata not found!`);
 			res.status(404).json({ detail: "Level not found"});
 		}
 		else {
+			console.log(`[GET /level/${key}] Leveldata retrieved successfully`);
 			res.json(leveldata);
 		}
     } catch (e) {
-        console.error("Database error:", e);
+        console.error(`[GET /level/${key}] Database error:`, e);
 
         if (e.name === "MongoError" || e.name === "MongoServerError") {
             res.status(503).json({ detail: "Database not reachable" });
