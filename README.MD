@@ -1,6 +1,6 @@
 # 🎯 Midterm Evaluation
 
-![GitHub Commit Activity](https://img.shields.io/github/commit-activity/m/retreat896/MobileDev-Final?color=blue&logo=github) ![Last Commit](https://img.shields.io/github/last-commit/retreat896/MobileDev-Final?color=green)
+![GitHub Commit Activity](https://img.shields.io/github/commit-activity/m/retreat896/MobileDev-Midterm?color=blue&logo=github) ![Last Commit](https://img.shields.io/github/last-commit/retreat896/MobileDev-Midterm?color=green)
 
 ### 🔫 Shooter – A 2D Top-Down React Native Game
 
@@ -24,9 +24,9 @@ The app features:
 
 | Screen | Description |
 |:---|:---|
-| 🏠 **Main Menu** | Displays game title, team info, and a button to start the game. TODO: Also includes a player stats screen.  |
+| 🏠 **Main Menu** | Displays game title, team info, and a button to start the game. Also includes a player stats screen.  |
 | 🎮 **Game Screen** | The main gameplay area. The player remains **fixed at the right** of the screen and cannot move. Enemies spawn from the left and move horizontally toward the right. Tapping the screen fires projectiles that can destroy enemies. |
-| 💀 **Game Over Screen** | Displays the final score after the player loses, TODO: with an option to restart or return to the main menu. |
+| 💀 **Game Over Screen** | Displays the final score after the player loses, with an option to restart or return to the main menu. |
 
 ---
 
@@ -44,8 +44,8 @@ The app features:
 ### 1️⃣ Clone the Repository
 
 ```bash
-git clone https://github.com/retreat896/MobileDev-Final.git
-cd MobileDev-Final
+git clone https://github.com/retreat896/MobileDev-Midterm.git
+cd MobileDev-Midterm
 ````
 
 ### 2️⃣ Install Dependencies
@@ -93,30 +93,42 @@ eas build --platform android --profile preview --local
 Mobile-Midterm/
 ├── app/
 │   ├── index.jsx               # Main Menu
-│   ├── Game.jsx                # Game Screen
+│   ├── GameScreen.jsx          # Game Screen
 │   ├── GameOver.jsx            # Game Over Screen
+│   ├── info.jsx                # Info / About Screen
 │   └── _layout.jsx             # App Wrapper
 ├── assets/                     # Images & static resources
 │   └───fonts/
 ├── components/                 # Reusable UI Components
-│   └───menu/
-│       ├───CoolerButton.jsx
-│       ├───Level.jsx
-│       ├───LevelSelect.jsx
-│       ├───MainMenu.jsx
-│       └───Wrapper.jsx
+│   ├───game/
+│   │   ├───GameCanvas.jsx
+│   │   ├───GameHUD.jsx
+│   │   └───PauseMenu.jsx
+│   ├───menu/
+│   │   ├───ConfirmDialog.jsx
+│   │   ├───CoolerButton.jsx
+│   │   ├───InfoDialog.jsx
+│   │   ├───LevelSelect.jsx
+│   │   ├───MainMenu.jsx
+│   │   └───Wrapper.jsx
+│   ├── DataContext.jsx         # Global Data State
+│   ├── LevelContext.jsx        # Level Management
+│   └── SplashScreen.jsx        # Custom Loading Screen
 ├── modules/                    # Shared logic (e.g., game logic)
 │   └───game/
-│       ├───enemy.js
-│       ├───player.jsx
-│       └───projectile.js
+│       ├───CollisionDetector.js
+│       ├───Enemy.js
+│       ├───EnemySpawner.js
+│       ├───Player.js
+│       └───Projectile.js
 ├── styles/                     # Reusable StyleSheets
-│   └───main.jsx
+│   ├───main.jsx
 │   └───game.jsx
 ├── .gitignore
 ├── App-Wireframe.excalidraw    # Proposed App Layout
 ├── app.json
 ├── babel.config.js
+├── dev.js                      # Custom Dev Runner
 ├── package-lock.json
 ├── package.json
 ├── README.md
@@ -143,7 +155,7 @@ Mobile-Midterm/
 
 ## 🤖 Generative AI Acknowledgment
 
-* [Readme.md](http://Readme.md) Formatting help. TODO
+* Code generation assistance for boilerplate logic and refactoring.
 
 ---
 
@@ -160,13 +172,13 @@ Mobile-Midterm/
 
 ### 🔍 Contribution Overview
 
-![GitHub Commit Activity](https://img.shields.io/github/commit-activity/m/retreat896/MobileDev-Final?color=blue\&logo=github) ![Last Commit](https://img.shields.io/github/last-commit/retreat896/MobileDev-Final?color=green)
+![GitHub Commit Activity](https://img.shields.io/github/commit-activity/m/retreat896/MobileDev-Midterm?color=blue\&logo=github) ![Last Commit](https://img.shields.io/github/last-commit/retreat896/MobileDev-Midterm?color=green)
 
 ### 📈 Graphs & Analytics
 
-[![GitHub Graphs](https://github-readme-activity-graph.vercel.app/graph?username=retreat896\&repo=MobileDev-Final\&theme=react-dark)](https://github.com/retreat896/MobileDev-Final)
+[![GitHub Graphs](https://github-readme-activity-graph.vercel.app/graph?username=retreat896\&repo=MobileDev-Midterm\&theme=react-dark)](https://github.com/retreat896/MobileDev-Midterm)
 
-[![GitHub Graphs](https://github-readme-activity-graph.vercel.app/graph?username=JMalland\&repo=MobileDev-Final\&theme=react-dark)](https://github.com/retreat896/MobileDev-Final)
+[![GitHub Graphs](https://github-readme-activity-graph.vercel.app/graph?username=JMalland\&repo=MobileDev-Midterm\&theme=react-dark)](https://github.com/retreat896/MobileDev-Midterm)
 
 ---
 
