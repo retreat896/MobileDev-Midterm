@@ -1,98 +1,52 @@
 [
     {
-        "name": "Cloudy-Hills Sunset",
-        "image": "/assets/backgrounds/used/Cloudy_Hills_Sunset.jpg",
-        "enemySpawn": {"x": 0, "y": 300},
-        "playerSpawn": {"x": 700, "y": 300}
-    },
-    {
-        "name": "Desert Sunset",
-        "image": "/assets/backgrounds/used/Desert_Sunset.jpg",
-        "enemySpawn": {"x": 0, "y": 300},
-        "playerSpawn": {"x": 700, "y": 300}
-    },
-    {
-        "name": "Island Sunset",
-        "image": "/assets/backgrounds/used/Island_Sunset.jpg",
-        "enemySpawn": {"x": 0, "y": 300},
-        "playerSpawn": {"x": 700, "y": 300}
-    },
-    {
-        "name": "Ocean 4",
-        "image": "/assets/backgrounds/used/Ocean_4.png",
-        "enemySpawn": {"x": 0, "y": 300},
-        "playerSpawn": {"x": 700, "y": 300}
-    },
-    {
-        "name": "Ocean 5",
-        "image": "/assets/backgrounds/used/Ocean_5.png",
-        "enemySpawn": {"x": 0, "y": 300},
-        "playerSpawn": {"x": 700, "y": 300}
-    },
-    {
-        "name": "Ocean 6",
-        "image": "/assets/backgrounds/used/Ocean_6.png",
-        "enemySpawn": {"x": 0, "y": 300},
-        "playerSpawn": {"x": 700, "y": 300}
-    },
-    {
-        "name": "Ocean 7",
-        "image": "/assets/backgrounds/used/Ocean_7.png",
-        "enemySpawn": {"x": 0, "y": 300},
-        "playerSpawn": {"x": 700, "y": 300}
-    },
-    {
-        "name": "Ocean 8",
-        "image": "/assets/backgrounds/used/Ocean_8.png",
-        "enemySpawn": {"x": 0, "y": 300},
-        "playerSpawn": {"x": 700, "y": 300}
-    },
-    {
-        "name": "Outer Space",
-        "image": "/assets/backgrounds/used/Outer_Space.jpg",
-        "enemySpawn": {"x": 0, "y": 300},
-        "playerSpawn": {"x": 700, "y": 300}
-    },
-    {
-        "name": "Pixelated Desert",
-        "image": "/assets/backgrounds/used/Pixelated_Desert.jpg",
-        "enemySpawn": {"x": 0, "y": 300},
-        "playerSpawn": {"x": 700, "y": 300}
-    },
-    {
-        "name": "Pixelated Mountains",
-        "image": "/assets/backgrounds/used/Pixelated_Mountains.jpg",
-        "enemySpawn": {"x": 0, "y": 300},
-        "playerSpawn": {"x": 700, "y": 300}
-    },
-    {
-        "name": "Snowy Mountain",
-        "image": "/assets/backgrounds/used/Snowy_Mountain.jpg",
-        "enemySpawn": {"x": 0, "y": 300},
-        "playerSpawn": {"x": 700, "y": 300}
-    },
-    {
-        "name": "Tall Forest",
-        "image": "/assets/backgrounds/used/Tall_Forest.jpg",
-        "enemySpawn": {"x": 0, "y": 300},
-        "playerSpawn": {"x": 700, "y": 300}
-    },
-    {
-        "name": "The Moon",
-        "image": "/assets/backgrounds/used/The_Moon.jpg",
-        "enemySpawn": {"x": 0, "y": 300},
-        "playerSpawn": {"x": 700, "y": 300}
-    },
-    {
-        "name": "Treetop Forest",
-        "image": "/assets/backgrounds/used/Treetop_Forest.jpg",
-        "enemySpawn": {"x": 0, "y": 300},
-        "playerSpawn": {"x": 700, "y": 300}
-    },
-    {
-        "name": "Secret Waterfall",
-        "image": "/assets/backgrounds/used/Secret_Waterfall.jpg",
-        "enemySpawn": {"x": 0, "y": 300},
-        "playerSpawn": {"x": 700, "y": 300}
+        "name": "Hedge",
+        "image": "/assets/backgrounds/used/Hedge.jpg",
+        "enemySpawn": [{ "x": 0, "y": 460 }],
+        "playerSpawn": { "x": 650, "y": 400 },
+        "enemyPaths": [
+            [
+                { "x": 0, "y": 460 },
+
+                { "x": 50, "y": 460 },
+                { "x": 50, "y": 360 },
+
+                { "x": 160, "y": 360 },
+                { "x": 160, "y": 500 },
+
+                { "x": 270, "y": 500 },
+                { "x": 270, "y": 250 },
+
+                { "x": 360, "y": 250 },
+                { "x": 360, "y": 580 },
+
+                { "x": 470, "y": 580 },
+                { "x": 470, "y": 150 },
+
+                { "x": 570, "y": 150 },
+                { "x": 570, "y": 670 },
+
+                { "x": 670, "y": 670 },
+                { "x": 670, "y": 150 },
+
+                { "x": 770, "y": 150 },
+                { "x": 770, "y": 580 },
+
+                { "x": 880, "y": 580 },
+                { "x": 880, "y": 250 },
+
+                { "x": 980, "y": 250 },
+                { "x": 980, "y": 500 },
+
+                { "x": 1080, "y": 500 },
+                { "x": 1080, "y": 360 },
+
+                { "x": 1100, "y": 360 },
+                { "x": 1100, "y": 460 },
+
+                { "x": 1200, "y": 460 },
+                { "x": 1200, "y": 460 }
+            ]
+        ]
     }
 ]

@@ -2,6 +2,8 @@ import React, { createContext, useContext, useState, useRef, useEffect } from 'r
 import Level from '@modules/menu/Level';
 import leveldata from '@assets/leveldata.json';
 
+import { BackgroundImages } from '@modules/AssetMap';
+
 /**
  * Retreive the neccesary data to create all the Levels from leveldata.json
  */
@@ -13,20 +15,28 @@ async function fetchLevels() {
         // The Level to create
         let levelToAdd = new Level(level.name);
 
-        // Construct the image URL
-        // We use the direct URL instead of fetching as blob to avoid issues
-        // Handle leading slash in level.image
-        const imagePath = level.image.startsWith('/') ? level.image.substring(1) : level.image;
-        const imageUrl = "https://raw.githubusercontent.com/retreat896/MobileDev-Midterm/main/" + imagePath;
-        
-        // Set the Image using the direct URL
-        levelToAdd.setImageURI(imageUrl);
+        // Check if we have a local mapping for this image
+        if (BackgroundImages[level.image]) {
+            levelToAdd.setImage(BackgroundImages[level.image]);
+        } else {
+            // Construct the image URL
+            // We use the direct URL instead of fetching as blob to avoid issues
+            // Handle leading slash in level.image
+            const imagePath = level.image.startsWith('/') ? level.image.substring(1) : level.image;
+            const imageUrl = 'https://raw.githubusercontent.com/retreat896/MobileDev-Midterm/main/' + imagePath;
+
+            // Set the Image using the direct URL
+            levelToAdd.setImageURI(imageUrl);
+        }
 
         if (level.enemySpawn) {
             levelToAdd.setEnemySpawn(level.enemySpawn);
         }
         if (level.playerSpawn) {
             levelToAdd.setPlayerSpawn(level.playerSpawn);
+        }
+        if (level.enemyPaths) {
+            levelToAdd.setEnemyPaths(level.enemyPaths);
         }
 
         // Add the Level to the list

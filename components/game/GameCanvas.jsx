@@ -11,54 +11,55 @@ const bad_guy = require("../../assets/bad_guy.png");
  
 export default function GameCanvas({ player, projectiles, enemies }) {
   return (
-    <>
-      {/* Player */}
-      <Image
-        style={[
-          styles.player,
-          {
-            width: player.getWidth() * 2,
-            height: player.getHeight(),
-            left: player.getDisplayX(),
-            top: player.getDisplayY(),
-            transform: [{ rotate: `${player.rotation}deg` }],
-          },
-        ]}
-        source={guy}
-        resizeMode="contain"
-      />
+      <>
+          {/* Player */}
+          <Image
+              style={[
+                  styles.player,
+                  {
+                      width: player.getWidth() * 2,
+                      height: player.getHeight(),
+                      left: player.getDisplayX(),
+                      top: player.getDisplayY(),
+                      transform: [{ rotate: `${player.rotation}deg` }],
+                  },
+              ]}
+              source={guy}
+              resizeMode="contain"
+          />
 
-      {/* Projectiles */}
-      {projectiles.map((p, i) => (
-        <View
-          key={`projectile-${i}`}
-          style={[
-            styles.projectile,
-            {
-              left: p.getDisplayX(),
-              top: p.getDisplayY(),
-            },
-          ]}
-        />
-      ))}
+          {/* Projectiles */}
+          {projectiles.map((p, i) => (
+              <View
+                  key={`projectile-${i}`}
+                  style={[
+                      styles.projectile,
+                      {
+                          left: p.getDisplayX(),
+                          top: p.getDisplayY(),
+                      },
+                  ]}
+              />
+          ))}
 
-      {/* Enemies */}
-      {enemies.map((e, i) => (
-        <Image
-          key={`enemy-${i}`}
-          style={[
-            styles.enemy,
-            {
-              left: e.x,
-              top: e.y,
-              width: e.getWidth(),
-              height: e.getHeight(),
-            },
-          ]}
-          source={bad_guy}
-        />
-      ))}
-    </>
+          {/* Enemies */}
+          {enemies.map((e, i) => (
+              <Image
+                  key={`enemy-${i}`}
+                  style={[
+                      styles.enemy,
+                      {
+                          left: e.x,
+                          top: e.y,
+                          width: e.getWidth(),
+                          height: e.getHeight(),
+                          transform: [{ rotate: `${e.rotation}deg` }],
+                      },
+                  ]}
+                  source={bad_guy}
+              />
+          ))}
+      </>
   );
 }
 

@@ -12,7 +12,7 @@ import { CollisionDetector } from '@modules/game/CollisionDetector';
 const PLAYER_START_HP = 10;
 // const PLAYER = new Player(SCREEN_WIDTH - 100, SCREEN_HEIGHT / 2, PLAYER_START_HP);
 
-export function useGameLoop({ width, height, offsetX = 0, offsetY = 0 }) {
+export function useGameLoop({ width, height, scale = 1, offsetX = 0, offsetY = 0, spawnPoints = [], enemyPaths = [], playerSpawn = null }) {
     // ... (state init)
 
     const [gameState, setGameState] = useState({
@@ -24,8 +24,8 @@ export function useGameLoop({ width, height, offsetX = 0, offsetY = 0 }) {
     const playerRef = useRef(null);
     if (!playerRef.current) {
         playerRef.current = new Player(
-            width - 100,
-            height / 2,
+            playerSpawn ? playerSpawn.x : width - 100,
+            playerSpawn ? playerSpawn.y : height / 2,
             PLAYER_START_HP,
             50,
             50,
@@ -57,23 +57,37 @@ export function useGameLoop({ width, height, offsetX = 0, offsetY = 0 }) {
         return path;
     };
 
-    const levelPathRef = useRef(null);
+    const levelPathsRef = useRef([]);
 
     // Execute when loaded
     useEffect(() => {
-        // Generate the path once
-        // Default start at random Y on left side if not specified (though we use 0,0 mostly for offscreen spawn)
-        let startY = Math.random() * (height - 100);
-        levelPathRef.current = generateComplexPath(0, startY, 5);
+        // Generate the paths
+        if (enemyPaths && enemyPaths.length > 0) {
+            // Use defined paths if available
+            levelPathsRef.current = enemyPaths;
+        } else if (spawnPoints && spawnPoints.length > 0) {
+            // If spawnPoints provided, generate paths for each
+            levelPathsRef.current = spawnPoints.map(
+                (point) => generateComplexPath(point.x || 0, point.y, 5) // Use point.y from data
+            );
+        } else {
+            // Fallback: Generate one random path
+            let startY = Math.random() * (height - 100);
+            levelPathsRef.current = [generateComplexPath(0, startY, 5)];
+        }
 
         // Initialize the EnemySpawner
         enemySpawnerRef.current = new EnemySpawner(height, (enemy) => {
-            // Apply the path
-            if (levelPathRef.current) {
-                enemy.setPath(levelPathRef.current);
+            // Apply a random path
+            if (levelPathsRef.current.length > 0) {
+                // Pick a random path from the available ones
+                const randomPathIndex = Math.floor(Math.random() * levelPathsRef.current.length);
+                const selectedPath = levelPathsRef.current[randomPathIndex];
+
+                enemy.setPath(selectedPath);
                 // Set initial position to start of path
-                enemy.x = levelPathRef.current[0].x;
-                enemy.y = levelPathRef.current[0].y;
+                enemy.x = selectedPath[0].x;
+                enemy.y = selectedPath[0].y;
             } else {
                 // Fallback
                 enemy.y = Math.random() * (height - 100);
@@ -166,9 +180,9 @@ export function useGameLoop({ width, height, offsetX = 0, offsetY = 0 }) {
             // Handle player rotation
             if (touch) {
                 const player = playerRef.current;
-                // Touch location
-                const touchX = touch.event.pageX - offsetX;
-                const touchY = touch.event.pageY - offsetY;
+                const touchX = (touch.event.pageX - offsetX) / scale;
+                const touchY = (touch.event.pageY - offsetY) / scale;
+                // console.log('Touch:', { pageX: touch.event.pageX, pageY: touch.event.pageY });
                 // Distance between player & touch
                 const dx = touchX - player.x;
                 const dy = touchY - player.y;
@@ -207,10 +221,10 @@ export function useGameLoop({ width, height, offsetX = 0, offsetY = 0 }) {
 
             // Check if enemies escaped
             activeEnemies.forEach((e) => {
-                let outOfBounds = playerRef.current.enemyOutOfBounds(e);
+                let reachedEnd = e.hasReachedEndOfPath();
 
-                // The enemy passed the player
-                if (outOfBounds) {
+                // The enemy reached the end of the path
+                if (reachedEnd) {
                     // Apply damage to the player
                     playerRef.current.takeDamage(e.getDamage());
 

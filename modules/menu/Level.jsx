@@ -13,10 +13,11 @@ async function blobToBase64(blob) {
 
 class Level {
     #image;
-    #name="";
+    #name = '';
     #enemySpawn;
+    #enemyPaths;
     #playerSpawn;
-    
+
     /**
      * Create a new Level object
      * @param {*} name The name of the level
@@ -70,11 +71,11 @@ class Level {
         return new Promise(async (resolve, reject) => {
             // Convert the Blob Image to base64 URL
             let blobImageURL = await blobToBase64(blobImage);
-            
+
             // Use the setImageURI method to set the image object values
             // So object creation is only in one spot
             resolve(this.setImageURI(blobImageURL));
-        })
+        });
     }
 
     /**
@@ -84,7 +85,7 @@ class Level {
      */
     setImageURI(url) {
         this.#image = {
-            uri: url
+            uri: url,
         };
         return this;
     }
@@ -96,6 +97,15 @@ class Level {
 
     getEnemySpawn() {
         return this.#enemySpawn;
+    }
+
+    setEnemyPaths(paths) {
+        this.#enemyPaths = paths;
+        return this;
+    }
+
+    getEnemyPaths() {
+        return this.#enemyPaths;
     }
 
     setPlayerSpawn(spawn) {

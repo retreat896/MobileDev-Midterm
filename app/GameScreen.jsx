@@ -14,18 +14,25 @@ export default function GameScreen() {
     const { width: windowWidth, height: windowHeight } = useWindowDimensions();
 
     // Calculate target dimensions for 16:9 aspect ratio
-    const targetRatio = 16 / 9;
+    // Calculate target dimensions for 16:10 aspect ratio
+    const LOGICAL_WIDTH = 1280;
+    const LOGICAL_HEIGHT = 800;
+    const targetRatio = LOGICAL_WIDTH / LOGICAL_HEIGHT;
     let gameWidth, gameHeight;
 
     if (windowWidth / windowHeight > targetRatio) {
-        // Window is wider than 16:9 (pillarbox)
+        // Window is wider than 16:10 (pillarbox)
         gameHeight = windowHeight;
         gameWidth = windowHeight * targetRatio;
     } else {
-        // Window is taller than 16:9 (letterbox)
+        // Window is taller than 16:10 (letterbox)
         gameWidth = windowWidth;
         gameHeight = windowWidth / targetRatio;
     }
+
+    // Determine the scale factor to fit the logical resolution into the gameWidth/Height
+    // Since gameWidth/gameHeight maintains the ratio, we can use either dimension
+    const scale = gameWidth / LOGICAL_WIDTH;
 
     const offsetX = (windowWidth - gameWidth) / 2;
     const offsetY = (windowHeight - gameHeight) / 2;
@@ -33,19 +40,23 @@ export default function GameScreen() {
     return (
         <View style={styles.excludeContainer}>
             <View style={[styles.gameContainer, { width: gameWidth, height: gameHeight }]}>
-                <GameSession
-                    key={`${gameWidth}-${gameHeight}`} // Remount on resize
-                    width={gameWidth}
-                    height={gameHeight}
-                    offsetX={offsetX}
-                    offsetY={offsetY}
-                />
+                {/* Scale the game session to fit the container while maintaining logical resolution */}
+                <View style={{ width: LOGICAL_WIDTH, height: LOGICAL_HEIGHT, transform: [{ scale }], transformOrigin: 'top left' }}>
+                    <GameSession
+                        key={`${gameWidth}-${gameHeight}`} // Remount on resize
+                        width={LOGICAL_WIDTH}
+                        height={LOGICAL_HEIGHT}
+                        scale={scale} // Pass scale for input handling
+                        offsetX={offsetX}
+                        offsetY={offsetY}
+                    />
+                </View>
             </View>
         </View>
     );
 }
 
-function GameSession({ width, height, offsetX, offsetY }) {
+function GameSession({ width, height, scale, offsetX, offsetY }) {
     const [loaded, setLoaded] = useState(false); // Use this to start the game after loading
     const gameEnded = useRef(false); // Prevent multiple game over triggers
     const { level } = useLevel();
@@ -56,7 +67,16 @@ function GameSession({ width, height, offsetX, offsetY }) {
         saveItems, // Save to storage
     } = useData(); // DataContext operations
 
-    const { gameState, player, handleTouch, updateGame, togglePause, getGameDuration, isGameOver } = useGameLoop({ width, height, offsetX, offsetY }); // Custom game-loop operations
+    const { gameState, player, handleTouch, updateGame, togglePause, getGameDuration, isGameOver } = useGameLoop({
+        width,
+        height,
+        scale,
+        offsetX,
+        offsetY,
+        spawnPoints: level.current.getEnemySpawn(),
+        enemyPaths: level.current.getEnemyPaths(),
+        playerSpawn: level.current.getPlayerSpawn(),
+    }); // Custom game-loop operations
 
     /**
      * Save the gamedata to the app storage

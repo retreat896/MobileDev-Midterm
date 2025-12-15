@@ -1,5 +1,10 @@
 import { styles } from '@styles/game';
 
+const MIN_SPEED = 1.5;
+const MAX_SPEED = 4.5;
+const MIN_HP = 3;
+const MAX_HP = 10;
+
 export default class Enemy {
     // Leave these private because these should ONLY be set during construction
     #speed
@@ -18,7 +23,7 @@ export default class Enemy {
      * @param {Number} maxHp Maximum health
      * @param {Number} points Point value
      */
-    constructor(x, y, speed=3, maxHp=5, damage=1, points=10, width=40, height=40) {
+    constructor(x, y, speed = Math.random() * (MAX_SPEED - MIN_SPEED) + MIN_SPEED, maxHp = Math.floor(Math.random() * (MAX_HP - MIN_HP + 1)) + MIN_HP, damage = 1, points = 10, width = 40, height = 40) {
         // X and Y are NOT optional
         this.x = x;
         this.y = y;
@@ -35,6 +40,7 @@ export default class Enemy {
         this.active = true;
         this.path = null;
         this.currentPathIndex = 0;
+        this.rotation = 0;
     }
 
     setPath(path) {
@@ -55,13 +61,20 @@ export default class Enemy {
                 this.currentPathIndex++;
             } else {
                 const angle = Math.atan2(dy, dx);
-                // this.rotation = angle * (180 / Math.PI); // If rotation is needed
+                this.rotation = angle * (180 / Math.PI); // If rotation is needed
                 this.x += Math.cos(angle) * this.#speed;
                 this.y += Math.sin(angle) * this.#speed;
             }
         } else {
             this.x += this.#speed;
         }
+    }
+
+    /**
+     * Check if the enemy has reached the end of its path
+     */
+    hasReachedEndOfPath() {
+        return this.path && this.currentPathIndex >= this.path.length;
     }
 
     /**
