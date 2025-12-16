@@ -14,7 +14,7 @@ import { useData } from '@components/DataContext';
 import Constants from 'expo-constants';
 
 // DOTENV
-const { API_SERVER_URL } = Constants.expoConfig.extra;
+const API_SERVER_URL  = "https://mullet-deep-explicitly.ngrok-free.app";
 
 const index = () => {
     // Lock the screen to landscape mode

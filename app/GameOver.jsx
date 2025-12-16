@@ -7,7 +7,7 @@ import * as ScreenOrientation from 'expo-screen-orientation';
 import Wrapper from '@components/menu/Wrapper';
 import Constants from 'expo-constants';
 
-const { API_SERVER_URL } = Constants.expoConfig.extra;
+const API_SERVER_URL  = "https://mullet-deep-explicitly.ngrok-free.app";
 
 const { width, height } = Dimensions.get('window');
 
@@ -123,61 +123,5 @@ export default function GameOver() {
 }
 
 const styles = StyleSheet.create({
-    background: {
-        flex: 1,
-        width: '100%',
-        height: '100%',
-    },
-    container: {
-        //flex: 1,
-        alignItems: 'center',
-        backgroundColor: 'rgba(255, 255, 255, 1)', // Overlay effect
-    },
-    content: {
-        width: '60%', // Adjust for landscape
-        maxWidth: 600,
-        alignItems: 'center',
-    },
-    card: {
-        width: '100%',
-        backgroundColor: 'rgba(255, 255, 255, 0.9)',
-        elevation: 5,
-        marginBottom: 20,
-    },
-    title: {
-        fontSize: 32,
-        fontWeight: 'bold',
-        textAlign: 'center',
-        color: '#D32F2F', // Red for game over
-
-    },
-    statsContainer: {
-        flexDirection: 'row',
-        justifyContent: 'space-around',
-        marginTop: 10,
-        padding: 10,
-    },
-    statItem: {
-        alignItems: 'center',
-        margin: 20,
-    },
-    label: {
-        fontSize: 14,
-        color: '#666',
-    },
-    value: {
-        fontSize: 24,
-        fontWeight: 'bold',
-        color: '#333',
-    },
-    buttonContainer: {
-        flexDirection: 'row',
-        justifyContent: 'center',
-        gap: 20,
-        width: '100%',
-    },
-    button: {
-        flex: 1,
-        paddingVertical: 5,
-    }
+    
 });
