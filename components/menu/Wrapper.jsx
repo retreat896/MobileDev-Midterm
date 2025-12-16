@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import { View, useWindowDimensions, StyleSheet } from 'react-native';
 import { Button, Card, Dialog, FAB, Text, Portal } from 'react-native-paper';
 
-const Wrapper = ({ children, title, subtitle, onOpen, onClose, style }) => {
+const Wrapper = ({ children, title, subtitle, onOpen, onClose, style, titleStyle }) => {
     const { width, height } = useWindowDimensions();
 
     // Call onOpen using UseEffect on every initial render
@@ -12,15 +12,17 @@ const Wrapper = ({ children, title, subtitle, onOpen, onClose, style }) => {
 
     return (
         <Portal>
-            <Dialog visible={true} style={[style, wrapperStyles.container]} onDismiss={onClose ? onClose : () => {}}>
+            <Dialog visible={true} style={[style, wrapperStyles.container]} onDismiss={onClose ? onClose : () => { }}>
+                {onClose && (
+                    <View style={wrapperStyles.closeButtonContainer}>
+                        <FAB icon="close" onPress={onClose} size="small" />
+                    </View>
+                )}
+
                 <View style={wrapperStyles.headerContainer}>
-                    <Dialog.Title style={wrapperStyles.title}>{title}</Dialog.Title>
-                    {onClose && (
-                        <View style={wrapperStyles.closeButtonContainer}>
-                            <FAB icon="close" onPress={onClose} />
-                        </View>
-                    )}
+                    <Dialog.Title style={[wrapperStyles.title, titleStyle]}>{title}</Dialog.Title>
                 </View>
+
                 <Dialog.Content style={wrapperStyles.content}>{children}</Dialog.Content>
             </Dialog>
         </Portal>
@@ -36,12 +38,13 @@ const wrapperStyles = StyleSheet.create({
     },
     headerContainer: {
         flexDirection: 'row',
-        alignItems: 'flex-start',
+        alignItems: 'center',
         justifyContent: 'center',
         paddingVertical: 10,
-        minHeight: 80,
+        minHeight: 60,
         zIndex: 2,
         marginTop: 0,
+        width: '100%',
     },
     title: {
         margin: 0, // Remove default margin
@@ -49,10 +52,9 @@ const wrapperStyles = StyleSheet.create({
     },
     closeButtonContainer: {
         position: 'absolute',
-        right: 12,
-        top: 0,
-        bottom: 0,
-        justifyContent: 'center',
+        top: 10,
+        right: 10,
+        zIndex: 10,
     },
     content: {
         flex: 1,

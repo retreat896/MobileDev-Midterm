@@ -71,42 +71,39 @@ export default function GameOver() {
 
     return (
         <ImageBackground source={require('../assets/backgrounds/used/Main_Background.jpg')} style={styles.background} resizeMode="cover">
-            <Wrapper onClose={() => router.dismissAll()} style={styles.container}>
+            <Wrapper
+                title="Mission Failed"
+                onClose={() => router.dismissAll()}
+                style={styles.container}
+                titleStyle={styles.title}
+            >
                 <View style={styles.content}>
-                    <Card style={styles.card}>
-                        <Card.Content>
-                            <Text variant="displayMedium" style={styles.title}>
-                                Mission Failed
+                    <View style={styles.statsContainer}>
+                        <View style={styles.statItem}>
+                            <Text variant="bodyMedium" style={styles.label}>
+                                Score
                             </Text>
-
-                            <View style={styles.statsContainer}>
-                                <View style={styles.statItem}>
-                                    <Text variant="bodyMedium" style={styles.label}>
-                                        Score
-                                    </Text>
-                                    <Text variant="bodyMedium" style={styles.value}>
-                                        {score}
-                                    </Text>
-                                </View>
-                                <View style={styles.statItem}>
-                                    <Text variant="bodyMedium" style={styles.label}>
-                                        High Score
-                                    </Text>
-                                    <Text variant="bodyMedium" style={styles.value}>
-                                        {highScore}
-                                    </Text>
-                                </View>
-                                <View style={styles.statItem}>
-                                    <Text variant="bodyMedium" style={styles.label}>
-                                        Time Survived
-                                    </Text>
-                                    <Text variant="bodyMedium" style={styles.value}>
-                                        {formatDuration(duration)}
-                                    </Text>
-                                </View>
-                            </View>
-                        </Card.Content>
-                    </Card>
+                            <Text variant="bodyMedium" style={styles.value}>
+                                {score}
+                            </Text>
+                        </View>
+                        <View style={styles.statItem}>
+                            <Text variant="bodyMedium" style={styles.label}>
+                                High Score
+                            </Text>
+                            <Text variant="bodyMedium" style={styles.value}>
+                                {highScore}
+                            </Text>
+                        </View>
+                        <View style={styles.statItem}>
+                            <Text variant="bodyMedium" style={styles.label}>
+                                Time Survived
+                            </Text>
+                            <Text variant="bodyMedium" style={styles.value}>
+                                {formatDuration(duration)}
+                            </Text>
+                        </View>
+                    </View>
 
                     <View style={styles.buttonContainer}>
                         <Button mode="contained" onPress={() => router.replace('/GameScreen')} style={styles.button} icon="restart">
@@ -123,5 +120,53 @@ export default function GameOver() {
 }
 
 const styles = StyleSheet.create({
-    
+    background: {
+        flex: 1,
+        width: '100%',
+        height: '100%',
+    },
+    container: {
+        backgroundColor: 'rgba(255, 255, 255, 1)', // Overlay effect
+    },
+    content: {
+        width: '100%',
+        alignItems: 'center',
+        paddingHorizontal: 20,
+    },
+    title: {
+        fontSize: 32,
+        fontWeight: 'bold',
+        textAlign: 'center',
+        color: '#D32F2F', // Red for game over
+
+    },
+    statsContainer: {
+        flexDirection: 'row',
+        justifyContent: 'space-around',
+        marginTop: 10,
+        padding: 10,
+    },
+    statItem: {
+        alignItems: 'center',
+        margin: 20,
+    },
+    label: {
+        fontSize: 14,
+        color: '#666',
+    },
+    value: {
+        fontSize: 24,
+        fontWeight: 'bold',
+        color: '#333',
+    },
+    buttonContainer: {
+        flexDirection: 'row',
+        justifyContent: 'center',
+        gap: 20,
+        width: '100%',
+    },
+    button: {
+        flex: 1,
+        paddingVertical: 5,
+    }
 });
