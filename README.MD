@@ -54,12 +54,18 @@ cd MobileDev-Midterm
 npm install
 # or
 yarn install
+
+
+# and
+cd backend && npm install
+# or
+cd backend && yarn install
 ```
 
 ### 3️⃣ Build the App
 
 ```bash
-npx run android
+npm run android
 ```
 
 🪟 Wait for it to build and open.
@@ -69,8 +75,7 @@ npx run android
 ### 4️⃣ Run the App
 
 ```bash
-ctrl+c <---- Close Previous Execution
-npx run start
+npm run dev
 ```
 
 📱 Using the Keyboard controls in Expo, launch the application in Android using the "a" key.

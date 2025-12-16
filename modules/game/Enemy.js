@@ -83,7 +83,8 @@ export default class Enemy {
      * @param {Number} height Boundary max height
      */
     isOutOfBounds(width, height) {
-        return this.x < 0 || this.x > width || this.y < 0 || this.y > height;
+        const buffer = 100;
+        return this.x < -buffer || this.x > width + buffer || this.y < -buffer || this.y > height + buffer;
     }
 
     /**

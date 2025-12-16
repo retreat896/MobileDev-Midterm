@@ -317,6 +317,13 @@ const index = () => {
         );
     };
 
+    const formatDuration = (ms) => {
+        const totalSeconds = Math.floor(ms / 1000);
+        const minutes = Math.floor(totalSeconds / 60);
+        const seconds = totalSeconds % 60;
+        return `${minutes}:${seconds.toString().padStart(2, '0')}`;
+    };
+
     const showStats = () => {
         if (!stats) return null;
 
@@ -344,7 +351,7 @@ const index = () => {
                             playerStats.map((item, index) => (
                                 <DataTable.Row key={index}>
                                     <DataTable.Cell>{item[0]}</DataTable.Cell>
-                                    <DataTable.Cell numeric>{item[1]}</DataTable.Cell>
+                                    <DataTable.Cell numeric>{['Duration', 'TotalTimePlayed', 'LongestGame'].includes(item[0]) ? formatDuration(item[1]) : item[1]}</DataTable.Cell>
                                 </DataTable.Row>
                             ))}
                     </DataTable>

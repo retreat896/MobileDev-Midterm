@@ -62,14 +62,15 @@ export function useGameLoop({ width, height, scale = 1, offsetX = 0, offsetY = 0
     // Execute when loaded
     useEffect(() => {
         // Generate the paths
+
         if (enemyPaths && enemyPaths.length > 0) {
             // Use defined paths if available
             levelPathsRef.current = enemyPaths;
         } else if (spawnPoints && spawnPoints.length > 0) {
             // If spawnPoints provided, generate paths for each
-            levelPathsRef.current = spawnPoints.map(
-                (point) => generateComplexPath(point.x || 0, point.y, 5) // Use point.y from data
-            );
+            levelPathsRef.current = spawnPoints.map((point) => {
+                return generateComplexPath(point.x || 0, point.y, 5); // Use point.y from data
+            });
         } else {
             // Fallback: Generate one random path
             let startY = Math.random() * (height - 100);

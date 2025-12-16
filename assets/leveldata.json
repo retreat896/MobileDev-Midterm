@@ -1,5 +1,15 @@
 [
     {
+        "name": "Beach Endless",
+        "image": "/assets/backgrounds/used/Island_Sunset.jpg",
+        "enemySpawn": [
+            { "x": -50, "y": 200 },
+            { "x": -50, "y": 400 },
+            { "x": -50, "y": 600 }
+        ],
+        "playerSpawn": { "x": 1100, "y": 400 }
+    },
+    {
         "name": "Hedge",
         "image": "/assets/backgrounds/used/Hedge.jpg",
         "enemySpawn": [{ "x": 0, "y": 460 }],

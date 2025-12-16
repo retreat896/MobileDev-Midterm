@@ -213,6 +213,49 @@ app.put("/player/:uuid", validateUser, async (req, res) => {
     }
 });
 
+app.post("/player/:uuid/save-game", validateUser, async (req, res) => {
+    try {
+        const { uuid } = req.params;
+        const { score, duration } = req.body;
+
+        console.log(`[POST /player/${uuid}/save-game] Saving game result`);
+
+        if (score === undefined || duration === undefined) {
+            return res.status(400).json({ detail: "Missing score or duration" });
+        }
+
+        const playerdata = await playerdataCollection.findOne({ UUID: uuid });
+        if (!playerdata) {
+            return res.status(404).json({ detail: "Player not found" });
+        }
+
+        // Calculate new stats
+        const currentHighScore = playerdata.HighScore || 0;
+        const currentTotalTime = playerdata.TotalTimePlayed || 0;
+        const currentLongestGame = playerdata.LongestGame || 0;
+        const currentDuration = playerdata.Duration || 0; // Legacy field? check usage
+
+        const updates = {
+            HighScore: Math.max(currentHighScore, parseInt(score)),
+            TotalTimePlayed: currentTotalTime + parseInt(duration),
+            LongestGame: Math.max(currentLongestGame, parseInt(duration)),
+            Duration: currentDuration + parseInt(duration) // Keep legacy field updated just in case
+        };
+
+        await playerdataCollection.updateOne({ UUID: uuid }, { $set: updates });
+
+        console.log(`[POST /player/${uuid}/save-game] Game saved successfully`);
+        res.json({
+            message: "Game saved successfully",
+            updates
+        });
+
+    } catch (e) {
+        console.error(`[POST /player/${uuid}/save-game] Error:`, e);
+        res.status(500).json({ detail: "Internal server error" });
+    }
+});
+
 // ----- Leveldata Routes -----
 app.get("/level/:key", validateUser, async (req, res) => {
     try {
