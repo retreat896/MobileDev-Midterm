@@ -7,7 +7,7 @@ import * as ScreenOrientation from 'expo-screen-orientation';
 import Wrapper from '@components/menu/Wrapper';
 import Constants from 'expo-constants';
 
-const { API_SERVER_URL } = Constants.expoConfig.extra;
+
 
 const { width, height } = Dimensions.get('window');
 
@@ -27,10 +27,6 @@ export default function GameOver() {
                 if (storedScore) setScore(parseInt(storedScore, 10));
                 if (storedHighScore) setHighScore(parseInt(storedHighScore, 10));
                 if (storedDuration) setDuration(parseInt(storedDuration, 10));
-
-                if (uuid && storedScore && storedDuration) {
-                    saveGameData(uuid, storedScore, storedDuration);
-                }
             } catch (error) {
                 console.error('Failed to load game data', error);
             }
@@ -51,62 +47,36 @@ export default function GameOver() {
         return `${minutes}:${seconds.toString().padStart(2, '0')}`;
     };
 
-    const saveGameData = async (uuid, score, duration) => {
-        try {
-            console.log(`Saving game data to ${API_SERVER_URL}/player/${uuid}/save-game`);
-            await fetch(`${API_SERVER_URL}/player/${uuid}/save-game`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    score: parseInt(score),
-                    duration: parseInt(duration),
-                }),
-            });
-        } catch (error) {
-            console.error('Failed to save game data to server', error);
-        }
-    };
-
     return (
         <ImageBackground source={require('../assets/backgrounds/used/Main_Background.jpg')} style={styles.background} resizeMode="cover">
-            <Wrapper onClose={() => router.dismissAll()} style={styles.container}>
+            <Wrapper title="Mission Failed" onClose={() => router.dismissAll()} style={styles.container} titleStyle={styles.title}>
                 <View style={styles.content}>
-                    <Card style={styles.card}>
-                        <Card.Content>
-                            <Text variant="displayMedium" style={styles.title}>
-                                Mission Failed
+                    <View style={styles.statsContainer}>
+                        <View style={styles.statItem}>
+                            <Text variant="bodyMedium" style={styles.label}>
+                                Score
                             </Text>
-
-                            <View style={styles.statsContainer}>
-                                <View style={styles.statItem}>
-                                    <Text variant="bodyMedium" style={styles.label}>
-                                        Score
-                                    </Text>
-                                    <Text variant="bodyMedium" style={styles.value}>
-                                        {score}
-                                    </Text>
-                                </View>
-                                <View style={styles.statItem}>
-                                    <Text variant="bodyMedium" style={styles.label}>
-                                        High Score
-                                    </Text>
-                                    <Text variant="bodyMedium" style={styles.value}>
-                                        {highScore}
-                                    </Text>
-                                </View>
-                                <View style={styles.statItem}>
-                                    <Text variant="bodyMedium" style={styles.label}>
-                                        Time Survived
-                                    </Text>
-                                    <Text variant="bodyMedium" style={styles.value}>
-                                        {formatDuration(duration)}
-                                    </Text>
-                                </View>
-                            </View>
-                        </Card.Content>
-                    </Card>
+                            <Text variant="bodyMedium" style={styles.value}>
+                                {score}
+                            </Text>
+                        </View>
+                        <View style={styles.statItem}>
+                            <Text variant="bodyMedium" style={styles.label}>
+                                High Score
+                            </Text>
+                            <Text variant="bodyMedium" style={styles.value}>
+                                {highScore}
+                            </Text>
+                        </View>
+                        <View style={styles.statItem}>
+                            <Text variant="bodyMedium" style={styles.label}>
+                                Time Survived
+                            </Text>
+                            <Text variant="bodyMedium" style={styles.value}>
+                                {formatDuration(duration)}
+                            </Text>
+                        </View>
+                    </View>
 
                     <View style={styles.buttonContainer}>
                         <Button mode="contained" onPress={() => router.replace('/GameScreen')} style={styles.button} icon="restart">
@@ -129,20 +99,12 @@ const styles = StyleSheet.create({
         height: '100%',
     },
     container: {
-        //flex: 1,
-        alignItems: 'center',
         backgroundColor: 'rgba(255, 255, 255, 1)', // Overlay effect
     },
     content: {
-        width: '60%', // Adjust for landscape
-        maxWidth: 600,
-        alignItems: 'center',
-    },
-    card: {
         width: '100%',
-        backgroundColor: 'rgba(255, 255, 255, 0.9)',
-        elevation: 5,
-        marginBottom: 20,
+        alignItems: 'center',
+        paddingHorizontal: 20,
     },
     title: {
         fontSize: 32,
