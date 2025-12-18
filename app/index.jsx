@@ -14,7 +14,7 @@ import { useData } from '@components/DataContext';
 import Constants from 'expo-constants';
 
 // DOTENV
-const API_SERVER_URL  = "https://mullet-deep-explicitly.ngrok-free.app";
+
 
 const index = () => {
     // Lock the screen to landscape mode
@@ -60,54 +60,6 @@ const index = () => {
      * console.log(getItem('Username'));
      *
      */
-    const registerOrUpdateName = async () => {
-        // Get the UUID/Username from storage, if any
-        const uuid = getItem('UUID');
-
-        console.log('Fetching: ' + `${API_SERVER_URL}/player/${uuid ? uuid + '/name' : ''}`);
-
-        // Send Username submission to the server, or update the player's username
-        const response = await fetch(`${API_SERVER_URL}/player/${uuid ? uuid + '/name' : ''}`, {
-            method: uuid ? 'PUT' : 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ username }),
-        }).catch((e) => console.error);
-
-        // Check server response
-        if (response.ok) {
-            // Process server response
-            const data = await response.json();
-            console.log(data.message);
-
-            // The user was required to submit a username
-            if (forceUsername) {
-                // Disable the forced-username input
-                setForceUsername(false);
-                // Hide the username dialog
-                showUsernameConfirm(false);
-                // Close settings
-                openSettings(false);
-            }
-
-            // Update the username
-            // Ensure it is saved
-            setItem('Username', username);
-
-            // Check for UUID returned
-            if (data.UUID) {
-                // Store the UUID in device storage
-                // Ensure it is saved
-                setItem('UUID', data.UUID);
-            }
-
-            // Save the updated User and UUID data
-            await saveItems('Username', 'UUID');
-        } else {
-            console.error(`Failed to register or update player name.`);
-        }
-    };
 
     /**
      * Update player statistics from server
@@ -123,34 +75,6 @@ const index = () => {
      * console.log(getItem('HighScore'));
      * console.log(getItem('LongestGame'));
      */
-    const fetchPlayerData = async () => {
-        // Attempt to fetch the player data from the server
-        const response = await fetch(`${API_SERVER_URL}/player/${getItem('UUID')}`, {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-        });
-
-        // Check response
-        if (response.ok) {
-            // Get the player data
-            const data = await response.json();
-
-            // Log any server message
-            if (data.message) console.log(data.message);
-
-            // Update the gamedata in the device storage
-            for (let key in data) {
-                // Save the player data
-                // Ensure it is saved
-                setItem(key, data[key]);
-                await saveItems(key);
-            }
-        } else {
-            console.log('Encountered an error fetching playerdata');
-        }
-    };
 
     // Execute as soon as the data loads
     useEffect(() => {
@@ -158,13 +82,13 @@ const index = () => {
         if (!dataLoaded) return;
 
         // Get the stored Username
-        const savedUUID = getItem('UUID');
+        const savedUsername = getItem('Username');
 
-        console.log('UUID: ' + savedUUID);
+        console.log('Username: ' + savedUsername);
 
         // NO DATA
         // No username has been saved
-        if (savedUUID == '') {
+        if (savedUsername == '') {
             console.log('Showing Stetings');
             // Display the settings menu
             openSettings(true);
@@ -178,10 +102,6 @@ const index = () => {
             console.log('Applying Stored Username');
             // Apply the saved username
             setUsername(getItem('Username'));
-
-            console.log('Fetching Server Data');
-            // Update Player data
-            fetchPlayerData();
         }
     }, [dataLoaded]);
 
@@ -231,7 +151,18 @@ const index = () => {
         console.log(`Username Submitted: ${username}`);
 
         // Update the player name (using getItem('Username'))
-        registerOrUpdateName();
+        setItem('Username', username);
+        await saveItems('Username');
+
+        // The user was required to submit a username
+        if (forceUsername) {
+            // Disable the forced-username input
+            setForceUsername(false);
+            // Hide the username dialog
+            showUsernameConfirm(false);
+            // Close settings
+            openSettings(false);
+        }
     };
 
     const showSettings = () => {

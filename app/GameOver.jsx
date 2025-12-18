@@ -7,7 +7,7 @@ import * as ScreenOrientation from 'expo-screen-orientation';
 import Wrapper from '@components/menu/Wrapper';
 import Constants from 'expo-constants';
 
-const API_SERVER_URL  = "https://mullet-deep-explicitly.ngrok-free.app";
+
 
 const { width, height } = Dimensions.get('window');
 
@@ -27,10 +27,6 @@ export default function GameOver() {
                 if (storedScore) setScore(parseInt(storedScore, 10));
                 if (storedHighScore) setHighScore(parseInt(storedHighScore, 10));
                 if (storedDuration) setDuration(parseInt(storedDuration, 10));
-
-                if (uuid && storedScore && storedDuration) {
-                    saveGameData(uuid, storedScore, storedDuration);
-                }
             } catch (error) {
                 console.error('Failed to load game data', error);
             }
@@ -51,32 +47,9 @@ export default function GameOver() {
         return `${minutes}:${seconds.toString().padStart(2, '0')}`;
     };
 
-    const saveGameData = async (uuid, score, duration) => {
-        try {
-            console.log(`Saving game data to ${API_SERVER_URL}/player/${uuid}/save-game`);
-            await fetch(`${API_SERVER_URL}/player/${uuid}/save-game`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    score: parseInt(score),
-                    duration: parseInt(duration),
-                }),
-            });
-        } catch (error) {
-            console.error('Failed to save game data to server', error);
-        }
-    };
-
     return (
         <ImageBackground source={require('../assets/backgrounds/used/Main_Background.jpg')} style={styles.background} resizeMode="cover">
-            <Wrapper
-                title="Mission Failed"
-                onClose={() => router.dismissAll()}
-                style={styles.container}
-                titleStyle={styles.title}
-            >
+            <Wrapper title="Mission Failed" onClose={() => router.dismissAll()} style={styles.container} titleStyle={styles.title}>
                 <View style={styles.content}>
                     <View style={styles.statsContainer}>
                         <View style={styles.statItem}>
